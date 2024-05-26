@@ -1,10 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$/../../..">
+    <content url="file://$USER_HOME$">
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="Sabrina\Speedguard\" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/cloudflare/src" isTestSource="false" packagePrefix="CF" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/cloudflare/src/Test" isTestSource="true" packagePrefix="CF" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/email-log/include" isTestSource="false" packagePrefix="EmailLog" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/site-performance-tracker/php" isTestSource="false" packagePrefix="Site_Performance_Tracker" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wp-mail-smtp/src" isTestSource="false" packagePrefix="WPMailSMTP" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wp-rocket/inc" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wp-rocket/inc/Addon" isTestSource="false" packagePrefix="WPMedia" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wp-rocket/inc/deprecated" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wp-rocket/inc/deprecated/Engine" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-content/plugins/wpdiscuz/forms" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../cm-biggerbolderbaking/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Downloads/shipping-nova-poshta-for-woocommerce/shipping-nova-poshta-for-woocommerce/src" isTestSource="false" packagePrefix="NovaPoshta" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Foodie Digital DB/FD Tech/Plugins/Licensed Plugins/perfmatters/inc/classes" isTestSource="false" packagePrefix="Perfmatters" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/clean/app/public/wp-content/plugins/wp-mail-catcher/src" isTestSource="false" packagePrefix="WpMailCatcher" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/clean/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/cleanupplugin/app/public/wp-content/plugins/google-analytics-for-wordpress/includes/gutenberg/headline-tool/phpinsight/lib" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/cleanupplugin/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/multisite/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/multisiteclassic/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/singleclassic/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/speedguard/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/start/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/disable-cart-fragments" isTestSource="false" packagePrefix="DCF" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/elementor-pro" isTestSource="false" packagePrefix="ElementorPro" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/elementor/includes" isTestSource="false" packagePrefix="Elementor" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/official-mailerlite-sign-up-forms/src" isTestSource="false" packagePrefix="MailerLiteForms" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/woo-discount-rules/v2" isTestSource="false" packagePrefix="Wdr" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-content/plugins/woocommerce/packages/action-scheduler/classes" isTestSource="false" packagePrefix="Action_Scheduler" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/stringtheory/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/google-analytics-for-wordpress/includes/gutenberg/headline-tool/phpinsight/lib" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/google-calendar-events/includes" isTestSource="false" packagePrefix="SimpleCalendar" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/http-https-remover/analyst/src" isTestSource="false" packagePrefix="Analyst" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/http-https-remover/analyst/src" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/imagify/classes" isTestSource="false" packagePrefix="Imagify" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/imagify/inc" isTestSource="false" packagePrefix="Imagify" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/woocommerce-follow-up-emails/includes/addons/twitter/lib/twitter" isTestSource="false" packagePrefix="Abraham" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/wp-rocket-/inc" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/wp-rocket-/inc/Addon" isTestSource="false" packagePrefix="WPMedia" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/wp-rocket-/inc/Dependencies/ActionScheduler/classes" isTestSource="false" packagePrefix="Action_Scheduler" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/wp-rocket-/inc/deprecated" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/wp-rocket-/inc/deprecated/Engine" isTestSource="false" packagePrefix="WP_Rocket" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/themes/northstar-theme/_includes/acf-addons/acf-gravityforms-add-on/resources" isTestSource="false" packagePrefix="ACFGravityformsField" />
+      <sourceFolder url="file://$USER_HOME$/Local Sites/torreyholistics/app/public/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/PhpstormProjects/SabrinaZeidan.com SpeedGuard/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
+      <sourceFolder url="file://$USER_HOME$/PhpstormProjects/SpeedGuard new on Cloudways/wp-content/plugins/shipping-nova-poshta-for-woocommerce/src" isTestSource="false" packagePrefix="NovaPoshta" />
+      <sourceFolder url="file://$USER_HOME$/PhpstormProjects/SpeedGuard new on Cloudways/wp-includes" isTestSource="false" packagePrefix="PHPMailer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

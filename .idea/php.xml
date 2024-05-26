@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="MessDetectorOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCSFixerOptionsConfiguration">
+    <option name="codingStandard" value="Symfony" />
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCodeSnifferOptionsConfiguration">
+    <option name="codingStandard" value="Custom" />
+    <option name="customRuleset" value="$PROJECT_DIR$/phpcs.xml" />
+    <option name="highlightLevel" value="WARNING" />
+    <option name="installedPaths" value="C:\Users\Sabrina\Documents\GitHub\speedguard\vendor\wp-coding-standards\wpcs" />
+    <option name="showSniffs" value="true" />
+    <option name="transferred" value="true" />
+  </component>
   <component name="PhpCSFixer">
     <phpcsfixer_settings>
       <PhpCSFixerConfiguration standards="PSR1;PSR2;Symfony;DoctrineAnnotation;PHP70Migration;PHP71Migration" tool_path="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer/php-cs-fixer" />
@@ -47,5 +62,13 @@
       <path value="$PROJECT_DIR$/vendor/phpstan/phpdoc-parser" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
+  <component name="PhpStanOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PsalmOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
 </project>

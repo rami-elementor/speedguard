@@ -267,34 +267,11 @@ class SpeedGuard_Settings {
 	function speedguard_settings() {
 		// General Settings
 		register_setting( 'speedguard', 'speedguard_options' );
-		add_settings_section( 'speedguard_widget_settings_section', '', '', 'speedguard' );
-		add_settings_field(
-			'speedguard_options',
-			__( 'Show site average load time on Dashboard', 'speedguard' ),
-			[
-				$this,
-				'show_dashboard_widget_fn',
-			],
-			'speedguard',
-			'speedguard_widget_settings_section',
-			[ 'label_for' => 'show_dashboard_widget' ]
-		);
 
-		add_settings_field(
-			'speedguard_ab_widget',
-			__( 'Show current page load time in Admin Bar', 'speedguard' ),
-			[
-				$this,
-				'show_ab_widget_fn',
-			],
-			'speedguard',
-			'speedguard_widget_settings_section',
-			[ 'label_for' => 'show_ab_widget' ]
-		);
 		add_settings_section( 'speedguard_reports_section', '', '', 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',
-			__( 'Send me report at', 'speedguard' ),
+			__( 'Minimal number of views during the last 30 days', 'szcleanup' ),
 			[
 				$this,
 				'email_me_at_fn',

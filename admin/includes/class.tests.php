@@ -123,16 +123,21 @@ class SpeedGuard_List_Table extends WP_List_Table {
 				];
 				// Get test result data
 				$sg_test_result = get_post_meta( $guarded_page_id, 'sg_test_result', true );
-                echo "<pre>";
+                echo "SZHELLO <pre>";
                 var_dump($sg_test_result);
                 echo "</pre>";
 				// Start Prepare PSI data and CWV data with the loop (use SG_METRICS_ARRAY make a loop)
 				foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
 					foreach ( $test_types as $test_type => $metrics ) {
 						foreach ( $metrics as $metric ) {
-							$core_value                                                 = SpeedGuard_Widgets::single_metric_display( $sg_test_result, $device, $test_type, $metric );
+
+
+							$core_value  = SpeedGuard_Widgets::single_metric_display( $sg_test_result, $device, $test_type, $metric );
 							$thisTestData[ $test_type . '_' . $device . '_' . $metric ] = $core_value; // this is a string to display // TODO rename
-						}
+						//debug
+                        	echo $test_type . '_' . $device . '_' . $metric . ' = ' . $core_value . '<br>';
+
+                        }
 					}
 				}
 				$data[] = $thisTestData;

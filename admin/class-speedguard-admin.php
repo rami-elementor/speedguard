@@ -190,57 +190,66 @@ class SpeedGuard_Admin {
     }
 
 **/
-    function mark_test_as_done_fn() {
+   //MArk individual test as done and save results to post_meta
+    //body: `action=mark_test_as_done&current_test_id=${post_id}&test_result_data=${test_result_data}&nonce=${sgnoncee}`,
+	//
+   function mark_test_as_done_fn() {
 	    check_ajax_referer( 'sg_run_one_test_nonce', 'nonce' );
-
 	    if (empty($_POST['current_test_id'])) return;
-	    $current_test = $_POST['current_test_id'];
-	    $test_result_data = wp_unslash($_POST['test_result_data']); // don't know where those slashes come from
-	    $test_result_data = json_decode($test_result_data, true);
+        //Data that we expect to have in the request: current_test_id, test_result_data, nonce
+	   //var_dump($_POST);
+
+        $current_test = $_POST['current_test_id'];
+	    $test_result_data_from_post = wp_unslash($_POST['test_result_data']); // don't know where those slashes come from
+	    $test_result_data = json_decode($test_result_data_from_post, true);
+
         $mobile_data = $test_result_data[0]['mobile'];
-        $desktop_data = $test_result_data[0]['desktop'];
+        $desktop_data = $test_result_data[1]['desktop'];
 
-$both_devices_values = ['mobile' =>[
-        'cwv'=>[
-                'lcp' => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
-                'cls' => $mobile_data['cwv']['cls'],
-                'fid' => $mobile_data['cwv']['fid'],
-                'overall_category' => $mobile_data['cwv']['overall_category']
-               ],
-        'psi'=>[
-                'lcp' => $mobile_data['psi']['lcp'],
-            // title, description, score, scoreDisplayMode, displayValue, numericValue
-                'cls' => $mobile_data['psi']['cls'],
-        ]
- ],
-'desktop' => [
-           'cwv'=>[
-                'lcp' => $desktop_data['cwv']['lcp'], //TODO check seems to be fine
-                'cls' => $desktop_data['cwv']['cls'],
-                'fid' => $desktop_data['cwv']['fid'],
-                'overall_category' => $desktop_data['cwv']['overall_category']
-               ],
-        'psi'=>[
-                'lcp' => $desktop_data['psi']['lcp'],
-            // title, description, score, scoreDisplayMode, displayValue, numericValue
-                'cls' => $desktop_data['psi']['cls'],
-        ]
 
-]];
+    $both_devices_values =
+            ['mobile' =>[
+                'cwv'=>[
+                        'lcp' => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
+                        'cls' => $mobile_data['cwv']['cls'],
+                        'fid' => $mobile_data['cwv']['fid'],
+                        'overall_category' => $mobile_data['cwv']['overall_category']
+                       ],
+                'psi'=>[
+                        'lcp' => $mobile_data['psi']['lcp'],
+                    // title, description, score, scoreDisplayMode, displayValue, numericValue
+                        'cls' => $mobile_data['psi']['cls'],
+                ]
+            ],
+            'desktop' => [
+                       'cwv'=>[
+                            'lcp' => $desktop_data['cwv']['lcp'], //array if ok, string if no data
+                            'cls' => $desktop_data['cwv']['cls'],
+                            'fid' => $desktop_data['cwv']['fid'],
+                            'overall_category' => $desktop_data['cwv']['overall_category']
+                           ],
+                    'psi'=>[
+                            'lcp' => $desktop_data['psi']['lcp'], //array
+                        // title, description, score, scoreDisplayMode, displayValue, numericValue
+                            'cls' => $desktop_data['psi']['cls'],
+                    ]
+
+            ]
+            ];
+
+
 
   $updated = update_post_meta( $current_test, 'sg_test_result',  $both_devices_values );
-wp_mail('sabrinazeidanspain@gmail.com', 'another attempt 910','$test_result_data: '.print_r($test_result_data,true).'<br>$device_values ' .print_r($both_devices_values,true)
-//.'<br>$test_result_data[0]'.print_r($test_result_data[0], true)
-, 'Content-Type: text/html; charset=UTF-8');
+//wp_mail('sabrinazeidanspain@gmail.com', 'another attempt1205',    '$test_result_data:  '.print_r($test_result_data,true).'$mobile_data:  '.print_r($mobile_data,true).'$desktop_data:  '.print_r($desktop_data,true).'<br>$device_values ' .print_r($both_devices_values,true)
+//.'<br>$test_result_data[0]'.print_r($test_result_data[0], true), 'Content-Type: text/html; charset=UTF-8');
 
 
 
 
         //TODO:update CWV for origin
 
-	    $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
-
-
+	    //Mark test as done in the queue
+       $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
 	    if ( ( $key = array_search( $current_test, $current_tests_array ) ) !== false ) {
 		    unset( $current_tests_array[ $key ] );
 	    }
@@ -370,10 +379,11 @@ if (typeof test_result_data === 'object') {
 //TODO update test status here, get rid of that fuction
 
     try {
+        //fires ok
         console.log('Variables in update_test_status_done function:');
-        console.log('post_id' + test_id);
-        console.log('test_result_data' + test_result_data);
-        console.log('test_result_data Stringify' + JSON.stringify(test_result_data));
+        console.log('post_id' + test_id); //ok
+        console.log('test_result_data' + test_result_data); //not ok
+        console.log('test_result_data Stringify' + JSON.stringify(test_result_data)); //ok
 
 
 
@@ -390,15 +400,21 @@ if (typeof test_result_data === 'object') {
             //Pass test data here
             body: `action=mark_test_as_done&current_test_id=${test_id}&test_result_data=${test_result_data_string}&nonce=${newsgnoncee}`,
         });
-        console.log('Sent AJAX request with action mark_test_as_done');
-        console.log(response);
+        if (response.ok) {  // Check if request was successful
+            console.log('Sent AJAX request with action mark_test_as_done');
+            console.log(response);
+        } else {
+            console.log('Failed to send AJAX request with action mark_test_as_done');
+        }
+
+
     } catch (err) {
         console.log(err);
     }
 
 
-} else //TODO error handling in fetchall
-{
+} else { //TODO error handling in fetchall
+// {
 console.log('Response is not object');
 }
 

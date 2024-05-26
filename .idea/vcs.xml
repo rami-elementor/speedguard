@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+    <mapping directory="$USER_HOME$/Desktop/speedguard" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../better-click-to-tweet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cleanupplugin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cm-biggerbolderbaking" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../code-syntax-block" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../lazyload-anything" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../social-sharing-block" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../speedguard-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../xcurrent" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../speedguard" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/clean/app/public/wp-content/plugins/speedguard" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/cleanupplugin/app/public/wp-content/plugins/cleanupplugin" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/speedguard/app/public/wp-content/plugins/speedguard" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/start/app/public/wp-content/plugins/better-click-to-tweet" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/start/app/public/wp-content/plugins/code-syntax-block" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/plugins/ewd-premium-helper" vcs="Git" />
+    <mapping directory="$USER_HOME$/Local Sites/torreyholistics/app/public/wp-content/themes/northstar-child" vcs="Git" />
+    <mapping directory="$USER_HOME$/PhpstormProjects/SabrinaZeidan.com SpeedGuard/wp-content/plugins/speedguard" vcs="Git" />
+    <mapping directory="$USER_HOME$/PhpstormProjects/SpeedGuard new on Cloudways/wp-content/plugins/cleanupplugin" vcs="Git" />
+    <mapping directory="$USER_HOME$/PhpstormProjects/SpeedGuard new on Cloudways/wp-content/plugins/speedguard" vcs="Git" />
   </component>
 </project>

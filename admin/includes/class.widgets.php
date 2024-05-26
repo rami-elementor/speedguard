@@ -183,6 +183,7 @@ class SpeedGuard_Widgets {
 	 * Function responsible for formatting CWV data for display
 	 */
 	public static function single_metric_display( $results_array, $device, $test_type, $metric ) {
+
 		$display_value = '';
 		$category      = '';
 		$class         = '';
@@ -190,7 +191,10 @@ class SpeedGuard_Widgets {
 			$class = 'waiting';
 		} elseif ( ( is_array( $results_array ) ) ) {// tests are not currently running
 			// Check if metric data is available for this device
-			if ( isset( $results_array[ $device ][ $test_type ][ $metric ] ) ) {
+			if ( isset( $results_array[ $device ][ $test_type ][ $metric] ) && is_array($results_array[ $device ][ $test_type ][ $metric]) ) {
+				echo 'isset( $results_array[ $device ][ $test_type ][ $metric ] )';
+                var_dump($results_array[ $device ][ $test_type ][ $metric ]);
+
 				if ( $test_type === 'psi' ) {
 					$display_value = $results_array[ $device ][ $test_type ][ $metric ]['displayValue'];
 					$class         = 'score';
@@ -212,7 +216,7 @@ class SpeedGuard_Widgets {
 			} elseif ( $test_type === 'psi' && get_transient( 'speedguard-tests-running' ) ) {
 				$class = 'waiting';
 			} else {
-				// No data aailable for the metric
+				// No data available for the metric
 				$class         = 'na';
 				$display_value = 'N/A';
 			}
