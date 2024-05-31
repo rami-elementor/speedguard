@@ -117,7 +117,12 @@ class SpeedGuard_Widgets {
 		// Retrieving data to display
 		delete_transients_with_prefix( 'speedguard' );
 		//echo SpeedGuard_Notifications::test_results_email( 'regular' );
-		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
+       $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
+//		echo "This is what is saved for sg_origin_results";
+//		var_dump($speedguard_cwv_origin);
+//		$last_test_is_done_tr = get_transient( 'speedguard_last_test_is_done' );
+//var_dump($last_test_is_done_tr);
+
 		// Preparing data to display
 		// TODO make this constant
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
@@ -193,7 +198,7 @@ class SpeedGuard_Widgets {
 			// Check if metric data is available for this device
 			if ( isset( $results_array[ $device ][ $test_type ][ $metric] ) && is_array($results_array[ $device ][ $test_type ][ $metric]) ) {
 				echo 'isset( $results_array[ $device ][ $test_type ][ $metric ] )';
-                var_dump($results_array[ $device ][ $test_type ][ $metric ]);
+               // var_dump($results_array[ $device ][ $test_type ][ $metric ]);
 
 				if ( $test_type === 'psi' ) {
 					$display_value = $results_array[ $device ][ $test_type ][ $metric ]['displayValue'];

@@ -95,6 +95,7 @@ class SpeedGuard_Admin {
     }
 
     function check_tests_progress_fn() {
+
         //Only transient here
         check_ajax_referer( 'sgnonce', 'nonce' );
         //check current tests transient
@@ -102,16 +103,18 @@ class SpeedGuard_Admin {
         $last_test_is_done_tr = get_transient( 'speedguard_last_test_is_done' );
         $test_in_progress     = get_transient( 'speedguard_test_in_progress' );
         //Possible responses:
+        //There were tests in the queue but now all have just been completed
         $last_test_complete = [
-            'status'  => 'complete',
+            'status'  => 'last_test_complete',
             'message' => 'All tests are complete',
         ];
-
+        // There are no tests in the queue
         $do_nothing         = [
             'status'  => 'no_tests',
             'message' => 'There are no tests in queue',
         ];
-        //If there are tests in the queue
+
+        //There are still some tests in the queue
         if ( $current_tests_array ) {
             $current_tests_array = json_decode( $current_tests_array, true );
             // Run 1 test async in the separate function
@@ -146,7 +149,7 @@ class SpeedGuard_Admin {
 
             }
             $response = $tests_are_running;
-        } else if ( ! $current_tests_array && ! $test_in_progress && $last_test_is_done_tr ) { //if there are no tests in the queue, but last test has just completed
+        } else if ( !$current_tests_array && !$test_in_progress && ($last_test_is_done_tr !== false) ) { //if there are no tests in the queue, but last test has just completed
             delete_transient( 'speedguard_last_test_is_done' );
             $response = $last_test_complete;
         } else { // if there are no tests and not waiting for the last one to complete
@@ -207,7 +210,7 @@ class SpeedGuard_Admin {
         $desktop_data = $test_result_data[1]['desktop'];
 
 
-    $both_devices_values =
+	   $both_devices_values =
             ['mobile' =>[
                 'cwv'=>[
                         'lcp' => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
@@ -236,17 +239,12 @@ class SpeedGuard_Admin {
 
             ]
             ];
-
-
-
-  $updated = update_post_meta( $current_test, 'sg_test_result',  $both_devices_values );
-//wp_mail('sabrinazeidanspain@gmail.com', 'another attempt1205',    '$test_result_data:  '.print_r($test_result_data,true).'$mobile_data:  '.print_r($mobile_data,true).'$desktop_data:  '.print_r($desktop_data,true).'<br>$device_values ' .print_r($both_devices_values,true)
-//.'<br>$test_result_data[0]'.print_r($test_result_data[0], true), 'Content-Type: text/html; charset=UTF-8');
+        $update_url_values = update_post_meta( $current_test, 'sg_test_result',  $both_devices_values );
+//wp_mail('sabrinazeidanspain@gmail.com', 'another attempt1205',    '$test_result_data:  '.print_r($test_result_data,true).'$mobile_data:  '.print_r($mobile_data,true).'$desktop_data:  '.print_r($desktop_data,true).'<br>$device_values ' .print_r($both_devices_values,true).'<br>$test_result_data[0]'.print_r($test_result_data[0], true), 'Content-Type: text/html; charset=UTF-8');
 
 
 
 
-        //TODO:update CWV for origin
 
 	    //Mark test as done in the queue
        $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
@@ -257,8 +255,56 @@ class SpeedGuard_Admin {
 	    //if after removing this test there are no tests left to process, mark that this is the last test in queue and delete transient
 	    if ( count( $current_tests_array ) < 1 ) {
 		    delete_transient( 'speedguard_tests_in_queue' );
-		    //  SpeedGuard_Lighthouse::update_average_psi();
-		    set_transient( 'speedguard_last_test_is_done', true, 5 );
+		    set_transient( 'speedguard_last_test_is_done', true, 300 );
+            $last_test_is_done = true;
+
+		    //Update CWV here, and count average psi
+
+            //TODO? move this seomwhere else, after checking the  speedguard_last_test_is_done ? Maybe not -- another page reload would be needed
+		   $calculated_average_psi =  SpeedGuard_Lighthouse::count_average_psi();
+
+            //Save CWV for origin
+
+		    $both_devices_values_origin =
+			    ['mobile' => [
+				    'cwv'=>[
+					    'lcp' => $mobile_data['originCWV']['lcp'], //TODO check seems to be fine
+					    'cls' => $mobile_data['originCWV']['cls'],
+					    'fid' => $mobile_data['originCWV']['fid'],
+					    'overall_category' => $mobile_data['originCWV']['overall_category']
+				    ],
+                    'psi' => [
+                            'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
+                            'cls' => $calculated_average_psi['mobile']['psi']['cls']
+                    ]
+
+			    ],
+			     'desktop' => [
+				     'cwv'=>[
+					     'lcp' => $desktop_data['originCWV']['lcp'], //array if ok, string if no data
+					     'cls' => $desktop_data['originCWV']['cls'],
+					     'fid' => $desktop_data['originCWV']['fid'],
+					     'overall_category' => $desktop_data['originCWV']['overall_category']
+				     ],
+                 'psi' => [
+			        'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
+			        'cls' => $calculated_average_psi['desktop']['psi']['cls']
+		            ]
+			     ]
+			    ];
+
+
+		    $update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin);
+
+
+		   // error_log( print_r( $calculated_average_psi, true ) );
+		   // error_log( print_r( $both_devices_values, true ) );
+		   // error_log( print_r( $mobile_data, true ) );
+
+
+
+
+
 
 	    } else {
 		    // delete_transient('speedguard_waiting_for_the_last_test_to_finish'); //for the case test was added while the last one was running, and that one is not the last one anymore
@@ -266,7 +312,8 @@ class SpeedGuard_Admin {
 	    }
 	    $response = [
 		    'status' => 'test marked as done',
-		    // 'test_id_passed'  => $test_id
+		    'test_id_passed'  => $current_test,
+            'last_test_in_queue' => isset($last_test_is_done)? $last_test_is_done : false
 	    ];
 
 
@@ -275,9 +322,13 @@ class SpeedGuard_Admin {
     }
 
     function run_tests_js() {
-        //TODO: include this only on Tests page
-        //this runs on every sinle admin page (good), but we need to insure it doesn't send multiple reguests. S0 -- check on every page, run tests from this function, after checking that there is no tests are running just now
-        $reload = self::is_screen( 'tests' ) ? 'true' : 'false';
+       //Fire only on Tests page
+	   //TODO: check if it works with scheduled tests by CRON
+	    if ( !self::is_screen( 'tests' ) ) {
+		    return;
+	    }
+        //if this runs on every single admin page (good), but we need to insure it doesn't send multiple reguests. S0 -- check on every page, run tests from this function, after checking that there is no tests are running just now
+	    $reload = self::is_screen( 'tests' ) ? 'true' : 'false';
         ?>
         <script type="text/javascript">
             const check_tests_queue_status = async (ajaxurl, sgnonce, reload) => {
@@ -310,8 +361,8 @@ class SpeedGuard_Admin {
                console.log(' check_tests_queue_status passes data.speedguard_test_in_progress_id:' + data.speedguard_test_in_progress_id);
 
                         return sg_run_one_test(ajaxurl, data.speedguard_test_in_progress_url, sg_run_one_test_nonce, data.speedguard_test_in_progress_id);
-                    } else if (data.status === 'complete') {
-                        console.log('Tests complete');
+                    } else if (data.status === 'last_test_complete') {
+                        console.log('Tests complete, we can reload the page');
                         if (reload === 'true') {
                             window.location.replace(window.location.href + '&speedguard=load_time_updated');
                         }
@@ -401,7 +452,8 @@ if (typeof test_result_data === 'object') {
             body: `action=mark_test_as_done&current_test_id=${test_id}&test_result_data=${test_result_data_string}&nonce=${newsgnoncee}`,
         });
         if (response.ok) {  // Check if request was successful
-            console.log('Sent AJAX request with action mark_test_as_done');
+            console.log('Sent AJAX request with action mark_test_as_done successfully');
+
             console.log(response);
         } else {
             console.log('Failed to send AJAX request with action mark_test_as_done');

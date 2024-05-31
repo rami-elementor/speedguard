@@ -121,11 +121,11 @@ class SpeedGuard_List_Table extends WP_List_Table {
 					'guarded_page_title' => '<a href="' . $guarded_page_url . '" target="_blank">' . $guarded_page_url . '</a>',
 					'report_date'        => $updated . '<a href="' . $report_link . '" target="_blank">🔗</a>',
 				];
-				// Get test result data
+				// Get saved each Test result data
 				$sg_test_result = get_post_meta( $guarded_page_id, 'sg_test_result', true );
-                echo "SZHELLO <pre>";
-                var_dump($sg_test_result);
-                echo "</pre>";
+             //   echo "SZHELLO This was saved to post_meta sg_test_result<pre>";
+               // var_dump($sg_test_result);
+               // echo "</pre>";
 				// Start Prepare PSI data and CWV data with the loop (use SG_METRICS_ARRAY make a loop)
 				foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
 					foreach ( $test_types as $test_type => $metrics ) {

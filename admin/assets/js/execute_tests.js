@@ -33,30 +33,21 @@ async function fetchAll(url_to_test) {
                 "psi": {
                     "lcp": item?.lighthouseResult?.audits['largest-contentful-paint'] ?? defaultValue,
                     "cls": item?.lighthouseResult?.audits['cumulative-layout-shift'] ?? defaultValue
+                },
+                "originCWV": { //Add Data for CWV Origin
+                    "lcp": item?.originLoadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS ?? defaultValue,
+                    "cls": item?.originLoadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
+                    "fid": item?.originLoadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,
+                    "overall_category": item?.originLoadingExperience?.overall_category ?? defaultValue
                 }
             };
 
             console.log(URL_RESULTS);
             //Save data to the new object based on device value
             let singleURLresultperdevice = {
-                [device]: {"psi": URL_RESULTS.psi, "cwv": URL_RESULTS.cwv}
+                [device]: {"psi": URL_RESULTS.psi, "cwv": URL_RESULTS.cwv, "originCWV": URL_RESULTS.originCWV}
             };
             singleURLresult.push(singleURLresultperdevice);
-            console.log(singleURLresult);
-
-
-//TODO for Origin
-            //Data for CWV Origin
-            const Origin_CWV = {
-
-                "lcp": item?.originLoadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS ?? defaultValue,
-                "cls": item?.originLoadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
-                "fid": item?.originLoadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,
-                "overall_category": item?.originLoadingExperience?.overall_category ?? defaultValue
-            };
-
-
-
         }
 
 
