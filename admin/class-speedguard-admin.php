@@ -89,8 +89,12 @@ class SpeedGuard_Admin {
         add_action( 'wp_ajax_check_tests_progress', [ $this, 'check_tests_progress_fn' ] );
       //  add_action( 'wp_ajax_run_one_test', [ $this, 'run_one_test_fn' ] );
         add_action( 'wp_ajax_mark_test_as_done', [ $this, 'mark_test_as_done_fn' ] );
-        //Move to Lighrhouse afer
-        add_action( 'admin_footer', [ $this, 'run_tests_js' ] );
+
+        //TODO Doing Move to the separate JS file
+       // add_action( 'admin_footer', [ $this, 'run_tests_js' ] );
+
+	    //add_action('admin_enqueue_scripts', [ $this, 'enqueue_run_tests_script']);
+
 
     }
 
@@ -321,165 +325,9 @@ class SpeedGuard_Admin {
 
     }
 
-    function run_tests_js() {
-       //Fire only on Tests page
-	   //TODO: check if it works with scheduled tests by CRON
-	    if ( !self::is_screen( 'tests' ) ) {
-		    return;
-	    }
-        //if this runs on every single admin page (good), but we need to insure it doesn't send multiple reguests. S0 -- check on every page, run tests from this function, after checking that there is no tests are running just now
-	    $reload = self::is_screen( 'tests' ) ? 'true' : 'false';
-        ?>
-        <script type="text/javascript">
-            const check_tests_queue_status = async (ajaxurl, sgnonce, reload) => {
-                try {
-                    const response = await fetch(ajaxurl, {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Cache-Control': 'no-cache',
-                            'Connection': 'keep-alive',
-                        },
-                        body: `action=check_tests_progress&nonce=${sgnonce}`,
-                    });
-
-                    const data = await response.json();
-                    console.log(data);
-
-                    if (data.status === 'queue') {
-                    console.log(data);
-                        // TODO If queue -> Run the test from here!
-                        setTimeout(() => check_tests_queue_status(ajaxurl, sgnonce, reload), 60000);
-                        console.log('Sending ID to test:');
-                        console.log(data.speedguard_test_in_progress_id);
-                        console.log('Sending URL to test:');
-                        console.log(data.speedguard_test_in_progress_url);
-                        const sg_run_one_test_nonce = '<?php echo wp_create_nonce( 'sg_run_one_test_nonce' ); ?>';
-
-               console.log(' check_tests_queue_status passes data.speedguard_test_in_progress_url:' + data.speedguard_test_in_progress_url);
-               console.log(' check_tests_queue_status passes data.speedguard_test_in_progress_id:' + data.speedguard_test_in_progress_id);
-
-                        return sg_run_one_test(ajaxurl, data.speedguard_test_in_progress_url, sg_run_one_test_nonce, data.speedguard_test_in_progress_id);
-                    } else if (data.status === 'last_test_complete') {
-                        console.log('Tests complete, we can reload the page');
-                        if (reload === 'true') {
-                            window.location.replace(window.location.href + '&speedguard=load_time_updated');
-                        }
-                    } else if (data.status === 'no_tests') {
-                        console.log('No tests');
-                    } else {
-                        // Catch error
-                    }
-                } catch (err) {
-                    console.log(err);
-                }
-            };
-
-            const reload = '<?php echo $reload;  ?>';
-            const sgnonce = '<?php echo wp_create_nonce( 'sgnonce' ); ?>';
-
-
-            // Start the process of Checking on page load
-            check_tests_queue_status(ajaxurl, sgnonce, reload);
-            const sgnoncee = '<?php echo wp_create_nonce( 'sgnoncee' ); ?>';
-            //Updating test status as done after successful API response
-
-            const update_test_status_done = async (ajaxurl, sgnoncee, post_id, test_result_data) => {
-                try {
-                console.log('Variables in update_test_status_done function:');
-                console.log('post_id' + post_id);
-                console.log('test_result_data' + test_result_data);
-                    // Make a fetch request to the AJAX endpoint.
-                    const response = await fetch(ajaxurl, {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Cache-Control': 'no-cache',
-                            'Connection': 'keep-alive',
-                        },
-                        //Pass test data here
-                        body: `action=mark_test_as_done&current_test_id=${post_id}&test_result_data=${test_result_data}&nonce=${sgnoncee}`,
-                    });
-                    const data = await response.json();
-                    console.log(data);
-
-
-                    console.log('Updating test status as done');
-                } catch (err) {
-                    console.log(err);
-                }
-
-            }
-
-          // TODO remove and php function
-          //  const sg_run_one_test_nonce = '<?php echo wp_create_nonce( 'sg_run_one_test_nonce' ); ?>';
-            const newsgnoncee = '<?php echo wp_create_nonce( 'sgnoncee' ); ?>';
-            const sg_run_one_test = async (ajaxurl, url, newsgnoncee, test_id) => {
-
-                console.log('sg_run_one_test got url:' + url);
-                console.log('sg_run_one_test got test_id:' + test_id);
-                try {
-
-const test_result_data = await fetchAll(url);
-
-if (typeof test_result_data === 'object') {
- console.log('Success. Test done, response is an object. Trying inside the function');
-  // return update_test_status_done(ajaxurl, sg_run_one_test_nonce, test_id, JSON.stringify(test_result_data, null, 2));
-//TODO update test status here, get rid of that fuction
-
-    try {
-        //fires ok
-        console.log('Variables in update_test_status_done function:');
-        console.log('post_id' + test_id); //ok
-        console.log('test_result_data' + test_result_data); //not ok
-        console.log('test_result_data Stringify' + JSON.stringify(test_result_data)); //ok
 
 
 
-            //Try mark_test_as_done
-            const test_result_data_string = JSON.stringify(test_result_data);
-            const response = await fetch(ajaxurl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-            },
-            //Pass test data here
-            body: `action=mark_test_as_done&current_test_id=${test_id}&test_result_data=${test_result_data_string}&nonce=${newsgnoncee}`,
-        });
-        if (response.ok) {  // Check if request was successful
-            console.log('Sent AJAX request with action mark_test_as_done successfully');
-
-            console.log(response);
-        } else {
-            console.log('Failed to send AJAX request with action mark_test_as_done');
-        }
-
-
-    } catch (err) {
-        console.log(err);
-    }
-
-
-} else { //TODO error handling in fetchall
-// {
-console.log('Response is not object');
-}
-
-
-
-
-                } catch (err) {
-                    console.log(err);
-                }
-            }
-        </script>
-        <?php
-    }
 
     public static function capability() {
         $capability = 'manage_options';
@@ -751,40 +599,77 @@ console.log('Response is not object');
     return $tag;
 }
 
-    public function enqueue_scripts() {
-        if ( is_admin_bar_showing() && ( self::is_screen( 'dashboard,settings,tests,plugins,clients' ) || ! is_admin() ) ) {
+	public function enqueue_scripts() {
+		if ( is_admin_bar_showing() && ( self::is_screen( 'dashboard,settings,tests,plugins,clients' ) || ! is_admin() ) ) {
+			//general JS
             wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-admin.js', [], $this->version, false );
-             wp_enqueue_script(
-        'speedguard_tests_module',
-        plugin_dir_url( __FILE__ ) . 'assets/js/execute_tests.js',
-        [],
-        $this->version,
-        true
-     );
-    wp_add_inline_script(
-        'speedguard_tests_module',
-        'const SG_Tests_Data = "data here"');
+
+            //TODO Maybe include on tests page only?
+
+            //For checking queue and initiating tests
+			//if (self::is_screen('tests')) {
+
+
+            //For making requests to API
+            wp_enqueue_script(
+				'speedguard_tests_module',
+				plugin_dir_url( __FILE__ ) . 'assets/js/execute_tests.js',
+				[],
+				$this->version,
+				true
+			);
+			wp_add_inline_script(
+				'speedguard_tests_module',
+				'const SG_Tests_Data = "data here"' );
 
 
 
-        }
-        if ( is_admin_bar_showing() && self::is_screen( 'tests' ) ) {
-            // search field with vanilla js
-            wp_enqueue_script( $this->plugin_name . '-awesompletejs', plugin_dir_url( __FILE__ ) . 'assets/awesomplete/awesomplete.js' );
-            wp_enqueue_script( 'speedguardsearch', plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-search.js', [ $this->plugin_name . '-awesompletejs' ], $this->version, true );
-            wp_localize_script(
-                'speedguardsearch',
-                'speedguardsearch',
-                [
-                    'search_url' => home_url( '/wp-json/speedguard/search?term=' ),
-                    'nonce'      => wp_create_nonce( 'wp_rest' ),
-                ]
-            );
-        }
-    }
+
+			wp_enqueue_script(
+				'speedguard_initiate_tests',
+				plugin_dir_url( __FILE__ ) . 'assets/js/initiate_tests.js',
+				[],
+				$this->version,
+				true
+			);
+
+			// Localize the script with your data
+			$data = [
+				'ajaxurl' => admin_url('admin-ajax.php'),
+				'sgnonce' => wp_create_nonce('sgnonce'),
+				'sg_run_one_test_nonce' => wp_create_nonce('sg_run_one_test_nonce'),
+				'reload' => self::is_screen('tests') ? 'true' : 'false',
+			];
+			//	wp_localize_script('speedguard_initiate_tests', 'initiate_tests_data', $data);
+
+			$script = 'var initiate_tests_data = ' . json_encode($data) . ';';
+
+			wp_add_inline_script('speedguard_initiate_tests', $script, 'before');
 
 
-    // Plugin Admin Notices
+
+
+
+
+
+		}
+		if ( is_admin_bar_showing() && self::is_screen( 'tests' ) ) {
+			// search field with vanilla js
+			wp_enqueue_script( $this->plugin_name . '-awesompletejs', plugin_dir_url( __FILE__ ) . 'assets/awesomplete/awesomplete.js' );
+			wp_enqueue_script( 'speedguardsearch', plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-search.js', [ $this->plugin_name . '-awesompletejs' ], $this->version, true );
+			wp_localize_script(
+				'speedguardsearch',
+				'speedguardsearch',
+				[
+					'search_url' => home_url( '/wp-json/speedguard/search?term=' ),
+					'nonce'      => wp_create_nonce( 'wp_rest' ),
+				]
+			);
+		}
+	}
+
+
+	// Plugin Admin Notices
     function body_classes_filter( $classes ) {
         if ( self::is_screen( 'settings,tests,dashboard' ) ) {
             if (  get_transient('speedguard_tests_count') < 1 ) {
