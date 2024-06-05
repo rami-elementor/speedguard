@@ -7,6 +7,11 @@ console.log('newsgnoncee:' + newsgnoncee);
 console.log('Result of initiate_tests_data:' + initiate_tests_data);
 
 
+//let ajaxurl = initiate_tests_data.ajaxurl;
+let nonce = initiate_tests_data.sg_check_tests_queue_nonce;
+
+
+
 
 
 const check_tests_queue_status = async (ajaxurl, sgnonce, reload) => {
@@ -19,7 +24,7 @@ const check_tests_queue_status = async (ajaxurl, sgnonce, reload) => {
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
             },
-            body: `action=check_tests_progress&nonce=${sgnonce}`,
+            body: `action=check_tests_progress&nonce=${nonce}`,
         });
 
         const data = await response.json();
@@ -53,7 +58,7 @@ const check_tests_queue_status = async (ajaxurl, sgnonce, reload) => {
     }
 };
 // Start the process of Checking on page load
-check_tests_queue_status(ajaxurl, sgnonce, reload);
+check_tests_queue_status(ajaxurl, nonce, reload);
 
 
 
