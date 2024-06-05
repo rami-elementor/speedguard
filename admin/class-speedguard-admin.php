@@ -254,10 +254,11 @@ class SpeedGuard_Admin {
        $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
 	   //How  $current_tests_array can be empty here?
 
-
-	    if ( ( $key = array_search( $current_test, $current_tests_array ) ) !== false ) {
-		    unset( $current_tests_array[ $key ] );
-	    }
+		if (is_array($current_tests_array) && in_array( $current_test, $current_tests_array ) ) {
+			$key = array_search( $current_test, $current_tests_array );
+			unset( $current_tests_array[ $key ] );
+		}
+		
 	    delete_transient( 'speedguard_test_in_progress' );
 	    //if after removing this test there are no tests left to process, mark that this is the last test in queue and delete transient
 	    if ( count( $current_tests_array ) < 1 ) {
