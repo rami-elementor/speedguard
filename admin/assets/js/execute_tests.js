@@ -13,7 +13,7 @@ async function fetchAll(url_to_test) {
             //separate test for Device, but the same for PSI and CWV
             devices.map(device => fetch(request_url + 'strategy=' + device)
                 .then(r => r.json())
-                .catch(error => ({ error, url}))
+                .catch(error => ({error, url}))
             )
         )
         for (let item of tests) {
