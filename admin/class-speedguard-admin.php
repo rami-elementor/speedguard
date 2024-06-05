@@ -101,7 +101,7 @@ class SpeedGuard_Admin {
     function check_tests_progress_fn() {
 
         //Only transient here
-        check_ajax_referer( 'sgnonce', 'nonce' );
+      //  check_ajax_referer( 'check_tests_queue', 'nonce' );
         //check current tests transient
         $current_tests_array  = get_transient( 'speedguard_tests_in_queue', true    );
         $last_test_is_done_tr = get_transient( 'speedguard_last_test_is_done' );
@@ -201,7 +201,7 @@ class SpeedGuard_Admin {
     //body: `action=mark_test_as_done&current_test_id=${post_id}&test_result_data=${test_result_data}&nonce=${sgnoncee}`,
 	//
    function mark_test_as_done_fn() {
-	    check_ajax_referer( 'sg_run_one_test_nonce', 'nonce' );
+	   // check_ajax_referer( 'mark_test_as_done', 'nonce' );
 	    if (empty($_POST['current_test_id'])) return;
         //Data that we expect to have in the request: current_test_id, test_result_data, nonce
 	   //var_dump($_POST);
@@ -252,6 +252,9 @@ class SpeedGuard_Admin {
 
 	    //Mark test as done in the queue
        $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
+	   //How  $current_tests_array can be empty here?
+
+
 	    if ( ( $key = array_search( $current_test, $current_tests_array ) ) !== false ) {
 		    unset( $current_tests_array[ $key ] );
 	    }
@@ -635,9 +638,12 @@ class SpeedGuard_Admin {
 
 			// Localize the script with your data
 			$data = [
-				'ajaxurl' => admin_url('admin-ajax.php'),
-				'sgnonce' => wp_create_nonce('sgnonce'),
+				'sg_ajaxurl' => admin_url('admin-ajax.php'),
+				'sg_check_tests_queue_nonce' => wp_create_nonce('sg_check_tests_queue_nonce'),
 				'sg_run_one_test_nonce' => wp_create_nonce('sg_run_one_test_nonce'),
+				//'sgnoncee' => wp_create_nonce('sgnoncee'),
+				//'newsgnoncee' => wp_create_nonce('newsgnoncee'),
+
 				'reload' => self::is_screen('tests') ? 'true' : 'false',
 			];
 			//	wp_localize_script('speedguard_initiate_tests', 'initiate_tests_data', $data);
