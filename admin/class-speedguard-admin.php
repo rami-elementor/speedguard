@@ -393,7 +393,8 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 					];
 					// If the metric is LCP, calculate the display value and score
 					if ( $metric === 'lcp' ) {
-						$new_metric_array['displayValue'] = round( $average / 1000, 2 ) . ' s';
+						$average = round( $average / 1000, 2 );
+						$new_metric_array['displayValue'] = $average. ' s';
 						if ( $average < 2.5 ) {
 							$new_metric_array['score'] = 'FAST';
 						} elseif ( $average < 4.0 ) {
@@ -404,7 +405,8 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 					}
 					// If the metric is CLS, calculate the display value and score
 					if ( $metric === 'cls' ) {
-						$new_metric_array['displayValue'] = round( $average, 3 );
+						$average = round( $average, 3 );
+						$new_metric_array['displayValue'] = $average;
 						if ( $average < 0.1 ) {
 							$new_metric_array['score'] = 'FAST';
 						} elseif ( $average < 0.25 ) {
