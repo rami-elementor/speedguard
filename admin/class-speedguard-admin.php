@@ -90,9 +90,48 @@ class SpeedGuard_Admin {
 		// Fn to mark individual test as done and save results to post_meta
         add_action( 'wp_ajax_mark_test_as_done', [ $this, 'mark_test_as_done_fn' ] );
 	    //Recount PSI Average for Origin when test is deleted
-	    add_action( 'deleted_post_meta', [ $this, 'count_average_psi' ], 10, 4 );
+	    add_action( 'deleted_post_meta', [ $this, 'update_average_psi' ], 10, 4 );
+	   //And when the test is updated
+	    add_action( 'updated_post_meta', [ $this, 'update_average_psi' ], 10, 4 );
 
     }
+
+
+	//Fired when post meta is deleted or updated
+function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
+		if ( $meta_key === 'sg_test_result' ) {
+		$calculated_average_psi =  SpeedGuard_Admin::count_average_psi();
+		$both_devices_values_origin =
+			['mobile' => [
+				'cwv'=>[
+					'lcp' => $calculated_average_psi['mobile']['cwv']['lcp'], //TODO check seems to be fine
+					'cls' => $calculated_average_psi['mobile']['cwv']['cls'],
+					'fid' => $calculated_average_psi['mobile']['cwv']['fid'],
+					'overall_category' => $calculated_average_psi['mobile']['cwv']['overall_category']
+				],
+				'psi' => [
+					'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
+					'cls' => $calculated_average_psi['mobile']['psi']['cls']
+				]
+
+			],
+				'desktop' => [
+					'cwv'=>[
+						'lcp' => $calculated_average_psi['desktop']['cwv']['lcp'], //array if ok, string if no data
+						'cls' => $calculated_average_psi['desktop']['cwv']['cls'],
+						'fid' => $calculated_average_psi['desktop']['cwv']['fid'],
+						'overall_category' => $calculated_average_psi['desktop']['cwv']['overall_category']
+					],
+					'psi' => [
+						'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
+						'cls' => $calculated_average_psi['desktop']['psi']['cls']
+					]
+				]
+			];
+		$update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin);
+	}
+}
+
 
     function check_tests_progress_fn() {
 
@@ -225,7 +264,9 @@ class SpeedGuard_Admin {
 		    set_transient( 'speedguard_last_test_is_done', true, 300 );
             $last_test_is_done = true;
 
-		    //Update CWV here, and count average psi
+
+
+			//Update CWV here, and count average psi
 		   $calculated_average_psi =  SpeedGuard_Admin::count_average_psi();
 
             //Save CWV for origin
@@ -291,10 +332,9 @@ class SpeedGuard_Admin {
 	public static function count_average_psi() {
 		// Prepare new values for PSI Averages
 		$new_average_array = [];
-		//	if (! get_transient('speedguard-tests-running')) { TODO adjust the orfder to make calculcations run only on last test
 		// Get all tests with valid results
 		$guarded_pages = get_posts( [
-			'posts_per_page' => 100,
+			'posts_per_page' => 100, // 100 is enough to get the general picture and not overload the server
 			'no_found_rows'  => true,
 			'post_type'      => SpeedGuard_Admin::$cpt_name,
 			'post_status'    => 'publish',
