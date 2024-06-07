@@ -241,7 +241,16 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 
             ]
             ];
+
         $update_url_values = update_post_meta( $current_test, 'sg_test_result',  $both_devices_values );
+
+		// update post date also
+	   		$update_post_date = wp_update_post( array(
+			'ID' => $current_test,
+			'post_date' => current_time('mysql'),
+			'post_date_gmt' => current_time('mysql', 1)
+		) );
+
 //wp_mail('sabrinazeidanspain@gmail.com', 'another attempt1205',    '$test_result_data:  '.print_r($test_result_data,true).'$mobile_data:  '.print_r($mobile_data,true).'$desktop_data:  '.print_r($desktop_data,true).'<br>$device_values ' .print_r($both_devices_values,true).'<br>$test_result_data[0]'.print_r($test_result_data[0], true), 'Content-Type: text/html; charset=UTF-8');
 
 
@@ -250,9 +259,8 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 
 	    //Mark test as done in the queue
        $current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
-	   //How  $current_tests_array can be empty here?
 
-		if (is_array($current_tests_array) && in_array( $current_test, $current_tests_array ) ) {
+	   if (is_array($current_tests_array) && in_array( $current_test, $current_tests_array ) ) {
 			$key = array_search( $current_test, $current_tests_array );
 			unset( $current_tests_array[ $key ] );
 		}
