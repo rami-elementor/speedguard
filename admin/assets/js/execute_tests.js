@@ -9,13 +9,10 @@ async function fetchAll(url_to_test) {
 
     try {
         singleURLresult = [];
-        let tests = await Promise.all(
-            //separate test for Device, but the same for PSI and CWV
+        let tests = await Promise.all(//separate test for Device, but the same for PSI and CWV
             devices.map(device => fetch(request_url + 'strategy=' + device)
                 .then(r => r.json())
-                .catch(error => ({error, url}))
-            )
-        )
+                .catch(error => ({error, url}))))
         for (let item of tests) {
 
             //get current device value
@@ -29,12 +26,10 @@ async function fetchAll(url_to_test) {
                     "cls": item?.loadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
                     "fid": item?.loadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,
                     "overall_category": item?.loadingExperience?.overall_category ?? defaultValue
-                },
-                "psi": {
+                }, "psi": {
                     "lcp": item?.lighthouseResult?.audits['largest-contentful-paint'] ?? defaultValue,
                     "cls": item?.lighthouseResult?.audits['cumulative-layout-shift'] ?? defaultValue
-                },
-                "originCWV": { //Add Data for CWV Origin
+                }, "originCWV": { //Add Data for CWV Origin
                     "lcp": item?.originLoadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS ?? defaultValue,
                     "cls": item?.originLoadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
                     "fid": item?.originLoadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,

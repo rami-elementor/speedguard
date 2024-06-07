@@ -3,43 +3,6 @@
  *
  *   Class responsible for adding metaboxes
  */
-function delete_transients_with_prefix( $prefix ) {
-	foreach ( get_transient_keys_with_prefix( $prefix ) as $key ) {
-		// delete_transient( $key );
-		echo "<br>" . $key . " " . get_transient( $key );
-	}
-}
-
-/**
- * Gets all transient keys in the database with a specific prefix.
- *
- * Note that this doesn't work for sites that use a persistent object
- * cache, since in that case, transients are stored in memory.
- *
- * @param string $prefix Prefix to search for.
- *
- * @return array          Transient keys with prefix, or empty array on error.
- */
-function get_transient_keys_with_prefix( $prefix ) {
-	global $wpdb;
-	$prefix = $wpdb->esc_like( '_transient_' . $prefix );
-	$sql    = "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE '%s'";
-	$keys   = $wpdb->get_results( $wpdb->prepare( $sql, $prefix . '%' ), ARRAY_A );
-	if ( is_wp_error( $keys ) ) {
-		return [];
-	}
-
-	return array_map( function ( $key ) {
-		// Remove '_transient_' from the option name.
-		return substr( $key['option_name'], strlen( '_transient_' ) );
-	}, $keys );
-}
-
-//To fire the function:
-add_action( 'wp_head', 'sz_output' );
-function sz_output() {
-	delete_transients_with_prefix( 'speedguard' );
-}
 
 class SpeedGuard_Widgets {
 	public function __construct() {
@@ -51,9 +14,7 @@ class SpeedGuard_Widgets {
 						'speedguard_dashboard_widget_function',
 					] );
 			}
-			if ( ( 'on' === $options['show_ab_widget'] ) && ! is_admin() ) {
-				add_action( 'admin_bar_menu', [ $this, 'speedguard_admin_bar_widget' ], 710 );
-			}
+
 		}
 	}
 
@@ -115,13 +76,8 @@ class SpeedGuard_Widgets {
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
-		delete_transients_with_prefix( 'speedguard' );
 		//echo SpeedGuard_Notifications::test_results_email( 'regular' );
        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-//		echo "This is what is saved for sg_origin_results";
-//		var_dump($speedguard_cwv_origin);
-//		$last_test_is_done_tr = get_transient( 'speedguard_last_test_is_done' );
-//var_dump($last_test_is_done_tr);
 
 		// Preparing data to display
 		// TODO make this constant
@@ -197,8 +153,6 @@ class SpeedGuard_Widgets {
 		} elseif ( ( is_array( $results_array ) ) ) {// tests are not currently running
 			// Check if metric data is available for this device
 			if ( isset( $results_array[ $device ][ $test_type ][ $metric] ) && is_array($results_array[ $device ][ $test_type ][ $metric]) ) {
-				echo 'isset( $results_array[ $device ][ $test_type ][ $metric ] )';
-               // var_dump($results_array[ $device ][ $test_type ][ $metric ]);
 
 				if ( $test_type === 'psi' ) {
 					$display_value = $results_array[ $device ][ $test_type ][ $metric ]['displayValue'];
@@ -210,7 +164,6 @@ class SpeedGuard_Widgets {
 					if ( $metric === 'lcp' ) {
 						$display_value = round( $metrics_value / 1000, 2 ) . ' s';
 					} elseif ( $metric === 'cls' ) {
-						$display_value = $metrics_value;
 						$display_value = $metrics_value / 100;
 					} elseif ( $metric === 'fid' ) {
 						$display_value = $metrics_value . ' ms';
@@ -237,8 +190,6 @@ class SpeedGuard_Widgets {
 		$cwv_link = 'https://web.dev/lcp/';
 		// Create the table.
 		?>
-
-
         <ul>
             <li>
                 <h3><?php _e( 'What does N/A mean?' ); ?></h3>
@@ -352,90 +303,7 @@ class SpeedGuard_Widgets {
 		$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
 	}
 
-	public function speedguard_admin_bar_widget( $wp_admin_bar ) {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		if ( is_front_page() ) {
-			$type              = 'homepage';
-			$current_item_id   = '';
-			$current_item_link = get_site_url(); // TODO Multisite
-			// Check if it's already guarded
-			$homepage_found = SpeedGuard_Tests::is_homepage_guarded();
-			if ( ! empty( $homepage_found ) ) {
-				$is_guarded = true;
-				$test_id    = $homepage_found;
-				$load_time  = get_post_meta( $test_id, 'sg_test_result' );
-			} else {
-				$is_guarded = false;
-			}
-		} elseif ( is_singular( SpeedGuard_Admin::supported_post_types() ) ) {
-			global $post;
-			$type              = 'single';
-			$current_item_id   = $post->ID;
-			$current_item_link = get_permalink( $current_item_id );
-			$speedguard_on     = get_post_meta( $current_item_id, 'speedguard_on', true );
-			if ( $speedguard_on && $speedguard_on[0] === 'true' ) {
-				$is_guarded = true;
-				$test_id    = $speedguard_on[1];
-				$load_time  = get_post_meta( $test_id, 'sg_test_result' );
-			} else {
-				$is_guarded = false;
-			}
-		} elseif ( is_archive() && ! is_post_type_archive() && ! is_date() ) {
-			$type              = 'archive';
-			$current_item_id   = get_queried_object()->term_id;
-			$current_item_link = get_term_link( $current_item_id );
-			$speedguard_on     = get_term_meta( $current_item_id, 'speedguard_on', true );
-			if ( $speedguard_on && $speedguard_on[0] === 'true' ) {
-				$is_guarded = true;
-				$test_id    = $speedguard_on[1];
-				$load_time  = get_post_meta( $test_id, 'sg_test_result' );
-			} else {
-				$is_guarded = false;
-			}
-		}
-		// The output
-		// There is the load time
-		if ( isset( $is_guarded ) && ! empty( $load_time ) && $load_time === 'waiting' ) {
-			$title  = __( 'Testing...', 'speedguard' );
-			$href   = '';
-			$atitle = __( 'Test is running currently', 'speedguard' );
-		} elseif ( isset( $is_guarded ) && $is_guarded === true ) {
-			if ( ( ! empty( $load_time[0]['displayValue'] ) ) && ( ! empty( $load_time[0]['score'] ) ) ) {
-				//TODO can be removed
-				// $title  = '<span data-score="' . $load_time[0]['score'] . '" class="speedguard-score"><span>●</span> ' . $load_time[0]['displayValue'] . '</span>';
-				//$href   = SpeedGuard_Admin::speedguard_page_url( 'tests' ) . '#speedguard-add-new-url-meta-box';
-				//$atitle = __( 'This page load time', 'speedguard' );
-			}
-		} elseif ( isset( $is_guarded ) && $is_guarded === false ) { // Item is not guarded or test is in process currently
-			$add_url_link = add_query_arg( [
-					'speedguard' => 'add_new_url',
-					'new_url_id' => $current_item_id,
-				], SpeedGuard_Admin::speedguard_page_url( 'tests' ) );
-			$title        = '<form action="' . $add_url_link . '" method="post">
-				<input type="hidden" id="blog_id" name="blog_id" value="" />
-				<input type="hidden" name="speedguard" value="add_new_url" /> 
-				<input type="hidden" name="speedguard_new_url_id" value="' . $current_item_id . '" />	
-				<input type="hidden" id="speedguard_new_url_permalink" name="speedguard_new_url_permalink" value="' . $current_item_link . '"/>
-				<input type="hidden" id="speedguard_item_type" name="speedguard_item_type" value="' . $type . '"/> 
-				<button style="border: 0;  background: transparent; color:inherit; cursor:pointer;">' . __( 'Test speed', 'speedguard' ) . '</button></form>';
-			$href         = SpeedGuard_Admin::speedguard_page_url( 'tests' );
-			$atitle       = '';
-		}
-		$args = [
-			'id'    => 'speedguard_ab',
-			'title' => isset( $title ) ? $title : '',
-			'href'  => isset( $href ) ? $href : '',
-			'meta'  => [
-				'class'  => 'menupop',
-				'title'  => isset( $atitle ) ? $atitle : '',
-				'target' => 'blank',
-			],
-		];
-		$wp_admin_bar->add_node( $args );
-		// }
-	}
+
 }
 
 new SpeedGuard_Widgets();

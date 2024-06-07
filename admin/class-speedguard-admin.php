@@ -8,9 +8,6 @@
  * @subpackage Speedguard/admin
  * @author     Sabrina Zeidan <sabrinazeidan@gmail.com>
  */
-//temp for development
-
-
 
 class SpeedGuard_Admin {
 
@@ -311,18 +308,9 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 		    $update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin);
 
 
-		   // error_log( print_r( $calculated_average_psi, true ) );
-		   // error_log( print_r( $both_devices_values, true ) );
-		   // error_log( print_r( $mobile_data, true ) );
-
-
-
-
-
 
 	    } else {
-		    // delete_transient('speedguard_waiting_for_the_last_test_to_finish'); //for the case test was added while the last one was running, and that one is not the last one anymore
-		    set_transient( 'speedguard_tests_in_queue', wp_json_encode( $current_tests_array ) );
+		   set_transient( 'speedguard_tests_in_queue', wp_json_encode( $current_tests_array ) );
 	    }
 	    $response = [
 		    'status' => 'test marked as done',

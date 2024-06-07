@@ -1,16 +1,13 @@
-const { reload, sg_check_tests_queue_nonce: nonce, sg_run_one_test_nonce: run_nonce } = initiate_tests_data;
+const {reload, sg_check_tests_queue_nonce: nonce, sg_run_one_test_nonce: run_nonce} = initiate_tests_data;
 
 const check_tests_queue_status = async (ajaxurl, reload) => {
     try {
         const response = await fetch(ajaxurl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
+            method: 'POST', credentials: 'same-origin', headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
-            },
-            body: `action=check_tests_progress&nonce=${nonce}`,
+            }, body: `action=check_tests_progress&nonce=${nonce}`,
         });
 
         const data = await response.json();
