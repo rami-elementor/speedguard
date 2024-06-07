@@ -68,7 +68,6 @@ class SpeedGuard_Admin {
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.widgets.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.settings.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
-            require_once plugin_dir_path( __FILE__ ) . '/includes/class.lighthouse.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
             add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
             add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
@@ -86,15 +85,12 @@ class SpeedGuard_Admin {
                 ]
             );
         }
+		// Fn to check the tests queue and initiate tests
         add_action( 'wp_ajax_check_tests_progress', [ $this, 'check_tests_progress_fn' ] );
-      //  add_action( 'wp_ajax_run_one_test', [ $this, 'run_one_test_fn' ] );
+		// Fn to mark individual test as done and save results to post_meta
         add_action( 'wp_ajax_mark_test_as_done', [ $this, 'mark_test_as_done_fn' ] );
-
-        //TODO Doing Move to the separate JS file
-       // add_action( 'admin_footer', [ $this, 'run_tests_js' ] );
-
-	    //add_action('admin_enqueue_scripts', [ $this, 'enqueue_run_tests_script']);
-
+	    //Recount PSI Average for Origin when test is deleted
+	    add_action( 'deleted_post_meta', [ $this, 'count_average_psi' ], 10, 4 );
 
     }
 
@@ -162,44 +158,7 @@ class SpeedGuard_Admin {
         wp_send_json( $response );
     }
 
-//TOOD remove this, check JS execution to replicate first
-   /**
- * function run_one_test_fn() {
-        check_ajax_referer( 'sg_run_one_test_nonce', 'nonce' );
-        //check current tests transient
-        $speedguard_test_in_progress = get_transient( 'speedguard_test_in_progress' );
-        $test_id = $_POST['current_test_id'];
-        $speedguard_sending_request_now = get_transient( 'speedguard_sending_request_now' );
-        //if test in progress, and the request to Lighthouse is sending at the moment
-        if ( $speedguard_test_in_progress && $speedguard_sending_request_now ) {
-            $response = [
-                'status' => 'busy',
-                'comment' => 'waiting for LightHouse to respond'
-            ];
-        }
-        //if test in progress, and the request to Lighthouse has not been sent yet -- send it
-        else if ( $speedguard_test_in_progress && !$speedguard_sending_request_now ) {
-            set_transient('speedguard_sending_request_now', $test_id );
-            $test_response = SpeedGuard_Lighthouse::lighthouse_new_test( json_decode( $test_id ) );
-            delete_transient('speedguard_sending_request_now');
-            $response      = [
-                'status'  => $test_response,
-                'test_id' => $test_id
-            ];
-        }
-        else {
-            $response = [
-                'status' => 'weird',
-                'comment' => 'no other cases where this funciton is called should exist, only when there is speedguard_test_in_progress transient set',
-            ];
-        }
-        wp_send_json( $response );
-    }
-
-**/
    //MArk individual test as done and save results to post_meta
-    //body: `action=mark_test_as_done&current_test_id=${post_id}&test_result_data=${test_result_data}&nonce=${sgnoncee}`,
-	//
    function mark_test_as_done_fn() {
 	   check_ajax_referer( 'mark_test_as_done', 'run_nonce' );
 	    if (empty($_POST['current_test_id'])) return;
@@ -267,9 +226,7 @@ class SpeedGuard_Admin {
             $last_test_is_done = true;
 
 		    //Update CWV here, and count average psi
-
-            //TODO? move this seomwhere else, after checking the  speedguard_last_test_is_done ? Maybe not -- another page reload would be needed
-		   $calculated_average_psi =  SpeedGuard_Lighthouse::count_average_psi();
+		   $calculated_average_psi =  SpeedGuard_Admin::count_average_psi();
 
             //Save CWV for origin
 
@@ -330,7 +287,93 @@ class SpeedGuard_Admin {
     }
 
 
-
+	// Fn to count average PSI values
+	public static function count_average_psi() {
+		// Prepare new values for PSI Averages
+		$new_average_array = [];
+		//	if (! get_transient('speedguard-tests-running')) { TODO adjust the orfder to make calculcations run only on last test
+		// Get all tests with valid results
+		$guarded_pages = get_posts( [
+			'posts_per_page' => 100,
+			'no_found_rows'  => true,
+			'post_type'      => SpeedGuard_Admin::$cpt_name,
+			'post_status'    => 'publish',
+			'fields'         => 'ids',
+			'meta_query'     => [
+				[
+					'key'     => 'sg_test_result',
+					'value'   => 'waiting',
+					'compare' => 'NOT LIKE',
+				]
+			]
+		] );
+		// If there are no tests with valid results, return an empty array
+		if ( empty( $guarded_pages ) ) {
+			return [];
+		}
+		// Initialize the average array
+		$average = [];
+		// Loop through the guarded pages
+		foreach ( $guarded_pages as $guarded_page ) {
+			// Get the guarded page load time
+			$guarded_page_load_time = get_post_meta( $guarded_page, 'sg_test_result', true );
+			// Loop through the device types
+			foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
+				// Loop through the test types
+				foreach ( $test_types as $test_type => $metrics ) {
+					// If the test type is PSI, prepare the metrics
+					if ( $test_type === 'psi' ) {
+						foreach ( $metrics as $metric ) {
+							// Add the guarded page load time to the average array
+							$average[ $device ][ $test_type ][ $metric ]['guarded_pages'][ $guarded_page ] = $guarded_page_load_time[ $device ][ $test_type ][ $metric ]['numericValue'];
+						}
+					}
+				}
+			}
+		}
+		// Loop through the average array
+		foreach ( $average as $device => $test_types ) {
+			// Loop through the test types
+			foreach ( $test_types as $test_type => $metrics ) {
+				// Loop through the metrics
+				foreach ( $metrics as $metric => $values ) {
+					// Calculate the average
+					$average = array_sum( $values['guarded_pages'] ) / count( $values['guarded_pages'] );
+					// Create a new metric array
+					$new_metric_array = [
+						'average' => $average,
+					];
+					// If the metric is LCP, calculate the display value and score
+					if ( $metric === 'lcp' ) {
+						$new_metric_array['displayValue'] = round( $average / 1000, 2 ) . ' s';
+						if ( $average < 2.5 ) {
+							$new_metric_array['score'] = 'FAST';
+						} elseif ( $average < 4.0 ) {
+							$new_metric_array['score'] = 'AVERAGE';
+						} else {
+							$new_metric_array['score'] = 'SLOW';
+						}
+					}
+					// If the metric is CLS, calculate the display value and score
+					if ( $metric === 'cls' ) {
+						$new_metric_array['displayValue'] = round( $average, 3 );
+						if ( $average < 0.1 ) {
+							$new_metric_array['score'] = 'FAST';
+						} elseif ( $average < 0.25 ) {
+							$new_metric_array['score'] = 'AVERAGE';
+						} else {
+							$new_metric_array['score'] = 'SLOW';
+						}
+					}
+					// Add the new metric array to the new average array
+					$new_average_array[ $device ][ $test_type ][ $metric ] = $new_metric_array;
+				}
+			}
+		}
+		//	}
+		// Return the new average array
+		return $new_average_array;
+	}
 
 
     public static function capability() {
