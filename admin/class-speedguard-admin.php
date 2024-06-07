@@ -67,7 +67,7 @@ class SpeedGuard_Admin {
         if ( ! ( is_plugin_active_for_network( 'speedguard/speedguard.php' ) ) || ( is_plugin_active_for_network( 'speedguard/speedguard.php' ) ) && ( is_main_site( $blog_id ) ) ) {
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.widgets.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.settings.php';
-            require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests.php';
+            require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.lighthouse.php';
             require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
             add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
