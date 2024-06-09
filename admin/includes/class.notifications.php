@@ -12,7 +12,7 @@ class SpeedGuard_Notifications {
 	public static function test_results_email( $type ) {
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
 
-		// Check if there are any tests running at the moment, and reschedule if so
+		// Check if there are any tests running at the moment, and if so -- reschedule it to 10 minutes later
 		if ( get_transient( 'speedguard-tests-running' ) ) {
 			wp_schedule_single_event( time() + 10 * 60, 'speedguard_email_test_results' );
 			return;
@@ -93,7 +93,7 @@ class SpeedGuard_Notifications {
 			$message .= '</body>';
 			$message .= '</html>';
 			echo $message;
-			//wp_mail( $admin_email, $subject, $message, $headers );
+			wp_mail( $admin_email, $subject, $message, $headers );
 
 
 		}

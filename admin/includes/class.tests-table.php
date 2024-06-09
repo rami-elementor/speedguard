@@ -355,14 +355,14 @@ class SpeedGuard_Tests {
                     if ( ! empty( $already_guarded ) && ( $already_guarded === true )  && ! empty( $existing_test_id ) && ( 'publish' === get_post_status( $existing_test_id ) ) ) {
                         //Already guarded, let's try to update
                         $result      = self::update_test_fn( $existing_test_id );
-                        set_transient('speedguard_notice_'.$result, true,5);
+                        set_transient('speedguard_notice_'.$result, true,10);
 
                     } else { // Valid and not guarded yet >>> ADD
                         $result = self::create_test_fn( $url_to_add, $guarded_item_type, $guarded_item_id );
                         set_transient('speedguard_notice_'.$result, true,5);
                     }
 
-                    //  set_transient('speedguard_notice_'.$result, true,5);
+                      set_transient('speedguard_notice_'.$result, true,5);
 
                 }
             }
@@ -458,6 +458,7 @@ class SpeedGuard_Tests {
 		} //check if it was tested recently
 		else if ( ($action === 'update') && (time() < (get_post_timestamp( $guarded_page_id, 'modified' ) + 3 * 60 ))) {
 			$response = 'slow_down';
+            set_transient('speedguard_notice_'.$response, true,5);
 		} else { //looks good, let's add it to the queue
 
 

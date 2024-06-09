@@ -3,6 +3,33 @@
  *
  *   Class responsible for adding metaboxes
  */
+function get_transient_keys_with_prefix( $prefix ) {
+	global $wpdb;
+	$prefix = $wpdb->esc_like( '_transient_' . $prefix );
+	$sql    = "SELECT `option_name`, `option_value` FROM $wpdb->options WHERE `option_name` LIKE '%s'";
+	$results = $wpdb->get_results( $wpdb->prepare( $sql, $prefix . '%' ), ARRAY_A );
+
+	if ( is_wp_error( $results ) ) {
+		return [];
+	}
+
+	$transients = array();
+	foreach ( $results as $result ) {
+		// Remove '_transient_' from the option name and store both the key and value
+		$key = substr( $result['option_name'], strlen( '_transient_' ) );
+		$transients[$key] = maybe_unserialize( $result['option_value'] );
+	}
+
+	return $transients;
+}
+//To fire the function:
+function sz_output() {
+	$transients =  get_transient_keys_with_prefix( 'speedguard' );
+	echo '<pre>'; print_r($transients); echo '</pre>';
+
+}
+
+
 
 class SpeedGuard_Widgets {
 	public function __construct() {
@@ -17,6 +44,9 @@ class SpeedGuard_Widgets {
 
 		}
 	}
+
+
+
 
 	/*
 	Function responsible for displaying widget with PSI Average results widget on the admin dashboard
@@ -76,7 +106,11 @@ class SpeedGuard_Widgets {
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
-		//echo SpeedGuard_Notifications::test_results_email( 'regular' );
+		//echo SpeedGuard_Notifications::test_results_email( 'regular' ); // TO test mail style
+
+		//$guarded_pages = get_transient('speedguard_tests_count');
+   //     echo $guarded_pages;
+     //   echo sz_output(); 
        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 
 		// Preparing data to display
