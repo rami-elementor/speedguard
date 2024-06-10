@@ -96,6 +96,12 @@ class SpeedGuard_Admin {
 
 	//Fired when post meta is deleted or updated
 function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
+		//check if there are no tests in queue to avoid updating the same data multiple times
+		$current_tests_array = get_transient( 'speedguard_tests_in_queue', true );
+		if ( empty( $current_tests_array ) ) {
+			return;
+		}
+		//check if the meta_key is the one we need
 		if ( $meta_key === 'sg_test_result' ) {
 		$calculated_average_psi =  SpeedGuard_Admin::count_average_psi();
 		$both_devices_values_origin =

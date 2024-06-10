@@ -106,11 +106,11 @@ class SpeedGuard_Widgets {
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
-		//echo SpeedGuard_Notifications::test_results_email( 'regular' ); // TO test mail style
+	//echo SpeedGuard_Notifications::test_results_email( 'regular' ); // TO test mail style
 
 		//$guarded_pages = get_transient('speedguard_tests_count');
    //     echo $guarded_pages;
-     //   echo sz_output(); 
+     //   echo sz_output();
        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 
 		// Preparing data to display
