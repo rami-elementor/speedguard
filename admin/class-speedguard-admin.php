@@ -87,30 +87,36 @@ class SpeedGuard_Admin {
 		// Fn to mark individual test as done and save results to post_meta
         add_action( 'wp_ajax_mark_test_as_done', [ $this, 'mark_test_as_done_fn' ] );
 	    //Recount PSI Average for Origin when test is deleted
-	    add_action( 'deleted_post_meta', [ $this, 'update_average_psi' ], 10, 4 );
-	   //And when the test is updated
-	    add_action( 'updated_post_meta', [ $this, 'update_average_psi' ], 10, 4 );
+		add_action( 'deleted_post', [ $this, 'update_average_psi_on_deletion' ], 10, 1 );
 
     }
 
 
 	//Fired when post meta is deleted or updated
-function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
+function update_average_psi_on_deletion( $post_id) {
 		//check if there are no tests in queue to avoid updating the same data multiple times
 		$current_tests_array = get_transient( 'speedguard_tests_in_queue', true );
 		if ( empty( $current_tests_array ) ) {
 			return;
 		}
-		//check if the meta_key is the one we need
-		if ( $meta_key === 'sg_test_result' ) {
-		$calculated_average_psi =  SpeedGuard_Admin::count_average_psi();
+		//check if its this post type was deleted
+		if ( get_post_type( $post_id ) !== SpeedGuard_Admin::$cpt_name ) {
+			return;
+		}
+
+	//get current CWV for origin value
+	$current_cwv_origin_data = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results');
+
+
+	$calculated_average_psi =  SpeedGuard_Admin::count_average_psi(); // Returns PSI only
+	// merge calculated average psi with current cwv origin data
 		$both_devices_values_origin =
 			['mobile' => [
 				'cwv'=>[
-					'lcp' => $calculated_average_psi['mobile']['cwv']['lcp'], //TODO check seems to be fine
-					'cls' => $calculated_average_psi['mobile']['cwv']['cls'],
-					'fid' => $calculated_average_psi['mobile']['cwv']['fid'],
-					'overall_category' => $calculated_average_psi['mobile']['cwv']['overall_category']
+					'lcp' => $current_cwv_origin_data['mobile']['cwv']['lcp'], //TODO check seems to be fine
+					'cls' => $current_cwv_origin_data['mobile']['cwv']['cls'],
+					'fid' => $current_cwv_origin_data['mobile']['cwv']['fid'],
+					'overall_category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
 				],
 				'psi' => [
 					'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
@@ -120,10 +126,10 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 			],
 				'desktop' => [
 					'cwv'=>[
-						'lcp' => $calculated_average_psi['desktop']['cwv']['lcp'], //array if ok, string if no data
-						'cls' => $calculated_average_psi['desktop']['cwv']['cls'],
-						'fid' => $calculated_average_psi['desktop']['cwv']['fid'],
-						'overall_category' => $calculated_average_psi['desktop']['cwv']['overall_category']
+						'lcp' => $current_cwv_origin_data['desktop']['cwv']['lcp'], //array if ok, string if no data
+						'cls' => $current_cwv_origin_data['desktop']['cwv']['cls'],
+						'fid' => $current_cwv_origin_data['desktop']['cwv']['fid'],
+						'overall_category' => $current_cwv_origin_data['desktop']['cwv']['overall_category']
 					],
 					'psi' => [
 						'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
@@ -131,8 +137,11 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
 					]
 				]
 			];
+
+
+		// Update Average PSI (CWV is used from saved before) for Origin
 		$update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin);
-	}
+
 }
 
 
@@ -330,7 +339,7 @@ function update_average_psi( $meta_id, $post_id, $meta_key, $meta_value) {
     }
 
 
-	// Fn to count average PSI values
+	// Fn to count average PSI values for all tests, returns PSI only
 	public static function count_average_psi() {
 		// Prepare new values for PSI Averages
 		$new_average_array = [];
