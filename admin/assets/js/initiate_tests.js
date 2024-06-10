@@ -16,6 +16,8 @@ const check_tests_queue_status = async (ajaxurl, reload) => {
             setTimeout(() => check_tests_queue_status(ajaxurl, reload), 15000);
             return sg_run_one_test(ajaxurl, data.speedguard_test_in_progress_url, run_nonce, data.speedguard_test_in_progress_id);
         } else if (data.status === 'last_test_complete' && reload === 'true') {
+            //set transient here
+
             window.location.replace(window.location.href + '&speedguard=load_time_updated');
         }
     } catch (err) {

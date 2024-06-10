@@ -110,6 +110,9 @@ class SpeedGuard_Widgets {
 
 		//$guarded_pages = get_transient('speedguard_tests_count');
    //     echo $guarded_pages;
+        //echo sz_output()
+        print_r(SpeedGuard_Admin::is_screen('tests'));
+
   echo sz_output();
        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 
