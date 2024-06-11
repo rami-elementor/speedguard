@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       SpeedGuard
  * Plugin URI:        https://sabrinazeidan.com/speedguard/
- * Description:       Keeps an eye on your website’s speed for you; every single day for free.
+ * Description:       Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
  * Version:           2.0
  * Author:            Sabrina Zeidan
  * Author URI:        https://sabrinazeidan.com/

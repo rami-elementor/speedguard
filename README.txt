@@ -7,7 +7,7 @@ Stable tag: 2.0
 Requires PHP: 5.6
 License: GPLv2 or later 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Keeps an eye on your website’s speed for you; every single day for free. 
+Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
 
 == Description ==
 **Google PageSpeed Insights right in your WordPress dashboard. 
