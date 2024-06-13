@@ -111,12 +111,12 @@ class SpeedGuard_Widgets {
 		//$guarded_pages = get_transient('speedguard_tests_count');
    //     echo $guarded_pages;
         //echo sz_output()
-        print_r(SpeedGuard_Tests::is_homepage_guarded());
-        print_r(SpeedGuard_Admin::is_screen('tests'));
-
-  echo sz_output();
+    //    print_r(SpeedGuard_Tests::is_homepage_guarded());
+    //    print_r(SpeedGuard_Admin::is_screen('tests'));
+//
+  //echo sz_output();
        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-
+//var_dump($speedguard_cwv_origin);
 		// Preparing data to display
 		// TODO make this constant
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
@@ -137,7 +137,8 @@ class SpeedGuard_Widgets {
 		} else {
 			$fid_tr = '';
 		}
-        if ( isset($speedguard_cwv_origin['desktop']['cwv']['overall_category']) && isset($speedguard_cwv_origin['mobile']['cwv']['overall_category']) ) {
+
+        if ( 'cwv' === $sg_test_type && isset($speedguard_cwv_origin['desktop']['cwv']['overall_category']) && isset($speedguard_cwv_origin['mobile']['cwv']['overall_category']) ) {
 
 	        $overall_category_desktop = $speedguard_cwv_origin['desktop']['cwv']['overall_category'];
 	        $overall_category_mobile  = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
@@ -145,6 +146,7 @@ class SpeedGuard_Widgets {
 	        $mobile_color  = ( $overall_category_mobile === 'FAST' ) ? 'score-green' : ( ( $overall_category_mobile === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
 	        $desktop_color = ( $overall_category_desktop === 'FAST' ) ? 'score-green' : ( ( $overall_category_desktop === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
         }
+
         $mobile_color = isset($mobile_color)?$mobile_color:'';
         $desktop_color = isset($desktop_color)?$desktop_color:'';
 		$content       = "
