@@ -734,7 +734,7 @@ class SpeedGuard_Admin {
 		}
 		if ( is_admin_bar_showing() && self::is_screen( 'tests' ) ) {
 			// search field with vanilla js
-			wp_enqueue_script( $this->plugin_name . '-awesompletejs', plugin_dir_url( __FILE__ ) . 'assets/awesomplete/awesomplete.js' );
+			wp_enqueue_script( $this->plugin_name . '-awesompletejs', plugin_dir_url( __FILE__ ) . 'assets/awesomplete/awesomplete.js', [], $this->version, true);
 			wp_enqueue_script( 'speedguardsearch', plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-search.js', [ $this->plugin_name . '-awesompletejs' ], $this->version, true );
 			wp_localize_script( 'speedguardsearch', 'speedguardsearch', [
 					'search_url' => home_url( '/wp-json/speedguard/search?term=' ),
