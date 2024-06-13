@@ -275,7 +275,7 @@ class SpeedGuard_Settings {
 			'speedguard_widget_settings_section',
 			[ 'label_for' => 'show_dashboard_widget' ]
 		);
-        
+
 		add_settings_section( 'speedguard_reports_section', '', '', 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',

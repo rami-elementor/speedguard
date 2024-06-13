@@ -316,8 +316,8 @@ class SpeedGuard_Admin {
 
 	function update_average_psi_on_deletion( $post_id ) {
 		//check if there are no tests in queue to avoid updating the same data multiple times
-		$current_tests_array = get_transient( 'speedguard_tests_in_queue', true );
-		if ( empty( $current_tests_array ) ) {
+		$current_tests_array = get_transient( 'speedguard_tests_in_queue', true);
+		if ( !empty( $current_tests_array ) ) {
 			return;
 		}
 		//check if its this post type was deleted
