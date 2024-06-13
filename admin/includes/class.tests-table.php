@@ -566,7 +566,7 @@ class SpeedGuard_Tests {
 			SpeedGuard_Widgets::add_meta_boxes();
 			?>
             <div class="wrap">
-                <h2><?php _e( 'Speedguard :: Guarded pages', 'speedguard' ); ?></h2>
+                <h2><?php esc_html_e( 'Speedguard :: Guarded pages', 'speedguard' ); ?></h2>
                 <div id="poststuff" class="metabox-holder has-right-sidebar">
                     <div id="side-info-column" class="inner-sidebar">
 						<?php

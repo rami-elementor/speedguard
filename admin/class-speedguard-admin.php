@@ -268,7 +268,7 @@ class SpeedGuard_Admin {
 
 
 		if ( isset( $notices ) ) {
-			print $notices;
+			echo esc_html( $notices );
 		}
 	}
 

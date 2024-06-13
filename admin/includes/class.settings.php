@@ -1,8 +1,7 @@
 <?php
 
 /**
- *
- *   Class responsible for the SpeedGuard settings
+ * Class responsible for the SpeedGuard settings
  */
 class SpeedGuard_Settings {
 	static $settings_page_hook = 'speedguard_page_speedguard_settings';
@@ -18,7 +17,6 @@ class SpeedGuard_Settings {
 		add_action( 'pre_update_option_speedguard_options', [ $this, 'default_options_set' ], 10, 2 );
 
 		// For NETWORK ACTIVATED only
-
 		add_action( 'add_site_option', [ $this, 'default_options_added' ], 10, 2 );
 		add_action( 'update_site_option', [ $this, 'default_options_added' ], 10, 2 );
 		// Set default plugin settings
@@ -35,7 +33,7 @@ class SpeedGuard_Settings {
 	public static function global_test_type() {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		if ( ! empty( $speedguard_options['test_type'] ) ) {
-			return $speedguard_options['test_type'];
+			return esc_attr( $speedguard_options['test_type'] );
 		} else {
 			return 'cwv';
 		}
@@ -46,23 +44,19 @@ class SpeedGuard_Settings {
 			SpeedGuard_Widgets::add_meta_boxes();
 			?>
             <div class="wrap">
-                <h2><?php _e( 'SpeedGuard :: Settings', 'speedguard' ); ?></h2>
+                <h2><?php esc_html_e( 'SpeedGuard :: Settings', 'speedguard' ); ?></h2>
                 <div id="poststuff" class="metabox-holder has-right-sidebar">
                     <div id="side-info-column" class="inner-sidebar">
 						<?php do_meta_boxes( '', 'side', 0 ); ?>
                     </div>
                     <div id="post-body" class="has-sidebar">
                         <div id="post-body-content" class="has-sidebar-content">
-                            <form method="post"
-                                  action="<?php print_r( defined( 'SPEEDGUARD_MU_NETWORK' ) ? 'edit.php?action=speedguard_update_settings' : 'options.php' ); ?>">
+                            <form method="post" action="<?php echo esc_url( defined( 'SPEEDGUARD_MU_NETWORK' ) ? 'edit.php?action=speedguard_update_settings' : 'options.php' ); ?>">
 								<?php do_meta_boxes( '', 'normal', 0 ); ?>
                             </form>
-
-
                         </div>
                     </div>
                 </div>
-                </form>
             </div>
 			<?php
 		}
@@ -124,7 +118,6 @@ class SpeedGuard_Settings {
 		}
 	}
 
-
 	function update_results_cron_function() {
 		// If send report is on: schedule cron job
 		$speedguard_options = get_option( 'speedguard_options' );
@@ -176,33 +169,27 @@ class SpeedGuard_Settings {
 	function show_dashboard_widget_fn( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$field_name = esc_attr( $args['label_for'] );
-		if ( $options[ $field_name ] === 'on' ) {
-			$checked = ' checked="checked" ';
-		} else {
-			$checked = '';
-		}
-		echo "<input type='hidden' name='speedguard_options[" . $field_name . "]' value='off' /><input " . $checked . " id='speedguard_options[" . $field_name . "]' name='speedguard_options[" . $field_name . "]' type='checkbox' />";
+		$checked    = ( $options[ $field_name ] === 'on' ) ? ' checked="checked" ' : '';
+		echo '<input type="hidden" name="speedguard_options[' . esc_attr( $field_name ) . ']" value="off" />';
+		echo '<input ' . esc_attr( $checked ) . ' id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']" type="checkbox" />';
 	}
 
 	function show_ab_widget_fn( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$field_name = esc_attr( $args['label_for'] );
-		if ( $options[ $field_name ] === 'on' ) {
-			$checked = ' checked="checked" ';
-		} else {
-			$checked = '';
-		}
-		echo "<input type='hidden' name='speedguard_options[" . $field_name . "]' value='off' /><input " . $checked . " id='speedguard_options[" . $field_name . "]' name='speedguard_options[" . $field_name . "]' type='checkbox' />";
+		$checked    = ( $options[ $field_name ] === 'on' ) ? ' checked="checked" ' : '';
+		echo '<input type="hidden" name="speedguard_options[' . esc_attr( $field_name ) . ']" value="off" />';
+		echo '<input ' . esc_attr( $checked ) . ' id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']" type="checkbox" />';
 	}
 
 	function email_me_at_fn( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$field_name = esc_attr( $args['label_for'] );
-		echo "<input id='speedguard_options[" . $field_name . "]' name='speedguard_options[" . $field_name . "]' type='text' size='40' value='" . $options[ $field_name ] . "'/>";
+		echo '<input id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']" type="text" size="40" value="' . esc_attr( $options[ $field_name ] ) . '"/>';
 	}
 
 	function print_description( $item ) {
-		echo $item;
+		echo esc_html( $item );
 	}
 
 	function email_me_case_fn( $args ) {
@@ -218,11 +205,9 @@ class SpeedGuard_Settings {
 
 		foreach ( $items as $item => $item_label ) {
 			$checked = ( $options[ $field_name ] === $item ) ? ' checked="checked" ' : '';
-
-			echo '<input ' . $checked . " type='radio' name='speedguard_options[" . $field_name . "]' id='" . $item . "' value='" . $item . "' /><label for='" . $item . "'>" . $item_label . '</label></br>';
+			echo '<input ' . esc_attr( $checked ) . ' type="radio" name="speedguard_options[' . esc_attr( $field_name ) . ']" id="' . esc_attr( $item ) . '" value="' . esc_attr( $item ) . '" /><label for="' . esc_attr( $item ) . '">' . esc_html( $item_label ) . '</label></br>';
 		}
 	}
-
 
 	function test_type_fn( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
@@ -231,10 +216,10 @@ class SpeedGuard_Settings {
 			'cwv' => __( 'Core Web Vitals', 'speedguard' ),
 			'psi' => __( 'PageSpeed Insights', 'speedguard' ),
 		];
-		echo "<select id='speedguard_options[" . $field_name . "]' name='speedguard_options[" . $field_name . "]' >";
+		echo '<select id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']">';
 		foreach ( $items as $item => $item_label ) {
 			$selected = ( $options[ $field_name ] === $item ) ? ' selected="selected" ' : '';
-			echo '<option ' . $selected . " value='$item'>$item_label</option>";
+			echo '<option ' . esc_attr( $selected ) . ' value="' . esc_attr( $item ) . '">' . esc_html( $item_label ) . '</option>';
 		}
 		echo '</select>';
 	}
@@ -245,7 +230,7 @@ class SpeedGuard_Settings {
 		$options = $new_whitelist_options['speedguard'];
 		foreach ( $options as $option ) {
 			if ( isset( $_POST[ $option ] ) ) {
-				update_site_option( $option, $_POST[ $option ] );
+				update_site_option( $option, sanitize_text_field( $_POST[ $option ] ) );
 			}
 		}
 		wp_redirect(

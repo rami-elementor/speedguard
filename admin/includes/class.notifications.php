@@ -104,7 +104,7 @@ class SpeedGuard_Notifications {
 			$message .= '</body>';
 			$message .= '</html>';
 		
-			echo $message;
+			echo esc_html($message);
 			wp_mail( $admin_email, $subject, $message, $headers );
 
 		}
