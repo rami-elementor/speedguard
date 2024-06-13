@@ -304,100 +304,91 @@ class SpeedGuard_Tests {
 		if (empty($url_to_add)) {
 			set_transient('speedguard_notice_add_new_url_error_empty', true, 5);
 			error_log('No URL provided.');
-		} elseif (!empty($url_to_add)) {
-			$url_to_add = strtok(trim(preg_replace('/\t+/', '', htmlspecialchars($url_to_add))), '?');
-			error_log('Processed URL: ' . $url_to_add);
+			return;
+		}
 
-			if (!filter_var($url_to_add, FILTER_VALIDATE_URL)) {
-				set_transient('speedguard_notice_add_new_url_error_not_url', true, 5);
-				error_log('Invalid URL: ' . $url_to_add);
+		$url_to_add = strtok(trim(preg_replace('/\t+/', '', htmlspecialchars($url_to_add))), '?');
+		error_log('Processed URL: ' . $url_to_add);
+
+		if (!filter_var($url_to_add, FILTER_VALIDATE_URL)) {
+			set_transient('speedguard_notice_add_new_url_error_not_url', true, 5);
+			error_log('Invalid URL: ' . $url_to_add);
+			return;
+		}
+
+		$entered_domain = wp_parse_url($url_to_add);
+		error_log('Entered domain: ' . print_r($entered_domain, true));
+
+		if (($_SERVER['SERVER_NAME'] != $entered_domain['host']) && !defined('SPEEDGUARD_PRO')) {
+			set_transient('speedguard_notice_add_new_url_error_not_current_domain', true, 5);
+			error_log('URL does not belong to the current domain and not PRO version.');
+			return;
+		}
+
+		if (empty($guarded_item_type)) {
+			if (trailingslashit($url_to_add) === trailingslashit(get_site_url())) {
+				$guarded_item_type = 'homepage';
+				$is_homepage_guarded = self::is_homepage_guarded();
+                error_log('is homepage guarded return: '. $is_homepage_guarded);
+				$already_guarded = !empty($is_homepage_guarded);
+				$existing_test_id = $already_guarded ? $is_homepage_guarded : false;
+
+				error_log('Homepage detected.');
 			} else {
-				$entered_domain = wp_parse_url($url_to_add);
-				error_log('Entered domain: ' . print_r($entered_domain, true));
+				$guarded_item_id = url_to_postid($url_to_add);
+				error_log('Post ID: ' . $guarded_item_id);
 
-				if (($_SERVER['SERVER_NAME'] != $entered_domain['host']) && !defined('SPEEDGUARD_PRO')) {
-					set_transient('speedguard_notice_add_new_url_error_not_current_domain', true, 5);
-					error_log('URL does not belong to the current domain and not PRO version.');
+				if ($guarded_item_id != 0) {
+					$guarded_item_type = 'single';
+					$speedguard_on = get_post_meta($guarded_item_id, 'speedguard_on', true);
+					$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
+					$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
+
+					error_log('Single post detected.');
 				} else {
-					if (empty($guarded_item_type)) {
-						if (trailingslashit($url_to_add) === trailingslashit(get_site_url())) {
-							$guarded_item_type = 'homepage';
-							$is_homepage_guarded = self::is_homepage_guarded();
-							$already_guarded = !empty($is_homepage_guarded);
-							$existing_test_id = $already_guarded ? $is_homepage_guarded : false;
+					$taxonomies = get_taxonomies();
+					error_log('Checking taxonomies for archive.');
 
-							error_log('Homepage detected.');
-							error_log("Guarded Item Type: $guarded_item_type");
-							error_log("Is Homepage Guarded: " . ($is_homepage_guarded ? 'true' : 'false'));
-							error_log("Already Guarded: " . ($already_guarded ? 'true' : 'false'));
-							error_log("Existing Test ID: $existing_test_id");
-
-						} else {
-							$guarded_item_id = url_to_postid($url_to_add);
-							error_log('Post ID: ' . $guarded_item_id);
-
-							if ($guarded_item_id != 0) {
-								$guarded_item_type = 'single';
-								$speedguard_on = get_post_meta($guarded_item_id, 'speedguard_on', true);
-								$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
-								$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
-
-								error_log('Single post detected.');
-								error_log("Guarded Item Type: $guarded_item_type");
-								error_log("Speedguard On: " . print_r($speedguard_on, true));
-								error_log("Already Guarded: " . ($already_guarded ? 'true' : 'false'));
-								error_log("Existing Test ID: $existing_test_id");
-
-							} elseif ($guarded_item_id === 0) {
-								$taxonomies = get_taxonomies();
-								error_log('Checking taxonomies for archive.');
-
-								foreach ($taxonomies as $taxonomy) {
-									$term_object = get_term_by('slug', basename($url_to_add) . PHP_EOL, $taxonomy);
-									if ($term_object) {
-										$guarded_item_id = $term_object->term_id;
-										$guarded_item_type = 'archive';
-										break;
-									}
-								}
-
-								$speedguard_on = get_term_meta($guarded_item_id, 'speedguard_on', true);
-								$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
-								$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
-
-								error_log('Archive detected.');
-								error_log("Guarded Item Type: $guarded_item_type");
-								error_log("Speedguard On: " . print_r($speedguard_on, true));
-								error_log("Already Guarded: " . ($already_guarded ? 'true' : 'false'));
-								error_log("Existing Test ID: $existing_test_id");
-							}
+					foreach ($taxonomies as $taxonomy) {
+						$term_object = get_term_by('slug', basename($url_to_add) . PHP_EOL, $taxonomy);
+						if ($term_object) {
+							$guarded_item_id = $term_object->term_id;
+							$guarded_item_type = 'archive';
+							break;
 						}
 					}
 
-					error_log("Final Guarded Item Type: $guarded_item_type");
-					error_log("Final Already Guarded: " . ($already_guarded ? 'true' : 'false'));
-					error_log("Final Existing Test ID: $existing_test_id");
+					$speedguard_on = get_term_meta($guarded_item_id, 'speedguard_on', true);
+					$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
+					$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
 
-					if ($already_guarded && $existing_test_id && 'publish' === get_post_status($existing_test_id)) {
-						$result = self::update_test_fn($existing_test_id);
-						set_transient('speedguard_notice_' . $result, true, 10);
-						error_log('Updated existing test: ' . $existing_test_id);
-					} else {
-						$result = self::create_test_fn($url_to_add, $guarded_item_type, $guarded_item_id);
-						set_transient('speedguard_notice_' . $result, true, 5);
-						error_log('Created new test for URL: ' . $url_to_add);
-					}
-
-					set_transient('speedguard_notice_' . $result, true, 5);
-					error_log('Set transient for result: ' . $result);
+					error_log('Archive detected.');
 				}
 			}
 		}
+
+		error_log("Final Guarded Item Type: $guarded_item_type");
+		error_log("Final Already Guarded: " . ($already_guarded ? 'true' : 'false'));
+		error_log("Final Existing Test ID: $existing_test_id");
+
+		if ($already_guarded && $existing_test_id && 'publish' === get_post_status($existing_test_id)) {
+			$result = self::update_test_fn($existing_test_id);
+			error_log('Updated existing test: ' . $existing_test_id);
+			set_transient('speedguard_notice_update_test', true, 10);
+		} else {
+			$result = self::create_test_fn($url_to_add, $guarded_item_type, $guarded_item_id);
+			error_log('Created new test for URL: ' . $url_to_add);
+			set_transient('speedguard_notice_create_test', true, 5);
+		}
+
+		set_transient('speedguard_notice_' . $result, true, 5);
+		error_log('Set transient for result: ' . $result);
 
 		$redirect_to = add_query_arg(array(
 			'speedguard' => 'new_url_submitted',
 			'sg_redirect_nonce' => wp_create_nonce('sg_redirect_nonce_action'),
 		));
+
 		if (!get_transient('speedguard-notice-activation')) {
 			wp_safe_redirect(esc_url_raw($redirect_to));
 			exit;
@@ -405,6 +396,7 @@ class SpeedGuard_Tests {
 
 		error_log('Redirected to: ' . $redirect_to);
 	}
+
 
 
 
@@ -429,7 +421,9 @@ class SpeedGuard_Tests {
 		];
 		$posts = get_posts( $args );
 
-		return ! empty( $posts );
+        //if posts is not empty return the value of 1st string in array
+		$existing_test_id = !empty($posts) ? $posts[0] : false;
+        return $existing_test_id;
 	}
 
 

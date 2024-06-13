@@ -111,6 +111,7 @@ class SpeedGuard_Widgets {
 		//$guarded_pages = get_transient('speedguard_tests_count');
    //     echo $guarded_pages;
         //echo sz_output()
+        print_r(SpeedGuard_Tests::is_homepage_guarded());
         print_r(SpeedGuard_Admin::is_screen('tests'));
 
   echo sz_output();
