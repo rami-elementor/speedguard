@@ -215,10 +215,7 @@ class SpeedGuard_Admin {
 				}
 
 
-				//?
-				if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
-					$notices = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
-				}
+
 
 				//ok
 				if ( get_transient( 'speedguard_notice_add_new_url_error_not_url' ) ) {
@@ -251,6 +248,10 @@ class SpeedGuard_Admin {
 		}
 
 		// TODO: I don't know why but this only works outside is_screen('tests') Maybe not a big deal this actions can only be performed from that page anyways
+		//ok
+		if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
+			$notices = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
+		}
 		// ok
 		if ( get_transient( 'speedguard_notice_slow_down' ) ) {
 			$notices = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
