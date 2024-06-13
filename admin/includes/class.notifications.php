@@ -43,6 +43,7 @@ class SpeedGuard_Notifications {
 			$message .= '<html>';
 			$message .= '<head>';
 			$message .= '<title>';
+			/* translators: Title of the email report */
 			$message .= esc_html__( 'SpeedGuard Report', 'speedguard' );
 			$message .= '</title>';
 			$message .= '<style>';
@@ -58,18 +59,23 @@ class SpeedGuard_Notifications {
 			$message .= '<tr>';
 			$message .= '<td style="padding: 10px; bgcolor="#f7f7f7">';
 			$message .= '<p style="text-align:center; font-size: 1.2em; font-weight: bold;">';
+			/* translators: Core Web Vitals report */
 			$message .= esc_html__( 'Core Web Vitals report', 'speedguard' );
 			$message .= '</p>';
 			$message .= '<p>';
+			/* translators: %1$s - Website URL, %2$s - Mobile status, %3$s - Desktop status */
 			$message .= sprintf( esc_html__( 'Currently the website %1$s %2$s Core Web Vitals assessment by Google for Mobile and %3$s for Desktop. This result is for Origin, meaning for the website in general.', 'speedguard' ), $site_url, $status_mobile_display, $status_desktop_display );
 			$message .= '</p>';
 			$message .= '<p>';
+			/* translators: Individual URLs might be passing or not. */
 			$message .= esc_html__( 'Individual URLs might be passing or not.', 'speedguard' );
 			$message .= '</p>';
 			$message .= '<p>';
+			/* translators: Number of monitored pages */
 			$message .= sprintf( esc_html__( '%s pages are monitored now.', 'speedguard' ), $guarded_pages );
 			$message .= '</p>';
 			$message .= '<p>';
+			/* translators: %1$s - Link start, %2$s - Link end */
 			$message .= sprintf( esc_html__( 'You can see the detailed report and add more individual URLs to be monitored %1$shere%2$s.', 'speedguard' ), '<a href="' . esc_url( SpeedGuard_Admin::speedguard_page_url( "tests" ) ) . '" target="_blank">', '</a>' );
 			$message .= '</p>';
 			$message .= '</td>';
@@ -78,6 +84,7 @@ class SpeedGuard_Notifications {
 			$message .= '<td width="100%" style="padding: 0;">';
 			$message .= '<div style="padding: 1em; color:#000;">';
 			$message .= '<p style="font-size: 1.2em; font-weight: bold;">';
+			/* translators: Important questions section */
 			$message .= esc_html__( 'Important questions:', 'speedguard' );
 			$message .= '</p>';
 			$message .= SpeedGuard_Widgets::get_important_questions_widget_function();  // TODO: Address the replacement issue
@@ -86,14 +93,17 @@ class SpeedGuard_Notifications {
 			$message .= '</tr>';
 			$message .= '<tr>';
 			$message .= '<td style="padding: 10px;color:#5f5a5a; text-align:right; font-size: 0.9em;" bgcolor="#e6e1e1" align="right">';
+			/* translators: Report requested by site administrator */
 			$message .= sprintf( esc_html__( 'This report was requested by administrator of %s.', 'speedguard' ), $site_url );
 			$message .= ' ';
+			/* translators: Change SpeedGuard notification settings link */
 			$message .= sprintf( esc_html__( 'You can change SpeedGuard notification settings %1$shere%2$s any time.', 'speedguard' ), '<a href="' . esc_url( SpeedGuard_Admin::speedguard_page_url( 'settings' ) ) . '" target="_blank">', '</a>' );
 			$message .= '</td>';
 			$message .= '</tr>';
 			$message .= '</table>';
 			$message .= '</body>';
 			$message .= '</html>';
+		
 			echo $message;
 			wp_mail( $admin_email, $subject, $message, $headers );
 
