@@ -32,8 +32,8 @@ class SpeedGuard_Admin {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		// PRO
-		define( 'SPEEDGUARD_PRO', true );
+		// PRO (for debugging)
+		define( 'SPEEDGUARD_PRO', false );
 		// Multisite
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once ABSPATH . '/wp-admin/includes/plugin.php';
