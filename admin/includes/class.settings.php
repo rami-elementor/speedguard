@@ -112,11 +112,10 @@ class SpeedGuard_Settings {
 		return $new_value;
 	}
 
-    // Every time the options are updated, we need to reschedule the cron job
 	function speedguard_options_updated( $option, $old_value, $value ) {
 		if ( $option === 'speedguard_options' ) {
 			$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
-			//$admin_email        = $speedguard_options['email_me_at'];
+			$admin_email        = $speedguard_options['email_me_at'];
 			wp_clear_scheduled_hook( 'speedguard_update_results' );
 			wp_clear_scheduled_hook( 'speedguard_email_test_results' );
 			if ( ! wp_next_scheduled( 'speedguard_update_results' ) ) {
@@ -127,7 +126,17 @@ class SpeedGuard_Settings {
 
 
 	function update_results_cron_function() {
-		// Get all guarded pages //TODO Maybe replace this with query with IDs stored in wp_options? transient speedguard_tests_count
+		// If send report is on: schedule cron job
+		$speedguard_options = get_option( 'speedguard_options' );
+		$email_me_case      = $speedguard_options['email_me_case'];
+		if ( $email_me_case != 'never' ) {
+			if ( ! wp_next_scheduled( 'speedguard_email_test_results' ) ) {
+				// In 2 minutes
+				wp_schedule_single_event( time() + 2 * 60, 'speedguard_email_test_results' );
+			}
+		}
+
+		// Get all guarded pages
 		$args          = [
 			'post_type'      => SpeedGuard_Admin::$cpt_name,
 			'post_status'    => 'publish',
@@ -139,40 +148,22 @@ class SpeedGuard_Settings {
 
 		// Update the test results for each guarded page
 		foreach ( $guarded_pages as $guarded_page_id ) {
-            SpeedGuard_Tests::update_test_fn( $guarded_page_id, 'update' );
-
+			SpeedGuard_Tests::update_speedguard_test( $guarded_page_id );
 		}
-
-		// If send report is on: schedule cron job
-		$speedguard_options = get_option( 'speedguard_options' );
-		$email_me_case      = $speedguard_options['email_me_case'];
-		if ( $email_me_case != 'never' ) {
-			if ( ! wp_next_scheduled( 'speedguard_email_test_results' ) ) {
-				// In 2 minutes
-				wp_schedule_single_event( time() + 5 * 60, 'speedguard_email_test_results' );
-			}
-		}
-
-
 	}
 
-    // Fired on CRON  after tests (TODO check on CRON and manually) are finished to send an email
 	function email_test_results_function() {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$email_me_case      = $speedguard_options['email_me_case'];
 		if ( $email_me_case !== 'never' ) {
 			SpeedGuard_Notifications::test_results_email( 'regular' );
 		}
-
-
-
-
 	}
 
 	function speedguard_cron_schedules( $schedules ) {
 		$check_recurrence = 1; // Check every day
-	//	$value            = constant( 'DAY_IN_SECONDS' );
-		$value                            = 600; //every 5 mins for testing TODO
+		$value            = constant( 'DAY_IN_SECONDS' );
+		//$value                            = 1200; //every 10 mins for testing
 		$interval                         = (int) $check_recurrence * $value;
 		$schedules['speedguard_interval'] = [
 			'interval' => $interval, // user input integer in second
@@ -272,11 +263,23 @@ class SpeedGuard_Settings {
 	function speedguard_settings() {
 		// General Settings
 		register_setting( 'speedguard', 'speedguard_options' );
-
+		add_settings_section( 'speedguard_widget_settings_section', '', '', 'speedguard' );
+		add_settings_field(
+			'speedguard_options',
+			__( 'Show site average load time on Dashboard', 'speedguard' ),
+			[
+				$this,
+				'show_dashboard_widget_fn',
+			],
+			'speedguard',
+			'speedguard_widget_settings_section',
+			[ 'label_for' => 'show_dashboard_widget' ]
+		);
+        
 		add_settings_section( 'speedguard_reports_section', '', '', 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',
-			__( 'Minimal number of views during the last 30 days', 'szcleanup' ),
+			__( 'Send me report at', 'speedguard' ),
 			[
 				$this,
 				'email_me_at_fn',
