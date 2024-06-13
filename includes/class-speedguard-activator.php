@@ -21,6 +21,8 @@ class Speedguard_Activator {
 	public static function activate() {
 		set_transient( 'speedguard-notice-activation', true, 5 );
 		$add_homepage = SpeedGuard_Tests::try_add_speedguard_test( get_site_url() );
+
+
 		//check that speedguard_tests_count transient is updated properly
 		$guarded_pages = get_posts( [
 			'posts_per_page' => -1,
@@ -30,7 +32,7 @@ class Speedguard_Activator {
 			'fields'         => 'ids'
 		] );
 		set_transient( 'speedguard_tests_count', count( $guarded_pages ) );
-		
+
 
 
 	}

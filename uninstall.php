@@ -23,24 +23,33 @@
  *
  * @package    Speedguard
  */
+
 // If uninstall not called from WordPress, then exit.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+require_once plugin_dir_path( __FILE__ ) . '/admin/class-speedguard-admin.php';
 require_once plugin_dir_path( __FILE__ ) . '/admin/includes/class.tests-table.php';
+
+// Delete all data
 function speedguard_delete_data() {
+
 	// Delete CPTs
-	$guarded_pages = get_posts( [
-		'post_type'     => 'guarded-page',
+	$guarded_pages = get_posts([
+		'post_type'     => ['guarded-page', SpeedGuard_Admin::$cpt_name], // Backwards compatibility
 		'post_status'   => 'any',
+		'posts_per_page' => -1,
 		'fields'        => 'ids',
 		'no_found_rows' => true,
-	] );
-	foreach ( $guarded_pages as $guarded_page_id ) {
-		SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
+	]);
+
+	foreach ($guarded_pages as $guarded_page_id) {
+		SpeedGuard_Tests::delete_test_fn($guarded_page_id);
 	}
+
 	// Delete posts meta
-	$guarded_posts = get_posts( [
+	$guarded_posts = get_posts([
 		'post_type'     => 'any',
 		'post_status'   => 'any',
 		'fields'        => 'ids',
@@ -52,12 +61,14 @@ function speedguard_delete_data() {
 			],
 		],
 		'no_found_rows' => true,
-	] );
-	foreach ( $guarded_posts as $guarded_post_id ) {
-		delete_post_meta( $guarded_post_id, 'speedguard_on' );
+	]);
+
+	foreach ($guarded_posts as $guarded_post_id) {
+		delete_post_meta($guarded_post_id, 'speedguard_on');
 	}
+
 	// Delete terms meta
-	$the_terms = get_terms( [
+	$the_terms = get_terms([
 		'fields'     => 'ids',
 		'hide_empty' => false,
 		'meta_query' => [
@@ -66,37 +77,41 @@ function speedguard_delete_data() {
 				'compare' => 'EXISTS',
 			],
 		],
-	] );
-	foreach ( $the_terms as $term_id ) {
-		delete_term_meta( $term_id, 'speedguard_on' );
+	]);
+
+	foreach ($the_terms as $term_id) {
+		delete_term_meta($term_id, 'speedguard_on');
 	}
+
 	// Delete options
 	$speedguard_options = [
 		'speedguard_options',
 		'sg_origin_results'
 	];
-	foreach ( $speedguard_options as $option_name ) {
-		delete_option( $option_name );
-		if ( is_multisite() ) {
-			delete_site_option( $option_name );
+	foreach ($speedguard_options as $option_name) {
+		delete_option($option_name);
+		if (is_multisite()) {
+			delete_site_option($option_name);
 		}
 	}
+
 	// Delete non-expiring transients (auto-expiring will be deleted automatically)
 	$speedguard_transients = [
 		'speedguard_tests_in_queue',
 		'speedguard_test_in_progress',
 		'speedguard_sending_request_now',
-        'speedguard_tests_count'
+		'speedguard_tests_count'
 	];
-	foreach ( $speedguard_transients as $speedguard_transient ) {
-		delete_transient( $speedguard_transient );
+	foreach ($speedguard_transients as $speedguard_transient) {
+		delete_transient($speedguard_transient);
 	}
+
 	// Delete CRON jobs
-	wp_clear_scheduled_hook( 'speedguard_update_results' );
-	wp_clear_scheduled_hook( 'speedguard_email_test_results' );
+	wp_clear_scheduled_hook('speedguard_update_results');
+	wp_clear_scheduled_hook('speedguard_email_test_results');
 }
 
-// search all blogs if Multisite
+// Search all blogs if Multisite
 if ( is_multisite() ) {
 	$sites = get_sites();
 	foreach ( $sites as $site ) {
