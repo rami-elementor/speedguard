@@ -248,7 +248,18 @@ class SpeedGuard_Settings {
 	function speedguard_settings() {
 		// General Settings
 		register_setting( 'speedguard', 'speedguard_options' );
-		add_settings_section( 'speedguard_widget_settings_section', '', '', 'speedguard' );
+		add_settings_section( 'speedguard_general_settings_section', '', '', 'speedguard' );
+		add_settings_field(
+			'speedguard_test_type',
+			__( 'Test type', 'speedguard' ),
+			[
+				$this,
+				'test_type_fn',
+			],
+			'speedguard',
+			'speedguard_general_settings_section',
+			[ 'label_for' => 'test_type' ]
+		);
 		add_settings_field(
 			'speedguard_options',
 			__( 'Show site average load time on Dashboard', 'speedguard' ),
@@ -257,11 +268,11 @@ class SpeedGuard_Settings {
 				'show_dashboard_widget_fn',
 			],
 			'speedguard',
-			'speedguard_widget_settings_section',
+			'speedguard_general_settings_section',
 			[ 'label_for' => 'show_dashboard_widget' ]
 		);
 
-		add_settings_section( 'speedguard_reports_section', '', '', 'speedguard' );
+		add_settings_section( 'speedguard_reports_section',  __('Get an email if your Core Web Vitals are not passing Google assessment:', 'speedguard'), [$this, 'notifications_description_fn'], 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',
 			__( 'Send me report at', 'speedguard' ),
@@ -284,19 +295,20 @@ class SpeedGuard_Settings {
 			'speedguard_reports_section',
 			[ 'label_for' => 'email_me_case' ]
 		);
-		add_settings_field(
-			'speedguard_test_type',
-			__( 'Test type', 'speedguard' ),
-			[
-				$this,
-				'test_type_fn',
-			],
-			'speedguard',
-			'speedguard_reports_section',
-			[ 'label_for' => 'test_type' ]
-		);
+
 	}
 
+    function notifications_description_fn() {
+	    if ( speedguard_fs()->is_not_paying() ) {
+		    echo '<section>';
+		    echo '<p><b>' . __('This functionality is available for PRO users.', 'speedguard') . '</b> ';
+		    echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' .
+		         __('Try it for free during 7 days.', 'speedguard') .
+		         '</a></p>';
+		    echo '</section>';
+	    }
+
+    }
 	function speedguard_settings_general() {
 	}
 }

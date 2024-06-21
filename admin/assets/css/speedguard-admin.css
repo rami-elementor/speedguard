@@ -164,6 +164,13 @@
     font-style: italic;
 }
 
+#settings-meta-box .inside h2 {
+    margin-top: 3em;
+    padding-left: 0;
+    font-size: large;
+    font-weight: bold;
+}
+
 /** Widgets**/
 .toplevel_page_speedguard_tests_cwv_widget tbody td {
     text-align: center;
