@@ -268,7 +268,7 @@ class SpeedGuard_Admin {
 
 
 		if ( isset( $notices ) ) {
-			echo esc_html( $notices );
+			echo wp_kses_post($notices);
 		}
 	}
 
@@ -744,7 +744,7 @@ class SpeedGuard_Admin {
 	}
 
 
-	// Plugin Admin Notices
+
 	function body_classes_filter( $classes ) {
 		if ( self::is_screen( 'settings,tests,dashboard' ) ) {
 			if ( get_transient( 'speedguard_tests_count' ) < 1 ) {

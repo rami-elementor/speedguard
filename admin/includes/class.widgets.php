@@ -61,7 +61,7 @@ class SpeedGuard_Widgets {
 			'SpeedGuard_Widgets',
 			'explanation_widget_function',
 		], '', 'main-content', 'core' );
-		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'How to get most use from this plugin?', 'speedguard' ), [
+		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'How to get the most use from this plugin?', 'speedguard' ), [
 			'SpeedGuard_Widgets',
 			'howto_widget_function',
 		], '', 'side', 'core' );
@@ -356,18 +356,39 @@ class SpeedGuard_Widgets {
 
 	public static function about_widget_function() {
 		$picture        = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+
+		/* translators: Hey! My name is Sabrina.
+		   I speed up websites every day, and I built this plugin because I needed a simple tool to monitor site speed and notify me if something is not right.
+		   Hope it will be helpful for you too.
+		*/
 		$hey            = sprintf( __( 'Hey!%1$s My name is %3$sSabrina%4$s. 
-		%1$sI speed up websites every day, and I built this plugin because I needed a simple tool to monitor site speed and notify me if something is not right.%2$s
-		%1$sHope it will be helpful for you too.%2$s
-		%2$s', 'speedguard' ), '<p>', '</p>', '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=sabrina" target="_blank">', '</a>' );
+        %1$sI speed up websites every day, and I built this plugin because I needed a simple tool to monitor site speed and notify me if something is not right.%2$s
+        %1$sHope it will be helpful for you too.%2$s
+        %2$s', 'speedguard' ), '<p>', '</p>', '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=sabrina" target="_blank">', '</a>' );
+
 		$rate_link      = 'https://wordpress.org/support/plugin/speedguard/reviews/?rate=5#new-post';
+
+		/* translators: If you like it, I would greatly appreciate if you add your ★★★★★ to spread the love. */
 		$rate_it        = sprintf( __( 'If you like it, I would greatly appreciate if you add your %1$s★★★★★%2$s to spread the love.', 'speedguard' ), '<a class="rate-link" href="' . $rate_link . '" target="_blank">', '</a>' );
+
 		$translate_link = 'https://translate.wordpress.org/projects/wp-plugins/speedguard/';
-		$translate_it   = sprintf( __( 'You can also help to %1$stranslate it to your language%2$s so that more people will be able to use it ❤︎', 'speedguard' ), '<a href="' . $translate_link . '" target="_blank">', '</a>' );
+
+		/* translators: You can also help translate it to your language so that more people will be able to use it ❤︎ */
+		$translate_it   = sprintf( __( 'You can also help %1$stranslate it to your language%2$s so that more people will be able to use it ❤︎', 'speedguard' ), '<a href="' . $translate_link . '" target="_blank">', '</a>' );
+
+		//add the line: If you'd like to to buy me a gelato -- here is where: https://buymeacoffee.com/sabrinazeidan
+		$gelato_link    = 'https://buymeacoffee.com/sabrinazeidan';
+
+		/* translators: If you'd like to thank me -- buy me a gelato here. */
+		$gelato_it      = sprintf( __( 'If you\'d like to thank me -- %1$s', 'speedguard' ), '<a href="' . $gelato_link . '" target="_blank">' . esc_html__( 'buy me a gelato here.', 'speedguard' ) . '</a>' );
+
+		/* translators: Cheers! */
 		$cheers         = sprintf( __( 'Cheers!', 'speedguard' ) );
-		$content        = $picture . $hey . '<p>' . $rate_it . '</p><p>' . $translate_it . '<p>' . $cheers;
+
+		$content        = $picture . $hey . '<p>' . $rate_it . '</p><p>' . $translate_it . '<p>' .$gelato_it.'</p><p>'. $cheers.'</p>';
 		echo wp_kses_post( $content );
 	}
+
 
 	function speedguard_dashboard_widget_function() {
 		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( 'Current Performance', 'speedguard' ), [
