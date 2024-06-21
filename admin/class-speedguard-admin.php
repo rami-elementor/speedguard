@@ -726,7 +726,7 @@ class SpeedGuard_Admin {
 				'reload'                     => self::is_screen( 'tests' ) ? 'true' : 'false',
 			];
 
-			$script = 'var initiate_tests_data = ' . json_encode( $data ) . ';';
+			$script = 'var initiate_tests_data = ' . wp_json_encode( $data ) . ';';
 
 			wp_add_inline_script( 'speedguard_initiate_tests', $script, 'before' );
 
