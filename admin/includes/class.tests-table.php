@@ -247,21 +247,36 @@ class SpeedGuard_List_Table extends WP_List_Table {
 		// Set defaults
 		$orderby = 'guarded_page_title';
 		$order   = 'asc';
-		// If orderby is set, use this as the sort column
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = $_GET['orderby'];
-		}
-		// If order is set use this as the order
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = $_GET['order'];
-		}
-		$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
-		if ( $order === 'asc' ) {
-			return $result;
+
+		// Nonce verification (if needed)
+		if ( isset( $_REQUEST['speedguard_wp_list_table_action_nonce'] ) && wp_verify_nonce( $_REQUEST['speedguard_wp_list_table_action_nonce'], 'speedguard_wp_list_table_action' ) ) {
+			// If orderby is set, use this as the sort column
+			if ( ! empty( $_GET['orderby'] ) ) {
+				$orderby = $_GET['orderby'];
+			}
+
+			// If order is set use this as the order
+			if ( ! empty( $_GET['order'] ) ) {
+				$order = $_GET['order'];
+			}
+		} else {
+			// Nonce verification failed - you might want to handle this differently based on your application flow
+			// For now, let's log an error and continue with defaults
+			error_log( 'Nonce verification failed in sort_data function.' );
 		}
 
-		return - $result;
+		// Sorting logic
+		$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
+
+		if ( $order === 'asc' ) {
+			return $result;
+		} else {
+			return - $result;
+		}
 	}
+
+
+
 }
 
 class SpeedGuard_Tests {
