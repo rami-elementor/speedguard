@@ -115,7 +115,7 @@
 
 
 
-.youtube-container {
+#speedguard-howto-meta-box .youtube-container {
     position: relative;
     padding-bottom: 56.25%; /* Aspect ratio 16:9 */
     height: 0;
@@ -123,9 +123,9 @@
     max-width: 100%; /* Ensures the video container does not exceed its parent */
 }
 
-.youtube-container iframe,
-.youtube-container object,
-.youtube-container embed {
+#speedguard-howto-meta-box .youtube-container iframe,
+#speedguard-howto-meta-box .youtube-container object,
+#speedguard-howto-meta-box .youtube-container embed {
     position: absolute;
     top: 0;
     left: 0;
@@ -290,11 +290,14 @@
 }
 
 #speedguard-about-meta-box #szpic {
-    background-image: url(../images/sabrina.png);
-    height: 75px;
-    width: 75px;
-    float: right;
-    margin: 1em;
+    background-image: url(../images/sabrina.jpg); /* Replace with your image path */
+    background-size: cover; /* Ensure the background image covers the entire container */
+    height: 75px; /* Adjust as per your image's dimensions */
+    width: 75px; /* Adjust as per your image's dimensions */
+    border-radius: 50%; /* Makes the image circular */
+    overflow: hidden; /* Ensures the image stays within the circular boundary */
+    float: right; /* Adjust positioning as needed */
+    margin: 1em; /* Adjust margin as needed */
 }
 
 #speedguard-about-meta-box .rate-link {
