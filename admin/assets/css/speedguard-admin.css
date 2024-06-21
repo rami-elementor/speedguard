@@ -106,6 +106,16 @@
     margin-left: 1em;
 }
 
+#speedguard-legend-meta-box li{
+    margin-bottom: 2em; 
+}
+#speedguard-legend-meta-box li#undersanding-metrics img{
+    margin-top: 2em;
+}
+
+
+
+
 
 .toplevel_page_speedguard_tests #tests-list-meta-box #location, .toplevel_page_speedguard_tests #tests-list-meta-box .column-location {
     display: none;
