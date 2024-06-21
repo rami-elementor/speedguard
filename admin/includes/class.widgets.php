@@ -61,6 +61,10 @@ class SpeedGuard_Widgets {
 			'SpeedGuard_Widgets',
 			'explanation_widget_function',
 		], '', 'main-content', 'core' );
+		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'How to get most use from this plugin?', 'speedguard' ), [
+			'SpeedGuard_Widgets',
+			'howto_widget_function',
+		], '', 'side', 'core' );
 
 		add_meta_box( 'speedguard-important-questions-meta-box', esc_html__( 'Important questions:', 'speedguard' ), [
 			'SpeedGuard_Widgets',
@@ -313,6 +317,40 @@ class SpeedGuard_Widgets {
 		$content .= '</ul>';
 
 		return $content;
+	}
+
+	public static function howto_widget_function() {
+		$content = '<style>.youtube-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;}.youtube-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;}</style>';
+		$content .= '<ul>';
+		$content .= '<li>' . sprintf( __( 'Add the URL of the page you want to monitor. You can add as many URLs as you want. The plugin will check them every day.', 'speedguard' ) ) . '</li>';
+		$content .= '<li>' . sprintf( __( 'Check the results in the table below. If you see a red or yellow score, it means that there is a problem with the page.', 'speedguard' ) ) . '</li>';
+	    $content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
+
+		// Add YouTube video with responsive wrapper
+		$content .= '<div class="youtube-container">';
+		$content .= '<iframe src="https://www.youtube.com/embed/y_RvQEhdq9c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+		$content .= '</div>';
+
+		$content .= '</ul>';
+
+		// Define allowed HTML tags
+		$allowed_html = array(
+			'style' => array(),
+			'ul' => array(),
+			'li' => array(),
+			'div' => array(
+				'class' => array(),
+			),
+			'iframe' => array(
+				'src' => array(),
+				'title' => array(),
+				'frameborder' => array(),
+				'allow' => array(),
+				'allowfullscreen' => array(),
+			),
+		);
+
+		echo wp_kses( $content, $allowed_html );
 	}
 
 
