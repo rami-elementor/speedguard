@@ -148,9 +148,18 @@ class SpeedGuard_Settings {
 	function email_test_results_function() {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$email_me_case      = $speedguard_options['email_me_case'];
-		if ( $email_me_case !== 'never' ) {
-			SpeedGuard_Notifications::test_results_email( 'regular' );
+		// This IF block will be auto removed from the Free version.
+		if ( speedguard_fs()->is__premium_only() ) {
+			// This IF will be executed only if the user in a trial mode or have a valid license.
+			if ( speedguard_fs()->can_use_premium_code() ) {
+				if ( $email_me_case !== 'never' ) {
+					SpeedGuard_Notifications::test_results_email( 'regular' );
+				}
+			}
 		}
+
+
+
 	}
 
 	function speedguard_cron_schedules( $schedules ) {
