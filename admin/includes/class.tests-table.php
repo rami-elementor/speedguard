@@ -161,47 +161,51 @@ class SpeedGuard_List_Table extends WP_List_Table {
 
 	// Columns data
 
-    public function process_bulk_action()    {
-        $doaction = $this->current_action();
-        if ($this->current_action() === 'delete' || $this->current_action() === 'retest_load_time') {
+	public function process_bulk_action() {
+		$doaction = $this->current_action();
 
-            if (wp_verify_nonce($_REQUEST['speedguard_wp_list_table_action_nonce'], 'speedguard_wp_list_table_action')) {
+		// Check if nonce verification is required for modifying actions
+		if ( in_array( $doaction, array( 'delete', 'retest_load_time' ) ) && isset( $_REQUEST['speedguard_wp_list_table_action_nonce'] ) && wp_verify_nonce( $_REQUEST['speedguard_wp_list_table_action_nonce'], 'speedguard_wp_list_table_action' ) ) {
 
-                if (!empty($doaction) && !empty($_POST['guarded-pages'])) {
-                    foreach ($_POST['guarded-pages'] as $guarded_page_id) {
-                        if ($doaction === 'retest_load_time') {
-                            $result = SpeedGuard_Tests::update_test_fn($guarded_page_id);
-                        } elseif ($doaction === 'delete') {
-                            $result = SpeedGuard_Tests::delete_test_fn($guarded_page_id);
-                        }
-                    }
-                }
-                if (isset($result)) {
-                    set_transient('speedguard_notice_' . $result, true, 5);
-                    $redirect_to = add_query_arg('speedguard', $doaction);
-                    $redirect_to_nonce = wp_nonce_url($redirect_to, 'sg_redirect_nonce');
-                    wp_safe_redirect(esc_url_raw($redirect_to_nonce));
-                    exit;
-                }
+			if ( ! empty( $doaction ) && ! empty( $_POST['guarded-pages'] ) ) {
+				foreach ( $_POST['guarded-pages'] as $guarded_page_id ) {
+					if ( $doaction === 'retest_load_time' ) {
+						$result = SpeedGuard_Tests::update_test_fn( $guarded_page_id );
+					} elseif ( $doaction === 'delete' ) {
+						$result = SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
+					}
+				}
+			}
 
-            } else {
+			if ( isset( $result ) ) {
+				set_transient( 'speedguard_notice_' . $result, true, 5 );
+				$redirect_to = add_query_arg( 'speedguard', $doaction );
+				$redirect_to_nonce = wp_nonce_url( $redirect_to, 'sg_redirect_nonce' );
+				wp_safe_redirect( esc_url_raw( $redirect_to_nonce ) );
+				exit;
+			}
 
-                die('This is a secure website. Your nonce did not verify. Go get a coffee.');
-            }
-            //  $true = wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural']);
-            // $true = wp_verify_nonce($_REQUEST['_wpnonce'], 'speedguard_nonce_tests_bulk_actions');
-
-
-        }
+		} elseif ( in_array( $doaction, array( 'delete', 'retest_load_time' ) ) ) {
+			// Nonce verification failed for modifying actions
+			wp_die( 'Security check failed. Please try again.' );
+		}
+	}
 
 
-    }
 
 
-    function column_cb( $item ) {
-        $sg_nonce = wp_nonce_field('speedguard_wp_list_table_action','speedguard_wp_list_table_action_nonce');
-        return '<input type="checkbox" name="guarded-pages[]" value="' . esc_attr( $item['guarded_page_id'] ) . '"> ' . $sg_nonce;
-    }
+
+	// Add checkbox to each row
+	function column_cb( $item ) {
+		// Output nonce field
+		$sg_nonce = wp_nonce_field( 'speedguard_wp_list_table_action', 'speedguard_wp_list_table_action_nonce', true, false );
+
+		// Return checkbox with associated nonce
+		return '<input type="checkbox" name="guarded-pages[]" value="' . esc_attr( $item['guarded_page_id'] ) . '"> ' . $sg_nonce;
+	}
+
+
+
 	// Sort data the variables set in the $_GET
 
 	public function column_default( $item, $column_name ) {
@@ -293,64 +297,53 @@ class SpeedGuard_Tests {
 
 	}
 
-	// TODO: separate add_test (decide here add or update) then: update_test and create_test
-
-
+    /**
+     * @param string $url_to_add
+     * @param string $guarded_item_type
+     * @param string $guarded_item_id
+     * @param string $guarded_post_blog_id
+     * @param bool $already_guarded
+     */
 
 	public static function try_add_speedguard_test($url_to_add = '', $guarded_item_type = '', $guarded_item_id = '', $guarded_post_blog_id = '', $already_guarded = false) {
-		error_log('Function called: try_add_speedguard_test');
-		error_log('Initial parameters: ' . print_r(compact('url_to_add', 'guarded_item_type', 'guarded_item_id', 'guarded_post_blog_id', 'already_guarded'), true));
-
+		// Validate input URL
 		if (empty($url_to_add)) {
 			set_transient('speedguard_notice_add_new_url_error_empty', true, 5);
-			error_log('No URL provided.');
 			return;
 		}
 
 		$url_to_add = strtok(trim(preg_replace('/\t+/', '', htmlspecialchars($url_to_add))), '?');
-		error_log('Processed URL: ' . $url_to_add);
 
 		if (!filter_var($url_to_add, FILTER_VALIDATE_URL)) {
 			set_transient('speedguard_notice_add_new_url_error_not_url', true, 5);
-			error_log('Invalid URL: ' . $url_to_add);
 			return;
 		}
 
+		// Check domain and PRO version
 		$entered_domain = wp_parse_url($url_to_add);
-		error_log('Entered domain: ' . print_r($entered_domain, true));
- error_log('SERVER_NAME: ' . $_SERVER['SERVER_NAME'] );
- error_log('entered_domain: ' . $entered_domain['host']);
- error_log('SPEEDGUARD_PRO: ' . defined('SPEEDGUARD_PRO'));
 
 		if (($_SERVER['SERVER_NAME'] !== $entered_domain['host']) && (!defined('SPEEDGUARD_PRO') || SPEEDGUARD_PRO === false)) {
 			set_transient('speedguard_notice_add_new_url_error_not_current_domain', true, 5);
-			error_log('URL does not belong to the current domain and not PRO version.');
 			return;
 		}
 
+		// Determine guarded item type
 		if (empty($guarded_item_type)) {
 			if (trailingslashit($url_to_add) === trailingslashit(get_site_url())) {
 				$guarded_item_type = 'homepage';
 				$is_homepage_guarded = self::is_homepage_guarded();
-                error_log('is homepage guarded return: '. $is_homepage_guarded);
 				$already_guarded = !empty($is_homepage_guarded);
 				$existing_test_id = $already_guarded ? $is_homepage_guarded : false;
-
-				error_log('Homepage detected.');
 			} else {
 				$guarded_item_id = url_to_postid($url_to_add);
-				error_log('Post ID: ' . $guarded_item_id);
 
 				if ($guarded_item_id != 0) {
 					$guarded_item_type = 'single';
 					$speedguard_on = get_post_meta($guarded_item_id, 'speedguard_on', true);
 					$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
 					$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
-
-					error_log('Single post detected.');
 				} else {
 					$taxonomies = get_taxonomies();
-					error_log('Checking taxonomies for archive.');
 
 					foreach ($taxonomies as $taxonomy) {
 						$term_object = get_term_by('slug', basename($url_to_add) . PHP_EOL, $taxonomy);
@@ -364,29 +357,22 @@ class SpeedGuard_Tests {
 					$speedguard_on = get_term_meta($guarded_item_id, 'speedguard_on', true);
 					$already_guarded = !empty($speedguard_on) && ($speedguard_on[0] === 'true');
 					$existing_test_id = $already_guarded ? $speedguard_on[1] : false;
-
-					error_log('Archive detected.');
 				}
 			}
 		}
 
-		error_log("Final Guarded Item Type: $guarded_item_type");
-		error_log("Final Already Guarded: " . ($already_guarded ? 'true' : 'false'));
-		error_log("Final Existing Test ID: $existing_test_id");
-
+		// Process based on guarded status
 		if ($already_guarded && $existing_test_id && 'publish' === get_post_status($existing_test_id)) {
 			$result = self::update_test_fn($existing_test_id);
-			error_log('Updated existing test: ' . $existing_test_id);
 			set_transient('speedguard_notice_update_test', true, 10);
 		} else {
 			$result = self::create_test_fn($url_to_add, $guarded_item_type, $guarded_item_id);
-			error_log('Created new test for URL: ' . $url_to_add);
 			set_transient('speedguard_notice_create_test', true, 5);
 		}
 
 		set_transient('speedguard_notice_' . $result, true, 5);
-		error_log('Set transient for result: ' . $result);
 
+		// Redirect after processing
 		$redirect_to = add_query_arg(array(
 			'speedguard' => 'new_url_submitted',
 			'sg_redirect_nonce' => wp_create_nonce('sg_redirect_nonce_action'),
@@ -396,12 +382,7 @@ class SpeedGuard_Tests {
 			wp_safe_redirect(esc_url_raw($redirect_to));
 			exit;
 		}
-
-		error_log('Redirected to: ' . $redirect_to);
 	}
-
-
-
 
 	/**
 	 * @return bool
