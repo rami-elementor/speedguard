@@ -81,6 +81,20 @@ class SpeedGuard_Widgets {
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
+		if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.0.0.1') {
+			// Local environment
+			echo "This is a local environment.";
+		} elseif ($_SERVER['SERVER_NAME'] === 'playground.wordpress.net') {
+			// Staging environment
+			echo "This is a PlayGround environment.";
+		} else {
+			// Production or other environment
+			echo "This is a production or unknown environment.";
+		}
+        var_dump($_SERVER['SERVER_NAME']);
+
+
+
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 		// Preparing data to display
@@ -306,9 +320,9 @@ class SpeedGuard_Widgets {
 		//Convert this function to return instead of echo
 
 		$links   = [
-			sprintf( __( '%1$sWhy CWV fail after they were passing before? [video]%2$s', 'speedguard' ), '<a href="https://www.youtube.com/watch?v=Q40B5cscObc" target="_blank">', '</a>' ),
-			sprintf( __( '%1$sOne single reason why your CWV are not passing [video]%2$s', 'speedguard' ), '<a href="https://youtu.be/-d7CPbjLXwg?si=VmZ_q-9myI4SBYSD" target="_blank">', '</a>' ),
-			sprintf( __( '%1$s5 popular recommendations that don’t work [video]%2$s', 'speedguard' ), '<a href="https://youtu.be/5j3OUaBDXKI?si=LSow4BWgtF9cSQKq" target="_blank">', '</a>' ),
+			sprintf( __( '%1$sWhy CWV fail after they were passing before?%2$s', 'speedguard' ), '<a href="https://www.youtube.com/watch?v=Q40B5cscObc" target="_blank">', '</a>' ),
+			sprintf( __( '%1$sOne single reason why your CWV are not passing%2$s', 'speedguard' ), '<a href="https://youtu.be/-d7CPbjLXwg?si=VmZ_q-9myI4SBYSD" target="_blank">', '</a>' ),
+			sprintf( __( '%1$s5 popular recommendations that don’t work%2$s', 'speedguard' ), '<a href="https://youtu.be/5j3OUaBDXKI?si=LSow4BWgtF9cSQKq" target="_blank">', '</a>' ),
 		];
 		$content = '<ul>';
 		foreach ( $links as $link ) {

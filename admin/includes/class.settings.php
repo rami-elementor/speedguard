@@ -208,8 +208,8 @@ class SpeedGuard_Settings {
 			'everyday'      => __( 'After daily check with the current state', 'speedguard' ),
 			'any_URL_fails' => __( 'After daily check in case any URL is not passing CWV', 'speedguard' ),
 			'origin_fails'  => __( 'After daily check only in case Origin (whole site) is not passing CWV', 'speedguard' ),
-			'everytime'     => __( 'every time the tests are run', 'speedguard' ),
-			'never'         => __( 'never', 'speedguard' ),
+			'everytime'     => __( 'Every time the tests are run', 'speedguard' ),
+			'never'         => __( 'Never', 'speedguard' ),
 		];
 
 		foreach ( $items as $item => $item_label ) {
