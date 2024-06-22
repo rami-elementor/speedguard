@@ -81,23 +81,15 @@ class SpeedGuard_Widgets {
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
-		if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.0.0.1') {
-			// Local environment
-			echo "This is a local environment.";
-		} elseif ($_SERVER['SERVER_NAME'] === 'playground.wordpress.net') {
-			// Staging environment
-			echo "This is a PlayGround environment.";
-		} else {
-			// Production or other environment
-			echo "This is a production or unknown environment.";
-		}
-        var_dump($_SERVER['SERVER_NAME']);
-
-
-
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-		// Preparing data to display
+        //if PSI lcp value is not available it might mean it's localhost or staging, set transient to show notice
+        //if $overall_category_desktop = $speedguard_cwv_origin['desktop']['psi']['overall_category'];
+
+        if ( isset($speedguard_cwv_origin['desktop']['psi']['lcp']['average']) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N") ) {
+	        set_transient( 'speedguard_not_production_environment', true, 10 );
+        }
+        // Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
 		foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
 			foreach ( $test_types as $test_type => $metrics ) {
@@ -111,8 +103,8 @@ class SpeedGuard_Widgets {
 		}
 		if ( 'cwv' === $sg_test_type ) {
 			$fid_tr = '<tr><th>' . esc_html__( 'First Input Delay (FID)', 'speedguard' ) . '</th>
-    <td>' . esc_html( $mobile_fid ) . '</td>
-    <td>' . esc_html( $desktop_fid ) . '</td></tr>';
+    <td>' . wp_kses_post( $mobile_fid ) . '</td>
+    <td>' . wp_kses_post( $desktop_fid ) . '</td></tr>';
 		} else {
 			$fid_tr = '';
 		}
@@ -154,11 +146,19 @@ class SpeedGuard_Widgets {
 </table>
 ";
 
+        // if CWV is not available but it's production website and PSI was calculated
+		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) && !get_transient( 'speedguard_not_production_environment' ) ) {
+			set_transient( 'speedguard_no_cwv_data', true, 10 );
+            $info_text = '';
+            echo "NO CWV";
+        } elseif ( 'psi' === $sg_test_type ) {
+			$info_text = sprintf(
+				             esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
+			You can switch in %sSettings%s.', 'speedguard' ),
+				             '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
+				             '</a>'
+			             ) . '<div><br></div>';
 
-		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) ) {
-			$info_text = sprintf( esc_html__( 'N/A means that there is no data from Google available -- most likely your website has not got enough traffic for Google to make an evaluation (Not enough usage data in the last 90 days for this device type)', 'speedguard' ), '<a href="#">', '</a>' ) . '<div><br></div>';
-		} elseif ( 'psi' === $sg_test_type ) {
-			$info_text = sprintf( esc_html__( 'This is not real user data. These are averages calculated based on the tests below. Core Web Vitals -- is where the real data is. You can switch in Settings', 'speedguard' ), '<a href="#">', '</a>' ) . '<div><br></div>';
 		} else {
 			$info_text = '';
 		}
@@ -221,7 +221,7 @@ class SpeedGuard_Widgets {
                 <h3><?php esc_html_e( 'What does N/A mean?', 'speedguard' ); ?></h3>
                 <span>
                 <?php
-                echo wp_kses_post( sprintf( /* translators: 1: Google Search Console URL, 2: CrUX report URL */ __( 'If you see "N/A" for a metric in Core Web Vitals tests, it means that there is not enough real-user data to provide a score. This can happen if your website is new or has very low traffic. The same will be displayed in your %1$s, which uses the same data source (%2$s) as CWV.', 'speedguard' ), '<a href="' . esc_url( 'https://search.google.com/search-console/' ) . '">' . esc_html__( 'Google Search Console (GSC)', 'speedguard' ) . '</a>', '<a href="' . esc_url( 'https://developer.chrome.com/docs/crux/' ) . '">' . esc_html__( 'CrUX report', 'speedguard' ) . '</a>' ) );
+                echo wp_kses_post( sprintf( /* translators: 1: Google Search Console URL, 2: CrUX report URL */ __( 'If you see "N/A" for a metric in Core Web Vitals tests, it means that there is not enough real-user data to provide a score. This can happen if your website is new or has very low traffic. You will see the same in your %1$s, as they pull data from the same source -- (%2$s).', 'speedguard' ), '<a href="' . esc_url( 'https://search.google.com/search-console/' ) . '">' . esc_html__( 'Google Search Console (GSC)', 'speedguard' ) . '</a>', '<a href="' . esc_url( 'https://developer.chrome.com/docs/crux/' ) . '">' . esc_html__( 'CrUX report', 'speedguard' ) . '</a>' ) );
                 ?>
             </span>
             </li>

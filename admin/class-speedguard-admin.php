@@ -240,6 +240,12 @@ class SpeedGuard_Admin {
 				}
 			}
 
+			//ok
+			if ( get_transient( 'speedguard_not_production_environment' ) ) {
+				$notices = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
+			}
+
+
 		}
 		if ( self::is_screen( 'settings' ) ) {
 			if ( ! empty( $_REQUEST['settings-updated'] ) && $_REQUEST['settings-updated'] === 'true' ) {
@@ -248,6 +254,19 @@ class SpeedGuard_Admin {
 		}
 
 		// TODO: I don't know why but this only works outside is_screen('tests') Maybe not a big deal this actions can only be performed from that page anyways
+
+		//ok
+		if ( get_transient( 'speedguard_no_cwv_data' ) ) {
+			$notices = self::set_notice(
+				sprintf(
+					__( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ),
+					'<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
+					'</a>'
+				),
+				'warning'
+			);
+		}
+
 		//ok
 		if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
 			$notices = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
@@ -265,6 +284,7 @@ class SpeedGuard_Admin {
 		if ( get_transient( 'speedguard_notice_already_in_queue' ) ) {
 			$notices = self::set_notice( __( 'This URL is currently in the queue.', 'speedguard' ), 'success' );
 		}
+
 
 
 		if ( isset( $notices ) ) {
@@ -376,12 +396,11 @@ class SpeedGuard_Admin {
 	}
 
 	// Delete test data when original post got unpublished
-
 	public static function count_average_psi() {
 		// Prepare new values for PSI Averages
 		$new_average_array = [];
 		// Get all tests with valid results
-		$guarded_pages = get_posts( [
+		$guarded_pages = get_posts([
 			'posts_per_page' => 100, // 100 is enough to get the general picture and not overload the server
 			'no_found_rows'  => true,
 			'post_type'      => SpeedGuard_Admin::$cpt_name,
@@ -394,76 +413,98 @@ class SpeedGuard_Admin {
 					'compare' => 'NOT LIKE',
 				]
 			]
-		] );
+		]);
+
 		// If there are no tests with valid results, return an empty array
-		if ( empty( $guarded_pages ) ) {
+		if (empty($guarded_pages)) {
 			return [];
 		}
+
 		// Initialize the average array
 		$average = [];
+
 		// Loop through the guarded pages
-		foreach ( $guarded_pages as $guarded_page ) {
+		foreach ($guarded_pages as $guarded_page) {
 			// Get the guarded page load time
-			$guarded_page_load_time = get_post_meta( $guarded_page, 'sg_test_result', true );
+			$guarded_page_load_time = get_post_meta($guarded_page, 'sg_test_result', true);
+
 			// Loop through the device types
-			foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
+			foreach (SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types) {
 				// Loop through the test types
-				foreach ( $test_types as $test_type => $metrics ) {
+				foreach ($test_types as $test_type => $metrics) {
 					// If the test type is PSI, prepare the metrics
-					if ( $test_type === 'psi' ) {
-						foreach ( $metrics as $metric ) {
+					if ($test_type === 'psi') {
+						foreach ($metrics as $metric) {
+							// Check if numericValue exists and is a valid number
+							$numericValue = $guarded_page_load_time[$device][$test_type][$metric]['numericValue'] ?? 'N/A';
+							if (!is_numeric($numericValue)) {
+								$numericValue = 'N/A';
+							}
 							// Add the guarded page load time to the average array
-							$average[ $device ][ $test_type ][ $metric ]['guarded_pages'][ $guarded_page ] = $guarded_page_load_time[ $device ][ $test_type ][ $metric ]['numericValue'];
+							$average[$device][$test_type][$metric]['guarded_pages'][$guarded_page] = $numericValue;
 						}
 					}
 				}
 			}
 		}
+
 		// Loop through the average array
-		foreach ( $average as $device => $test_types ) {
+		foreach ($average as $device => $test_types) {
 			// Loop through the test types
-			foreach ( $test_types as $test_type => $metrics ) {
+			foreach ($test_types as $test_type => $metrics) {
 				// Loop through the metrics
-				foreach ( $metrics as $metric => $values ) {
-					// Calculate the average
-					$average = array_sum( $values['guarded_pages'] ) / count( $values['guarded_pages'] );
+				foreach ($metrics as $metric => $values) {
+					// Filter out 'N/A' values
+					$valid_values = array_filter($values['guarded_pages'], 'is_numeric');
+
+					// Calculate the average if there are valid numeric values
+					if (count($valid_values) > 0) {
+						$average_value = array_sum($valid_values) / count($valid_values);
+					} else {
+						$average_value = 'N/A';
+					}
+
 					// Create a new metric array
 					$new_metric_array = [
-						'average' => $average,
+						'average' => $average_value,
 					];
+
 					// If the metric is LCP, calculate the display value and score
-					if ( $metric === 'lcp' ) {
-						$average                          = round( $average / 1000, 2 );
-						$new_metric_array['displayValue'] = $average . ' s';
-						if ( $average < 2.5 ) {
+					if ($metric === 'lcp' && $average_value !== 'N/A') {
+						$average_value = round($average_value / 1000, 2);
+						$new_metric_array['displayValue'] = $average_value . ' s';
+						if ($average_value < 2.5) {
 							$new_metric_array['score'] = 'FAST';
-						} elseif ( $average < 4.0 ) {
+						} elseif ($average_value < 4.0) {
 							$new_metric_array['score'] = 'AVERAGE';
 						} else {
 							$new_metric_array['score'] = 'SLOW';
 						}
 					}
+
 					// If the metric is CLS, calculate the display value and score
-					if ( $metric === 'cls' ) {
-						$average                          = round( $average, 3 );
-						$new_metric_array['displayValue'] = $average;
-						if ( $average < 0.1 ) {
+					if ($metric === 'cls' && $average_value !== 'N/A') {
+						$average_value = round($average_value, 3);
+						$new_metric_array['displayValue'] = $average_value;
+						if ($average_value < 0.1) {
 							$new_metric_array['score'] = 'FAST';
-						} elseif ( $average < 0.25 ) {
+						} elseif ($average_value < 0.25) {
 							$new_metric_array['score'] = 'AVERAGE';
 						} else {
 							$new_metric_array['score'] = 'SLOW';
 						}
 					}
+
 					// Add the new metric array to the new average array
-					$new_average_array[ $device ][ $test_type ][ $metric ] = $new_metric_array;
+					$new_average_array[$device][$test_type][$metric] = $new_metric_array;
 				}
 			}
 		}
-		//	}
+
 		// Return the new average array
 		return $new_average_array;
 	}
+
 
 	public static function update_this_plugin_option( $option_name, $option_value ) {
 		if ( defined( 'SPEEDGUARD_MU_NETWORK' ) ) {
