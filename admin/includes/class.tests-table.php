@@ -117,7 +117,7 @@ class SpeedGuard_List_Table extends WP_List_Table {
 				$thisTestData = [
 					'guarded_page_id'    => $guarded_page_id,
 					'guarded_page_title' => '<a href="' . $guarded_page_url . '" target="_blank">' . $guarded_page_url . '</a>',
-					'report_date'        => $updated . '<a href="' . $report_link . '" target="_blank">🔗</a>',
+					'report_date'        => $updated . '<a class="report-link" href="' . $report_link . '" target="_blank"></a>',
 				];
 				// Get saved each Test result data
 				$sg_test_result = get_post_meta( $guarded_page_id, 'sg_test_result', true );
