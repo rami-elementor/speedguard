@@ -1,10 +1,10 @@
 === Site Speed Test - SpeedGuard === 
 Contributors: sabrinazeidan
 Tags: speed, site speed, test speed, performance, optimization
-Requires at least: 4.7
-Tested up to: 6.4.2
+Requires at least: 5.8
+Tested up to: 6.5.4
 Stable tag: 2.0
-Requires PHP: 5.6
+Requires PHP: 7.3.5
 License: GPLv2 or later 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
