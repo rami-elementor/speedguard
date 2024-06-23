@@ -721,7 +721,7 @@ class SpeedGuard_Admin {
 
 
 	public function enqueue_styles() {
-		if ( ( is_admin_bar_showing() ) && ( self::is_screen( 'dashboard,settings,tests' ) || ! is_admin() ) ) {
+		if ( ( is_admin_bar_showing() ) && ( self::is_screen( 'dashboard,settings,tests' ) ) ) {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/css/speedguard-admin.css', [], $this->version );
 		}
 		if ( is_admin_bar_showing() && self::is_screen( 'tests' ) ) {
@@ -742,15 +742,9 @@ class SpeedGuard_Admin {
 	}
 
 	public function enqueue_scripts() {
-		if ( is_admin_bar_showing() && ( self::is_screen( 'dashboard,settings,tests,plugins,clients' ) || ! is_admin() ) ) {
+		if ( is_admin_bar_showing() && ( self::is_screen( 'dashboard,settings,tests,plugins,clients' ) ) ) {
 			//general JS
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-admin.js', [], $this->version, false );
-
-			//TODO Maybe include on tests page only?
-
-			//For checking queue and initiating tests
-			//if (self::is_screen('tests')) {
-
 
 			//For making requests to API
 			wp_enqueue_script( 'speedguard_tests_module', plugin_dir_url( __FILE__ ) . 'assets/js/execute_tests.js', [], $this->version, true );
