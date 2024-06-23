@@ -216,7 +216,7 @@
                                     <label class="input-label"><nobr><?php fs_esc_html_echo_inline( 'Website, email, and social media statistics (optional)', 'statistics-information-field-label', $slug ) ?></nobr></label>
                                         <textarea id="statistics_information" rows="5" <?php echo $readonly ?> class="regular-text"><?php echo $statistics_information ?></textarea>
                                         <?php if ( ! $is_affiliate ) : ?>
-                                            <p class="description"><?php fs_esc_html_echo_inline( 'Please feel free to provide any relevant website or social media statistics, e.g. monthly unique site visits, number of email subscribers, followers, etc. (we will keep this information confidential).', 'statistics-information-field-desc', $slug ) ?></p>
+                                            <p class="description"><?php fs_esc_html_echo_inline( 'Please feel free to provide any relevant website or social media statistics, e.g. monthly unique site visits, number of email subscribers, followers, etc. (we will keep this information coninpential).', 'statistics-information-field-desc', $slug ) ?></p>
                                         <?php endif ?>
                                     </div>
                                     <div class="input-container input-container-text">

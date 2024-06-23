@@ -28,7 +28,7 @@ async function fetchAll(url_to_test) {
                     "cwv": {
                         "lcp": item?.loadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS ?? defaultValue,
                         "cls": item?.loadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
-                        "fid": item?.loadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,
+                        "inp": item?.loadingExperience?.metrics?.INTERACTION_TO_NEXT_PAINT ?? defaultValue,
                         "overall_category": item?.loadingExperience?.overall_category ?? defaultValue
                     },
                     "psi": {
@@ -38,7 +38,7 @@ async function fetchAll(url_to_test) {
                     "originCWV": {
                         "lcp": item?.originLoadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS ?? defaultValue,
                         "cls": item?.originLoadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE ?? defaultValue,
-                        "fid": item?.originLoadingExperience?.metrics?.FIRST_INPUT_DELAY_MS ?? defaultValue,
+                        "inp": item?.originLoadingExperience?.metrics?.INTERACTION_TO_NEXT_PAINT ?? defaultValue,
                         "overall_category": item?.originLoadingExperience?.overall_category ?? defaultValue
                     }
                 };
@@ -61,7 +61,7 @@ async function fetchAll(url_to_test) {
                     "cwv": {
                         "lcp": defaultValue,
                         "cls": defaultValue,
-                        "fid": defaultValue,
+                        "inp": defaultValue,
                         "overall_category": defaultValue
                     },
                     "psi": {
@@ -71,7 +71,7 @@ async function fetchAll(url_to_test) {
                     "originCWV": {
                         "lcp": defaultValue,
                         "cls": defaultValue,
-                        "fid": defaultValue,
+                        "inp": defaultValue,
                         "overall_category": defaultValue
                     }
                 };

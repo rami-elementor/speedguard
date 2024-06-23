@@ -2455,7 +2455,7 @@ msgid "Website, email, and social media statistics (optional)"
 msgstr ""
 
 #: templates/forms/affiliation.php:219
-msgid "Please feel free to provide any relevant website or social media statistics, e.g. monthly unique site visits, number of email subscribers, followers, etc. (we will keep this information confidential)."
+msgid "Please feel free to provide any relevant website or social media statistics, e.g. monthly unique site visits, number of email subscribers, followers, etc. (we will keep this information coninpential)."
 msgstr ""
 
 #: templates/forms/affiliation.php:223

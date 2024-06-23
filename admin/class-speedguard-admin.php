@@ -15,11 +15,11 @@ class SpeedGuard_Admin {
 	const SG_METRICS_ARRAY = [
 		'mobile'  => [
 			'psi' => [ 'lcp', 'cls' ],
-			'cwv' => [ 'lcp', 'cls', 'fid' ],
+			'cwv' => [ 'lcp', 'cls', 'inp' ],
 		],
 		'desktop' => [
 			'psi' => [ 'lcp', 'cls' ],
-			'cwv' => [ 'lcp', 'cls', 'fid' ],
+			'cwv' => [ 'lcp', 'cls', 'inp' ],
 		],
 	];
 	public static $cpt_name = 'guarded-page';
@@ -357,7 +357,7 @@ class SpeedGuard_Admin {
 					'lcp'              => $current_cwv_origin_data['mobile']['cwv']['lcp'],
 					//TODO check seems to be fine
 					'cls'              => $current_cwv_origin_data['mobile']['cwv']['cls'],
-					'fid'              => $current_cwv_origin_data['mobile']['cwv']['fid'],
+					'inp'              => $current_cwv_origin_data['mobile']['cwv']['inp'],
 					'overall_category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
 				],
 				'psi' => [
@@ -371,7 +371,7 @@ class SpeedGuard_Admin {
 					'lcp'              => $current_cwv_origin_data['desktop']['cwv']['lcp'],
 					//array if ok, string if no data
 					'cls'              => $current_cwv_origin_data['desktop']['cwv']['cls'],
-					'fid'              => $current_cwv_origin_data['desktop']['cwv']['fid'],
+					'inp'              => $current_cwv_origin_data['desktop']['cwv']['inp'],
 					'overall_category' => $current_cwv_origin_data['desktop']['cwv']['overall_category']
 				],
 				'psi' => [
@@ -598,7 +598,7 @@ class SpeedGuard_Admin {
 				'cwv' => [
 					'lcp'              => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
 					'cls'              => $mobile_data['cwv']['cls'],
-					'fid'              => $mobile_data['cwv']['fid'],
+					'inp'              => $mobile_data['cwv']['inp'],
 					'overall_category' => $mobile_data['cwv']['overall_category']
 				],
 				'psi' => [
@@ -611,7 +611,7 @@ class SpeedGuard_Admin {
 				'cwv' => [
 					'lcp'              => $desktop_data['cwv']['lcp'], //array if ok, string if no data
 					'cls'              => $desktop_data['cwv']['cls'],
-					'fid'              => $desktop_data['cwv']['fid'],
+					'inp'              => $desktop_data['cwv']['inp'],
 					'overall_category' => $desktop_data['cwv']['overall_category']
 				],
 				'psi' => [
@@ -661,7 +661,7 @@ class SpeedGuard_Admin {
 					'cwv' => [
 						'lcp'              => $mobile_data['originCWV']['lcp'], //TODO check seems to be fine
 						'cls'              => $mobile_data['originCWV']['cls'],
-						'fid'              => $mobile_data['originCWV']['fid'],
+						'inp'              => $mobile_data['originCWV']['inp'],
 						'overall_category' => $mobile_data['originCWV']['overall_category']
 					],
 					'psi' => [
@@ -674,7 +674,7 @@ class SpeedGuard_Admin {
 					'cwv' => [
 						'lcp'              => $desktop_data['originCWV']['lcp'], //array if ok, string if no data
 						'cls'              => $desktop_data['originCWV']['cls'],
-						'fid'              => $desktop_data['originCWV']['fid'],
+						'inp'              => $desktop_data['originCWV']['inp'],
 						'overall_category' => $desktop_data['originCWV']['overall_category']
 					],
 					'psi' => [

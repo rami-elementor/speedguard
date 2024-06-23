@@ -97,16 +97,28 @@ class SpeedGuard_Widgets {
 					foreach ( $metrics as $metric ) {
 						$current_metric  = $device . '_' . $metric;
 						$$current_metric = SpeedGuard_Widgets::single_metric_display( $speedguard_cwv_origin, $device, $test_type, $metric );
-					}
+						// Check if the dynamic variable is defined (For the cases when new metrics are added)
+							$$current_metric = isset($$current_metric) ? $$current_metric : '';
+
+                    }
 				}
 			}
 		}
+		// Ensure $mobile_inp and $desktop_inp are defined if they are not already
+		if (!isset($mobile_inp)) {
+			$mobile_inp = 'N/A';
+		}
+		if (!isset($desktop_inp)) {
+			$desktop_inp = 'N/A';
+		}
+
+		// Generate the table row for INP if the test type is 'cwv'
 		if ( 'cwv' === $sg_test_type ) {
-			$fid_tr = '<tr><th>' . esc_html__( 'First Input Delay (FID)', 'speedguard' ) . '</th>
-    <td>' . wp_kses_post( $mobile_fid ) . '</td>
-    <td>' . wp_kses_post( $desktop_fid ) . '</td></tr>';
+			$inp_tr = '<tr><th>' . esc_html__( 'Interaction to Next Paint (INP)', 'speedguard' ) . '</th>
+    <td>' . wp_kses_post( $mobile_inp ) . '</td>
+    <td>' . wp_kses_post( $desktop_inp ) . '</td></tr>';
 		} else {
-			$fid_tr = '';
+			$inp_tr = '';
 		}
 
 		if ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) ) {
@@ -141,7 +153,7 @@ class SpeedGuard_Widgets {
 <td>" . wp_kses_post( $mobile_cls ) . "</td>
 <td>" . wp_kses_post( $desktop_cls ) . "</td>
 </tr>
-   " . wp_kses_post( $fid_tr ) . "
+   " . wp_kses_post( $inp_tr ) . "
 </tbody>
 </table>
 ";
@@ -150,7 +162,6 @@ class SpeedGuard_Widgets {
 		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) && !get_transient( 'speedguard_not_production_environment' ) ) {
 			set_transient( 'speedguard_no_cwv_data', true, 10 );
             $info_text = '';
-            echo "NO CWV";
         } elseif ( 'psi' === $sg_test_type ) {
 			$info_text = sprintf(
 				             esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
@@ -175,28 +186,37 @@ class SpeedGuard_Widgets {
 		$display_value = '';
 		$category      = '';
 		$class         = '';
-		if ( ( $results_array === 'waiting' ) ) {  // tests are currently running, //PSI Origin results will be calculated after all tests are finished
+
+		if ( $results_array === 'waiting' ) {
+			// Tests are currently running, PSI Origin results will be calculated after all tests are finished
 			$class = 'waiting';
-		} elseif ( ( is_array( $results_array ) ) ) {// tests are not currently running
-			// Check if metric data is available for this device
+		} elseif ( is_array( $results_array ) ) {
+			// Tests are not currently running
+			// Check if metric data is available for this device and test type
 			if ( isset( $results_array[ $device ][ $test_type ][ $metric ] ) && is_array( $results_array[ $device ][ $test_type ][ $metric ] ) ) {
 
 				if ( $test_type === 'psi' ) {
-					$display_value = $results_array[ $device ][ $test_type ][ $metric ]['displayValue'];
+					$display_value = isset( $results_array[ $device ][ $test_type ][ $metric ]['displayValue'] ) ? $results_array[ $device ][ $test_type ][ $metric ]['displayValue'] : 'N/A';
 					$class         = 'score';
-					$category      = $results_array[ $device ][ $test_type ][ $metric ]['score'];
+					$category      = isset( $results_array[ $device ][ $test_type ][ $metric ]['score'] ) ? $results_array[ $device ][ $test_type ][ $metric ]['score'] : '';
 				} elseif ( $test_type === 'cwv' ) {
-					$metrics_value = $results_array[ $device ][ $test_type ][ $metric ]['percentile'];
+					$metrics_value = isset( $results_array[ $device ][ $test_type ][ $metric ]['percentile'] ) ? $results_array[ $device ][ $test_type ][ $metric ]['percentile'] : null;
+
 					// Format metrics output for display
-					if ( $metric === 'lcp' ) {
-						$display_value = round( $metrics_value / 1000, 2 ) . ' s';
-					} elseif ( $metric === 'cls' ) {
-						$display_value = $metrics_value / 100;
-					} elseif ( $metric === 'fid' ) {
-						$display_value = $metrics_value . ' ms';
+					if ( $metrics_value !== null ) {
+						if ( $metric === 'lcp' ) {
+							$display_value = round( $metrics_value / 1000, 2 ) . ' s';
+						} elseif ( $metric === 'cls' ) {
+							$display_value = $metrics_value / 100;
+						} elseif ( $metric === 'inp' ) {
+							$display_value = $metrics_value . ' ms';
+						}
+					} else {
+						$display_value = 'N/A';
 					}
+
 					$class    = 'score';
-					$category = $results_array[ $device ][ $test_type ][ $metric ]['category'];
+					$category = isset( $results_array[ $device ][ $test_type ][ $metric ]['category'] ) ? $results_array[ $device ][ $test_type ][ $metric ]['category'] : '';
 				}
 			} elseif ( $test_type === 'psi' && get_transient( 'speedguard-tests-running' ) ) {
 				$class = 'waiting';
@@ -205,13 +225,20 @@ class SpeedGuard_Widgets {
 				$class         = 'na';
 				$display_value = 'N/A';
 			}
+		} else {
+			// results_array is not an array or 'waiting', which is unexpected
+			$class         = 'na';
+			$display_value = 'N/A';
 		}
-		$category             = 'data-score-category="' . $category . '"';
-		$class                = 'class="speedguard-' . $class . '"';
-		$metric_display_value = '<span ' . $category . ' ' . $class . '>' . $display_value . '</span>';
+
+		$category             = !empty($category) ? 'data-score-category="' . esc_attr($category) . '"' : '';
+		$class                = 'class="speedguard-' . esc_attr($class) . '"';
+		$metric_display_value = '<span ' . $category . ' ' . $class . '>' . esc_html($display_value) . '</span>';
 
 		return $metric_display_value;
 	}
+
+
 
 	public static function explanation_widget_function() {
 		$cwv_link = 'https://web.dev/lcp/';
