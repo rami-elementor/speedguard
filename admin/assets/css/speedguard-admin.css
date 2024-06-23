@@ -24,14 +24,12 @@
     min-width: 250px;
 }
 
-#tests-list-meta-box .column-report_link, #tests-list-meta-box .column-report_date {
-    text-align: center;
-    width: 90px;
+#tests-list-meta-box .column-report_date {
+    min-width: 90px;
     vertical-align: middle;
 }
 
 #tests-list-meta-box tbody .column-report_date {
-    text-align: center;
     font-size: 0.8em;
 }
 
@@ -44,6 +42,10 @@
 }
 
 /** Results Page**/
+/** Distinguish visually mobile results from Desktop. There is probably a better way to do this **/
+td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px solid grey;}
+
+
 #speedguard_dashboard_widget thead th, #speedguard-dashboard-widget thead th {
     text-align: center;
 }
