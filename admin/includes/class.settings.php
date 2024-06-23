@@ -257,8 +257,8 @@ class SpeedGuard_Settings {
 	function speedguard_settings() {
 		// General Settings
 		register_setting( 'speedguard', 'speedguard_options' );
-		add_settings_section( 'speedguard_general_settings_section', '', '', 'speedguard' );
-		add_settings_field(
+		add_settings_section( 'speedguard_general_settings_section', '', [ $this, 'general_settings_note_fn'], 'speedguard' );
+        add_settings_field(
 			'speedguard_test_type',
 			__( 'Test type', 'speedguard' ),
 			[
@@ -280,7 +280,6 @@ class SpeedGuard_Settings {
 			'speedguard_general_settings_section',
 			[ 'label_for' => 'show_dashboard_widget' ]
 		);
-
 		add_settings_section( 'speedguard_reports_section',  __('Get an email if your Core Web Vitals are not passing Google assessment:', 'speedguard'), [$this, 'notifications_description_fn'], 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',
@@ -306,8 +305,14 @@ class SpeedGuard_Settings {
 		);
 
 	}
-
+	function general_settings_note_fn() {
+		echo '<div class="general-settings-note">';
+		echo '<p><strong>' . esc_html__( 'Tests are updated automatically, every single day (by CRON).', 'speedguard' ) . '</strong></p>';
+		echo '</div>';
+	}
     function notifications_description_fn() {
+	    echo '<p>' . esc_html__( 'Tests are updated automatically, every single day (by CRON).', 'speedguard' ) . '</p>';
+
 	    if ( speedguard_fs()->is_not_paying() ) {
 		    echo '<section>';
 		    echo '<p><b>' . __('This functionality is available for PRO users.', 'speedguard') . '</b> ';
