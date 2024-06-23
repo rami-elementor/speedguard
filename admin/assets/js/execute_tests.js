@@ -8,6 +8,8 @@ async function fetchAll(url_to_test) {
     const defaultValue = 'No data';
     let singleURLresult = [];
 
+    console.log('Starting fetchAll function...');
+
     try {
         singleURLresult = await Promise.all(devices.map(async device => {
             try {
@@ -22,6 +24,8 @@ async function fetchAll(url_to_test) {
 
                 // get current device value
                 const currentDevice = item.lighthouseResult.configSettings.emulatedFormFactor;
+
+                console.log(`Fetched data for ${device}:`, item);
 
                 // Data for the Single URL (both CWV and PSI)
                 const URL_RESULTS = {
@@ -43,6 +47,8 @@ async function fetchAll(url_to_test) {
                     }
                 };
 
+                console.log(`Processed results for ${device}:`, URL_RESULTS);
+
                 // Save data to the new object based on device value
                 let singleURLresultperdevice = {
                     [currentDevice]: {
@@ -51,6 +57,8 @@ async function fetchAll(url_to_test) {
                         "originCWV": URL_RESULTS.originCWV
                     }
                 };
+
+                console.log(`Final data for ${device}:`, singleURLresultperdevice);
 
                 return singleURLresultperdevice;
             } catch (error) {
@@ -76,6 +84,14 @@ async function fetchAll(url_to_test) {
                     }
                 };
 
+                console.log(`Returning default values for ${device}:`, {
+                    [device]: {
+                        "psi": URL_RESULTS.psi,
+                        "cwv": URL_RESULTS.cwv,
+                        "originCWV": URL_RESULTS.originCWV
+                    }
+                });
+
                 // Return object with default values for the current device
                 return {
                     [device]: {
@@ -90,6 +106,8 @@ async function fetchAll(url_to_test) {
     } catch (err) {
         console.error('There was an error:', err);
     }
+
+    console.log('fetchAll function completed. Result:', singleURLresult);
 
     return singleURLresult;
 }
