@@ -537,7 +537,34 @@ class SpeedGuard_Tests {
 	}
 
 	public static function tests_results_widget_function() {
-		$exampleListTable = new SpeedGuard_List_Table();
+        //show note is global test type is set to cwv
+        if ( SpeedGuard_Settings::global_test_type() === 'cwv' ) {
+	        $link = sprintf(
+		        '<a href="%s">%s</a>',
+		        admin_url('admin.php?page=speedguard_settings'),
+		        __('email notification', 'speedguard')
+	        );
+
+	        $note = sprintf(
+	        /* translators: %s: link to email notification settings */
+		        __('Note: The results are updated automatically every 24 hours. You can have %s in case Core Web Vitals need your attention.', 'speedguard'),
+		        $link
+	        );
+
+            // Output the note safely
+	        echo wp_kses(
+		        $note,
+		        array(
+			        'a' => array(
+				        'href' => array(),
+				        'title' => array(),
+				        'target' => array()
+			        )
+		        )
+	        );
+        }
+
+        $exampleListTable = new SpeedGuard_List_Table();
 		echo '<form id="wpse-list-table-form" method="post">';
 		$exampleListTable->prepare_items();
 		$exampleListTable->display();
