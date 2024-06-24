@@ -1,4 +1,4 @@
-<?php
+z<?php
 /**
  *
  * @link              https://sabrinazeidan.com/
@@ -41,7 +41,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 
 				if ( ! isset( $speedguard_fs ) ) {
 					// Include Freemius SDK.
-					require_once dirname(__FILE__) . '/freemius/start.php';
+					require_once dirname( __FILE__ ) . '/freemius/start.php';
 
 					$speedguard_fs = fs_dynamic_init( array(
 						'id'                  => '15835',
@@ -60,8 +60,8 @@ if ( function_exists( 'speedguard_fs' ) ) {
 							'is_require_payment' => false,
 						),
 						'menu'                => array(
-							'slug'           => 'speedguard_tests',
-							'first-path'     => 'admin.php?page=speedguard_tests',
+							'slug'       => 'speedguard_tests',
+							'first-path' => 'admin.php?page=speedguard_tests',
 						),
 					) );
 				}
@@ -75,61 +75,47 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			do_action( 'speedguard_fs_loaded' );
 
 
-	//Customise strings
+			//Customise strings
 			// For customers on pro plan
-			if ( speedguard_fs()->is_plan('pro') ) {
+			if ( speedguard_fs()->is_plan( 'pro' ) ) {
 				speedguard_fs()->override_i18n( array(
-					'upgrade'     => __( 'Track CWV on more websites.', 'speedguard' ),
+					'upgrade' => __( 'Track CWV on more websites.', 'speedguard' ),
 				) );
-			}
-			// For customers in trial
-		    elseif ( speedguard_fs()->is_trial() ) {
-			    speedguard_fs()->override_i18n( array(
-				    'upgrade'     => __( 'Keep email notifications going', 'speedguard' ),
-			    ) );
-		    }
-			// For customers on free plan
+			} // For customers in trial
+            elseif ( speedguard_fs()->is_trial() ) {
+				speedguard_fs()->override_i18n( array(
+					'upgrade' => __( 'Keep email notifications going', 'speedguard' ),
+				) );
+			} // For customers on free plan
 			else {
 				speedguard_fs()->override_i18n( array(
-					'upgrade'     => __( 'Get email notifications', 'speedguard' ),
+					'upgrade' => __( 'Get email notifications', 'speedguard' ),
 				) );
 			}
 
 			// Custom connect message for New free/paid users
-			speedguard_fs()->add_filter('connect_message','speedguard_fs_custom_connect_message_on_update', 10, 6);
+			speedguard_fs()->add_filter( 'connect_message', 'speedguard_fs_custom_connect_message_on_update', 10, 6 );
 			// Custom connect message for Existing free/paid users, who update from older version
-			speedguard_fs()->add_filter('connect_message_on_update','speedguard_fs_custom_connect_message_on_update', 10, 6);
+			speedguard_fs()->add_filter( 'connect_message_on_update', 'speedguard_fs_custom_connect_message_on_update', 10, 6 );
 			function speedguard_fs_custom_connect_message_on_update(
-				$message,
-				$user_first_name,
-				$plugin_title,
-				$user_login,
-				$site_link,
-				$freemius_link
+				$message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link
 			) {
-				$picture        = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+				$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
 
-				return $picture.sprintf(
-						'<p>' . __( 'Hi there!' ) .'</p>'.
-	'<p>' . __( 'My name is Sabrina.' ) .'</p>' .
-	'<p>' . __( 'Please help me improve %2$s!' ) .
-	'<br>' . __( 'I would like to make this plugin more compatible with the sites like yours, and make it more useful.'
-						) .
-	'<br>' . __( 'If you opt-in, some basic WordPress environment info will be shared.' ) .
-	'<br>' . __( 'No guarantee, but I might also send you email for security & feature updates, educational content, and occasional offers.' )  .'</p>' .
-	'<p>' . __( 'If you skip this, that\'s okay! %2$s will still work just fine.', 'speedguard' ).'</p>',
-	$user_first_name,
-	'<b>' . $plugin_title . '</b>',
-	'<b>' . $user_login . '</b>',
-	$site_link,
-	$freemius_link
-);
+				return $picture . sprintf( '<p>' . __( 'Hi there!' ) . '</p>' . '<p>' . __( 'My name is Sabrina.' ) . '</p>' . '<p>' . __( 'Please help me improve %2$s!' ) . '<br>' . __( 'I would like to make this plugin more compatible with the sites like yours, and make it more useful.' ) . '<br>' . __( 'If you opt-in, some basic WordPress environment info will be shared.' ) . '<br>' . __( 'No guarantee, but I might also send you email for security & feature updates, educational content, and occasional offers.' ) . '</p>' . '<p>' . __( 'If you skip this, that\'s okay! %2$s will still work just fine.', 'speedguard' ) . '</p>', $user_first_name, '<b>' . $plugin_title . '</b>', '<b>' . $user_login . '</b>', $site_link, $freemius_link );
 			}
 
 
+//Hide Contact me submenu for free users
+			function my_custom_is_submenu_visible( $is_visible, $menu_id ) {
+				if ( $menu_id !== 'contact' && $menu_id !== 'account' ) {
+					return $is_visible;
+				}
 
+				return speedguard_fs()->can_use_premium_code();
+			}
 
-
+			speedguard_fs()->add_filter( 'is_submenu_visible', 'my_custom_is_submenu_visible', 10, 2 );
 
 
 		}
@@ -162,7 +148,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 	register_deactivation_hook( __FILE__, 'deactivate_speedguard' );
 
 
-	register_uninstall_hook(__FILE__, 'uninstall_speedguard');
+	register_uninstall_hook( __FILE__, 'uninstall_speedguard' );
 
 	function uninstall_speedguard() {
 		// Uninstall logic here
@@ -173,20 +159,20 @@ if ( function_exists( 'speedguard_fs' ) ) {
 		function speedguard_delete_data() {
 
 			// Delete CPTs
-			$guarded_pages = get_posts([
-				'post_type'     => ['guarded-page', SpeedGuard_Admin::$cpt_name], // Backwards compatibility
-				'post_status'   => 'any',
-				'posts_per_page' => -1,
-				'fields'        => 'ids',
-				'no_found_rows' => true,
-			]);
+			$guarded_pages = get_posts( [
+				'post_type'      => [ 'guarded-page', SpeedGuard_Admin::$cpt_name ], // Backwards compatibility
+				'post_status'    => 'any',
+				'posts_per_page' => - 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			] );
 
-			foreach ($guarded_pages as $guarded_page_id) {
-				SpeedGuard_Tests::delete_test_fn($guarded_page_id);
+			foreach ( $guarded_pages as $guarded_page_id ) {
+				SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
 			}
 
 			// Delete posts meta
-			$guarded_posts = get_posts([
+			$guarded_posts = get_posts( [
 				'post_type'     => 'any',
 				'post_status'   => 'any',
 				'fields'        => 'ids',
@@ -198,14 +184,14 @@ if ( function_exists( 'speedguard_fs' ) ) {
 					],
 				],
 				'no_found_rows' => true,
-			]);
+			] );
 
-			foreach ($guarded_posts as $guarded_post_id) {
-				delete_post_meta($guarded_post_id, 'speedguard_on');
+			foreach ( $guarded_posts as $guarded_post_id ) {
+				delete_post_meta( $guarded_post_id, 'speedguard_on' );
 			}
 
 			// Delete terms meta
-			$the_terms = get_terms([
+			$the_terms = get_terms( [
 				'fields'     => 'ids',
 				'hide_empty' => false,
 				'meta_query' => [
@@ -214,10 +200,10 @@ if ( function_exists( 'speedguard_fs' ) ) {
 						'compare' => 'EXISTS',
 					],
 				],
-			]);
+			] );
 
-			foreach ($the_terms as $term_id) {
-				delete_term_meta($term_id, 'speedguard_on');
+			foreach ( $the_terms as $term_id ) {
+				delete_term_meta( $term_id, 'speedguard_on' );
 			}
 
 			// Delete options
@@ -225,10 +211,10 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				'speedguard_options',
 				'sg_origin_results'
 			];
-			foreach ($speedguard_options as $option_name) {
-				delete_option($option_name);
-				if (is_multisite()) {
-					delete_site_option($option_name);
+			foreach ( $speedguard_options as $option_name ) {
+				delete_option( $option_name );
+				if ( is_multisite() ) {
+					delete_site_option( $option_name );
 				}
 			}
 
@@ -239,13 +225,13 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				'speedguard_sending_request_now',
 				'speedguard_tests_count'
 			];
-			foreach ($speedguard_transients as $speedguard_transient) {
-				delete_transient($speedguard_transient);
+			foreach ( $speedguard_transients as $speedguard_transient ) {
+				delete_transient( $speedguard_transient );
 			}
 
 			// Delete CRON jobs
-			wp_clear_scheduled_hook('speedguard_update_results');
-			wp_clear_scheduled_hook('speedguard_email_test_results');
+			wp_clear_scheduled_hook( 'speedguard_update_results' );
+			wp_clear_scheduled_hook( 'speedguard_email_test_results' );
 		}
 
 // Search all blogs if Multisite
