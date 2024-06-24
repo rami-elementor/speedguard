@@ -31,7 +31,7 @@ class SpeedGuard_Widgets {
 		], '', 'normal', 'core' );
 
 		if ( 'cwv' === $sg_test_type ) {
-			$origin_widget_title = 'Core Web Vitals (real users experience) for the entire website';
+			$origin_widget_title = 'Core Web Vitals for Origin -- real users\' experience for the entire website';
 		} elseif ( 'psi' === $sg_test_type ) {
 			$origin_widget_title = 'PageSpeed Insights (lab tests)';
 		}
@@ -47,12 +47,12 @@ class SpeedGuard_Widgets {
 		], '', 'main-content', 'core' );
 
 		if ( 'cwv' === $sg_test_type ) {
-			$test_type = ' -- Core Web Vitals';
+			$test_type = 'Core Web Vitals';
 		} elseif ( 'psi' === $sg_test_type ) {
-			$test_type = ' -- PageSpeed Insights';
+			$test_type = 'PageSpeed Insights';
 		}
 
-		add_meta_box( 'tests-list-meta-box', sprintf( esc_html__( 'Test results for specific URLs %s', 'speedguard' ), $test_type ), [
+		add_meta_box( 'tests-list-meta-box', sprintf( esc_html__( '%s per page -- Test results for specific URLs', 'speedguard' ), $test_type ), [
 			'SpeedGuard_Tests',
 			'tests_results_widget_function',
 		], '', 'main-content', 'core' );

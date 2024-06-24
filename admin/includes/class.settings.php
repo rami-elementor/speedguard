@@ -280,7 +280,7 @@ class SpeedGuard_Settings {
 			'speedguard_general_settings_section',
 			[ 'label_for' => 'show_dashboard_widget' ]
 		);
-		add_settings_section( 'speedguard_reports_section',  __('Get an email if your Core Web Vitals are not passing Google assessment:', 'speedguard'), [$this, 'notifications_description_fn'], 'speedguard' );
+		add_settings_section( 'speedguard_reports_section',  __('Email notification in case your CWV needs your attention:', 'speedguard'), [$this, 'notifications_description_fn'], 'speedguard' );
 		add_settings_field(
 			'speedguard_email_me_at',
 			__( 'Send me report at', 'speedguard' ),
@@ -311,13 +311,11 @@ class SpeedGuard_Settings {
 		echo '</div>';
 	}
     function notifications_description_fn() {
-	    echo '<p>' . esc_html__( 'Tests are updated automatically, every single day (by CRON).', 'speedguard' ) . '</p>';
-
-	    if ( speedguard_fs()->is_not_paying() ) {
+        if ( speedguard_fs()->is_not_paying() ) {
 		    echo '<section>';
 		    echo '<p><b>' . __('This functionality is available for PRO users.', 'speedguard') . '</b> ';
 		    echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' .
-		         __('Try it for free during 7 days.', 'speedguard') .
+		         __('But you can try it for free during 7 days -- without subscription and with no strings attached.', 'speedguard') .
 		         '</a></p>';
 		    echo '</section>';
 	    }
