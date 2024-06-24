@@ -13,6 +13,16 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * New table class that extends the WP_List_Table
  */
 class SpeedGuard_List_Table extends WP_List_Table {
+	public function display() {
+		// Add the wrapper div
+		echo '<div class="speedguard-table-wrapper">';
+
+		parent::display(); // This will output the table
+
+		// Close the wrapper div
+		echo '</div>';
+	}
+
 	public function no_items() {
 		esc_html_e( 'No pages guarded yet. Add something in the field above for the start.', 'speedguard' );
 	}

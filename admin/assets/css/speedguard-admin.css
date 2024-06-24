@@ -314,9 +314,20 @@ td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px so
 
 }
 
+/* Horizontal scroll for the Tests table */
+.speedguard-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on mobile devices */
+}
+
+.speedguard-table-wrapper .wp-list-table {
+    width: 100%;
+    min-width: 1000px; /* Set a minimum width to trigger the scroll */
+}
 
 
-#speedguard-about-meta-box #szpic {
+/* SZ picture in Sidebar widget and Freemius Opt0in screen */
+#speedguard-about-meta-box #szpic, .fs-content #szpic {
     background-image: url(../images/sabrina.jpg); /* Replace with your image path */
     background-size: cover; /* Ensure the background image covers the entire container */
     height: 75px; /* Adjust as per your image's dimensions */

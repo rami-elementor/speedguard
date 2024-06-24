@@ -49,7 +49,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 						'premium_slug'        => 'speedguard-pro',
 						'type'                => 'plugin',
 						'public_key'          => 'pk_4f087343623f01d0a96151c22d6f9',
-						'is_premium'          => true,
+						'is_premium'          => false,
 						'premium_suffix'      => 'PRO',
 						// If your plugin is a serviceware, set this option to false.
 						'has_premium_version' => true,
@@ -73,6 +73,65 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			speedguard_fs();
 			// Signal that SDK was initiated.
 			do_action( 'speedguard_fs_loaded' );
+
+
+	//Customise strings
+			// For customers on pro plan
+			if ( speedguard_fs()->is_plan('pro') ) {
+				speedguard_fs()->override_i18n( array(
+					'upgrade'     => __( 'Track CWV on more websites.', 'speedguard' ),
+				) );
+			}
+			// For customers in trial
+		    elseif ( speedguard_fs()->is_trial() ) {
+			    speedguard_fs()->override_i18n( array(
+				    'upgrade'     => __( 'Keep email notifications going', 'speedguard' ),
+			    ) );
+		    }
+			// For customers on free plan
+			else {
+				speedguard_fs()->override_i18n( array(
+					'upgrade'     => __( 'Get email notifications', 'speedguard' ),
+				) );
+			}
+
+			// Custom connect message for New free/paid users
+			speedguard_fs()->add_filter('connect_message','speedguard_fs_custom_connect_message_on_update', 10, 6);
+			// Custom connect message for Existing free/paid users, who update from older version
+			speedguard_fs()->add_filter('connect_message_on_update','speedguard_fs_custom_connect_message_on_update', 10, 6);
+			function speedguard_fs_custom_connect_message_on_update(
+				$message,
+				$user_first_name,
+				$plugin_title,
+				$user_login,
+				$site_link,
+				$freemius_link
+			) {
+				$picture        = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+
+				return $picture.sprintf(
+						'<p>' . __( 'Hi there!' ) .'</p>'.
+	'<p>' . __( 'My name is Sabrina.' ) .'</p>' .
+	'<p>' . __( 'Please help me improve %2$s!' ) .
+	'<br>' . __( 'I would like to make this plugin more compatible with the sites like yours, and make it more useful.'
+						) .
+	'<br>' . __( 'If you opt-in, some basic WordPress environment info will be shared.' ) .
+	'<br>' . __( 'No guarantee, but I might also send you email for security & feature updates, educational content, and occasional offers.' )  .'</p>' .
+	'<p>' . __( 'If you skip this, that\'s okay! %2$s will still work just fine.', 'speedguard' ).'</p>',
+	$user_first_name,
+	'<b>' . $plugin_title . '</b>',
+	'<b>' . $user_login . '</b>',
+	$site_link,
+	$freemius_link
+);
+			}
+
+
+
+
+
+
+
 		}
 	}
 
