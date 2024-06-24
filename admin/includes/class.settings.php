@@ -51,7 +51,8 @@ class SpeedGuard_Settings {
                     </div>
                     <div id="post-body" class="has-sidebar">
                         <div id="post-body-content" class="has-sidebar-content">
-                            <form method="post" action="<?php echo esc_url( defined( 'SPEEDGUARD_MU_NETWORK' ) ? 'edit.php?action=speedguard_update_settings' : 'options.php' ); ?>">
+                            <form method="post"
+                                  action="<?php echo esc_url( defined( 'SPEEDGUARD_MU_NETWORK' ) ? 'edit.php?action=speedguard_update_settings' : 'options.php' ); ?>">
 								<?php do_meta_boxes( '', 'normal', 0 ); ?>
                             </form>
                         </div>
@@ -159,7 +160,6 @@ class SpeedGuard_Settings {
 		}
 
 
-
 	}
 
 	function speedguard_cron_schedules( $schedules ) {
@@ -242,85 +242,69 @@ class SpeedGuard_Settings {
 				update_site_option( $option, sanitize_text_field( $_POST[ $option ] ) );
 			}
 		}
-		wp_redirect(
-			add_query_arg(
-				[
-					'page'             => 'speedguard_settings',
-					'settings-updated' => 'true',
-				],
-				network_admin_url( 'admin.php' )
-			)
-		);
+		wp_redirect( add_query_arg( [
+			'page'             => 'speedguard_settings',
+			'settings-updated' => 'true',
+		], network_admin_url( 'admin.php' ) ) );
 		exit;
 	}
 
 	function speedguard_settings() {
 		// General Settings
 		register_setting( 'speedguard', 'speedguard_options' );
-		add_settings_section( 'speedguard_general_settings_section', '', [ $this, 'general_settings_note_fn'], 'speedguard' );
-        add_settings_field(
-			'speedguard_test_type',
-			__( 'Test type', 'speedguard' ),
-			[
-				$this,
-				'test_type_fn',
-			],
-			'speedguard',
-			'speedguard_general_settings_section',
-			[ 'label_for' => 'test_type' ]
-		);
-		add_settings_field(
-			'speedguard_options',
-			__( 'Show site average load time on Dashboard', 'speedguard' ),
-			[
-				$this,
-				'show_dashboard_widget_fn',
-			],
-			'speedguard',
-			'speedguard_general_settings_section',
-			[ 'label_for' => 'show_dashboard_widget' ]
-		);
-		add_settings_section( 'speedguard_reports_section',  __('Email notification in case your CWV needs your attention:', 'speedguard'), [$this, 'notifications_description_fn'], 'speedguard' );
-		add_settings_field(
-			'speedguard_email_me_at',
-			__( 'Send me report at', 'speedguard' ),
-			[
-				$this,
-				'email_me_at_fn',
-			],
-			'speedguard',
-			'speedguard_reports_section',
-			[ 'label_for' => 'email_me_at' ]
-		);
-		add_settings_field(
-			'speedguard_email_me_case',
-			'',
-			[
-				$this,
-				'email_me_case_fn',
-			],
-			'speedguard',
-			'speedguard_reports_section',
-			[ 'label_for' => 'email_me_case' ]
-		);
+		add_settings_section( 'speedguard_general_settings_section', '', [
+			$this,
+			'general_settings_note_fn'
+		], 'speedguard' );
+		add_settings_field( 'speedguard_test_type', __( 'Test type', 'speedguard' ), [
+			$this,
+			'test_type_fn',
+		], 'speedguard', 'speedguard_general_settings_section', [ 'label_for' => 'test_type' ] );
+		add_settings_field( 'speedguard_options', __( 'Show site average load time on Dashboard', 'speedguard' ), [
+			$this,
+			'show_dashboard_widget_fn',
+		], 'speedguard', 'speedguard_general_settings_section', [ 'label_for' => 'show_dashboard_widget' ] );
+		add_settings_section( 'speedguard_reports_section', __( 'Email notification in case your CWV needs your attention:', 'speedguard' ), [
+			$this,
+			'notifications_description_fn'
+		], 'speedguard' );
+		add_settings_field( 'speedguard_email_me_at', __( 'Send me report at', 'speedguard' ), [
+			$this,
+			'email_me_at_fn',
+		], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_at' ] );
+		add_settings_field( 'speedguard_email_me_case', '', [
+			$this,
+			'email_me_case_fn',
+		], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_case' ] );
 
 	}
+
 	function general_settings_note_fn() {
 		echo '<div class="general-settings-note">';
 		echo '<p><strong>' . esc_html__( 'Tests are updated automatically, every single day (by CRON).', 'speedguard' ) . '</strong></p>';
 		echo '</div>';
 	}
-    function notifications_description_fn() {
-        if ( speedguard_fs()->is_not_paying() ) {
-		    echo '<section>';
-		    echo '<p><b>' . __('This functionality is available for PRO users.', 'speedguard') . '</b> ';
-		    echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' .
-		         __('But you can try it for free during 7 days -- without subscription and with no strings attached.', 'speedguard') .
-		         '</a></p>';
-		    echo '</section>';
-	    }
 
-    }
+	function notifications_description_fn() {
+		if ( speedguard_fs()->is_not_paying() ) {
+			echo '<section>';
+			$picture_url     = plugin_dir_url( __DIR__ ) . 'assets/images/notifications-example.png';
+			$example_picture = '<figure class="notifications-example">
+<picture>
+<source srcset="' . $picture_url . '" type="image/png">
+<img src="' . $picture_url . '" alt="' . __( 'Notifications settings preview', 'speedguard' ) . '" style="width: 100%;">
+</picture>
+<figcaption>' . __( 'Notifications Settings Preview', 'speedguard' ) . '</figcaption>
+</figure>';
+			echo $example_picture;
+			echo '<p><b>' . __( 'This functionality is available for PRO users.', 'speedguard' ) . '</b> ';
+			echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' . __( 'But you can try it for free during 7 days -- without subscription and with no strings attached.', 'speedguard' ) . '</a></p>';
+
+			echo '</section>';
+		}
+
+	}
+
 	function speedguard_settings_general() {
 	}
 }

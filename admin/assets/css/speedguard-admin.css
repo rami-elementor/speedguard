@@ -314,6 +314,19 @@ td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px so
 
 }
 
+
+/* Notifications Preview Block */
+figure.notifications-example {
+   margin-bottom: 2em;
+    max-width: 600px;
+}
+.notifications-example figcaption {
+    font-size: 0.8em;
+    text-align: center;
+    font-style: italic;
+    margin-top: 0.5em;
+}
+
 /* Horizontal scroll for the Tests table */
 .speedguard-table-wrapper {
     overflow-x: auto;
