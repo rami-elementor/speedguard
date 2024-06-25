@@ -51,7 +51,9 @@ class SpeedGuard_Widgets {
 		} elseif ( 'psi' === $sg_test_type ) {
 			$test_type = 'PageSpeed Insights';
 		}
-
+		/* translators:
+		1: Test type
+		*/
 		add_meta_box( 'tests-list-meta-box', sprintf( esc_html__( '%s per page -- Test results for specific URLs', 'speedguard' ), $test_type ), [
 			'SpeedGuard_Tests',
 			'tests_results_widget_function',
@@ -83,7 +85,7 @@ class SpeedGuard_Widgets {
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-        // Preparing data to display
+		// Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
 		foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
 			foreach ( $test_types as $test_type => $metrics ) {
@@ -92,17 +94,17 @@ class SpeedGuard_Widgets {
 						$current_metric  = $device . '_' . $metric;
 						$$current_metric = SpeedGuard_Widgets::single_metric_display( $speedguard_cwv_origin, $device, $test_type, $metric );
 						// Check if the dynamic variable is defined (For the cases when new metrics are added)
-							$$current_metric = isset($$current_metric) ? $$current_metric : '';
+						$$current_metric = isset( $$current_metric ) ? $$current_metric : '';
 
-                    }
+					}
 				}
 			}
 		}
 		// Ensure $mobile_inp and $desktop_inp are defined if they are not already
-		if (!isset($mobile_inp)) {
+		if ( ! isset( $mobile_inp ) ) {
 			$mobile_inp = 'N/A';
 		}
-		if (!isset($desktop_inp)) {
+		if ( ! isset( $desktop_inp ) ) {
 			$desktop_inp = 'N/A';
 		}
 
@@ -152,17 +154,16 @@ class SpeedGuard_Widgets {
 </table>
 ";
 
-        // if CWV is not available but it's production website and PSI was calculated
-		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) && !get_transient( 'speedguard_not_production_environment' ) ) {
+		// if CWV is not available but it's production website and PSI was calculated
+		/* translators:
+1: Settings page link
+*/
+		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) && ! get_transient( 'speedguard_not_production_environment' ) ) {
 			set_transient( 'speedguard_no_cwv_data', true, 10 );
-            $info_text = '';
-        } elseif ( 'psi' === $sg_test_type ) {
-			$info_text = sprintf(
-				             esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
-			You can switch in %sSettings%s.', 'speedguard' ),
-				             '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
-				             '</a>'
-			             ) . '<div><br></div>';
+			$info_text = '';
+		} elseif ( 'psi' === $sg_test_type ) {
+			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
+			You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
 
 		} else {
 			$info_text = '';
@@ -225,13 +226,12 @@ class SpeedGuard_Widgets {
 			$display_value = 'N/A';
 		}
 
-		$category             = !empty($category) ? 'data-score-category="' . esc_attr($category) . '"' : '';
-		$class                = 'class="speedguard-' . esc_attr($class) . '"';
-		$metric_display_value = '<span ' . $category . ' ' . $class . '>' . esc_html($display_value) . '</span>';
+		$category             = ! empty( $category ) ? 'data-score-category="' . esc_attr( $category ) . '"' : '';
+		$class                = 'class="speedguard-' . esc_attr( $class ) . '"';
+		$metric_display_value = '<span ' . $category . ' ' . $class . '>' . esc_html( $display_value ) . '</span>';
 
 		return $metric_display_value;
 	}
-
 
 
 	public static function explanation_widget_function() {
@@ -259,9 +259,9 @@ class SpeedGuard_Widgets {
             </span>
             </li>
             <li id="undersanding-metrics">
-	            <?php
-	            echo wp_kses_post( __( 'All three of these metrics are important for providing a good user experience. A fast LCP means that users will not have to wait long for the main content of a page to load. A low CLS means that users will not have to deal with content that moves around while they are trying to read it. And a low INP means that users will be able to interact with a web page quickly and easily.', 'speedguard' ) );
-	            ?>
+				<?php
+				echo wp_kses_post( __( 'All three of these metrics are important for providing a good user experience. A fast LCP means that users will not have to wait long for the main content of a page to load. A low CLS means that users will not have to deal with content that moves around while they are trying to read it. And a low INP means that users will be able to interact with a web page quickly and easily.', 'speedguard' ) );
+				?>
                 </p>
                 <h3><?php esc_html_e( 'Understanding metrics:', 'speedguard' ); ?></h3>
                 <span>
@@ -359,7 +359,7 @@ class SpeedGuard_Widgets {
 		$content .= '<ul>';
 		$content .= '<li>' . sprintf( __( 'Add the URL of the page you want to monitor. You can add as many URLs as you want. The plugin will check them every day.', 'speedguard' ) ) . '</li>';
 		$content .= '<li>' . sprintf( __( 'Check the results in the table below. If you see a red or yellow score, it means that there is a problem with the page.', 'speedguard' ) ) . '</li>';
-	    $content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
+		$content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
 
 		// Add YouTube video with responsive wrapper
 		$content .= '<div class="youtube-container">';
@@ -370,17 +370,17 @@ class SpeedGuard_Widgets {
 
 		// Define allowed HTML tags
 		$allowed_html = array(
-			'style' => array(),
-			'ul' => array(),
-			'li' => array(),
-			'div' => array(
+			'style'  => array(),
+			'ul'     => array(),
+			'li'     => array(),
+			'div'    => array(
 				'class' => array(),
 			),
 			'iframe' => array(
-				'src' => array(),
-				'title' => array(),
-				'frameborder' => array(),
-				'allow' => array(),
+				'src'             => array(),
+				'title'           => array(),
+				'frameborder'     => array(),
+				'allow'           => array(),
 				'allowfullscreen' => array(),
 			),
 		);
@@ -390,37 +390,37 @@ class SpeedGuard_Widgets {
 
 
 	public static function about_widget_function() {
-		$picture        = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+		$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
 
 		/* translators: Hey! My name is Sabrina.
 		   I speed up websites every day, and I built this plugin because I needed a simple tool to monitor site speed and notify me if something is not right.
 		   Hope it will be helpful for you too.
 		*/
-		$hey            = sprintf( __( 'Hey!%1$s My name is %3$sSabrina%4$s. 
+		$hey = sprintf( __( 'Hey!%1$s My name is %3$sSabrina%4$s. 
         %1$sI speed up websites every day, and I built this plugin because I needed a simple tool to monitor site speed and notify me if something is not right.%2$s
         %1$sHope it will be helpful for you too.%2$s
         %2$s', 'speedguard' ), '<p>', '</p>', '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=sabrina" target="_blank">', '</a>' );
 
-		$rate_link      = 'https://wordpress.org/support/plugin/speedguard/reviews/?rate=5#new-post';
+		$rate_link = 'https://wordpress.org/support/plugin/speedguard/reviews/?rate=5#new-post';
 
 		/* translators: If you like it, I would greatly appreciate if you add your ★★★★★ to spread the love. */
-		$rate_it        = sprintf( __( 'If you like it, I would greatly appreciate if you add your %1$s★★★★★%2$s to spread the love.', 'speedguard' ), '<a class="rate-link" href="' . $rate_link . '" target="_blank">', '</a>' );
+		$rate_it = sprintf( __( 'If you like it, I would greatly appreciate if you add your %1$s★★★★★%2$s to spread the love.', 'speedguard' ), '<a class="rate-link" href="' . $rate_link . '" target="_blank">', '</a>' );
 
 		$translate_link = 'https://translate.wordpress.org/projects/wp-plugins/speedguard/';
 
 		/* translators: You can also help translate it to your language so that more people will be able to use it ❤︎ */
-		$translate_it   = sprintf( __( 'You can also help %1$stranslate it to your language%2$s so that more people will be able to use it ❤︎', 'speedguard' ), '<a href="' . $translate_link . '" target="_blank">', '</a>' );
+		$translate_it = sprintf( __( 'You can also help %1$stranslate it to your language%2$s so that more people will be able to use it ❤︎', 'speedguard' ), '<a href="' . $translate_link . '" target="_blank">', '</a>' );
 
 		//add the line: If you'd like to to buy me a gelato -- here is where: https://buymeacoffee.com/sabrinazeidan
-		$gelato_link    = 'https://buymeacoffee.com/sabrinazeidan';
+		$gelato_link = 'https://buymeacoffee.com/sabrinazeidan';
 
 		/* translators: If you'd like to thank me -- buy me a gelato here. */
-		$gelato_it      = sprintf( __( 'If you\'d like to thank me -- %1$s', 'speedguard' ), '<a href="' . $gelato_link . '" target="_blank">' . esc_html__( 'buy me a gelato here.', 'speedguard' ) . '</a>' );
+		$gelato_it = sprintf( __( 'If you\'d like to thank me -- %1$s', 'speedguard' ), '<a href="' . $gelato_link . '" target="_blank">' . esc_html__( 'buy me a gelato here.', 'speedguard' ) . '</a>' );
 
 		/* translators: Cheers! */
-		$cheers         = sprintf( __( 'Cheers!', 'speedguard' ) );
+		$cheers = sprintf( __( 'Cheers!', 'speedguard' ) );
 
-		$content        = $picture . $hey . '<p>' . $rate_it . '</p><p>' . $translate_it . '<p>' .$gelato_it.'</p><p>'. $cheers.'</p>';
+		$content = $picture . $hey . '<p>' . $rate_it . '</p><p>' . $translate_it . '<p>' . $gelato_it . '</p><p>' . $cheers . '</p>';
 		echo wp_kses_post( $content );
 	}
 

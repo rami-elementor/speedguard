@@ -108,7 +108,13 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				$message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link
 			) {
 				$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
-
+				/* translators:
+                1: User's first name
+                2: Plugin title
+                3: User's login
+                4: Site link
+                5: Freemius link
+                */
 				return $picture . sprintf( '<p>' . __( 'Hi there!' ) . '</p>' . '<p>' . __( 'My name is Sabrina.' ) . '</p>' . '<p>' . __( 'Please help me improve %2$s!' ) . '<br>' . __( 'I would like to make this plugin more compatible with the sites like yours, and make it more useful.' ) . '<br>' . __( 'If you opt-in, some basic WordPress environment info will be shared.' ) . '<br>' . __( 'No guarantee, but I might also send you email for security & feature updates, educational content, and occasional offers.' ) . '</p>' . '<p>' . __( 'If you skip this, that\'s okay! %2$s will still work just fine.', 'speedguard' ) . '</p>', $user_first_name, '<b>' . $plugin_title . '</b>', '<b>' . $user_login . '</b>', $site_link, $freemius_link );
 			}
 
