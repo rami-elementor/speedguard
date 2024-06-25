@@ -173,7 +173,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 
 			// Delete CPTs
 			$guarded_pages = get_posts( [
-				'post_type'      => [ 'guarded-page', SpeedGuard_Admin::$cpt_name ], // Backwards compatibility
+				'post_type'      => [ 'guarded-page'], // SpeedGuard_Admin::$cpt_name does not work here TODO Maybe move it to constant
 				'post_status'    => 'any',
 				'posts_per_page' => - 1,
 				'fields'         => 'ids',
