@@ -10,26 +10,28 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
 
 == Description ==
-**Google PageSpeed Insights right in your WordPress dashboard. 
+**Google Core Web Vitals and PageSpeed Insights right in your WordPress dashboard.
 It's free.**
-<strong>Test site speed performance daily, get notified if it's slow, get detailed reports.</strong>
+<strong>Track Core Web Vitals for individual URLs of your website. Every day. For free.</strong>
 
 [youtube https://www.youtube.com/watch?v=y_RvQEhdq9c]
 
+No need to guess whether your website performance needs your attention or not - you will get the definite answer in your WordPress Dashboard in a few minutes.
+
 == With SpeedGuard you get: ==
 
-* <strong>unlimited Google Lighthouse tests (PageSpeed Insights API)</strong>
+* <strong>Core Web Vitals (LCP, CLS, INP) testing for individual URLs of your website</strong>
+* <strong>PageSpeed Insights (LCP, CLS) for the cases if your website doesn't have Core Web Vitals yet</strong>
 * <strong>automatic </strong> everyday monitoring
 * <strong>desktop and mobile</strong> testing
-* <strong>daily reports</strong> about your site speed health are delivered straight to your inbox. If site performance gets worse, you'll be able to prevent big problems asap
-* <strong>links to the Google PageSpeed Insights reports</strong> which you can pass to the performance engineer to improve your site speed
-* <strong>tests are completely automated</strong> since first time setup is done
+* <strong>links to the Google PageSpeed Insights reports (that include CWV on top as well)</strong> which you can pass to the performance engineer to improve your site speed
+* <strong>tests are completely automated</strong> -- you don't need to do anything
 * <strong>easy to use</strong> — just pick pages of your website that you would like to monitor
 * <strong>It's free :)</strong>
 
-No need to guess whether your website is slow or fast - get the definite answer in your WordPress Dashboard in a few minutes.
 
-== Test speed of different types of content in WordPress :==
+
+== Test performance of any  content in WordPress :==
 
 * Posts
 * Pages
@@ -42,14 +44,24 @@ No need to guess whether your website is slow or fast - get the definite answer 
 * any other Custom Taxonomy
 
 = Idea Behind =
-Today, if your website loads slow, there is no need to even bother with any other optimization at all. 
+There is no need to say that performance IS very important.
+What's also important -- is to understand whether you have to worry about your website performance or it's doing fine.
 
-Page load time is one of Google’s top priorities for 2020 and it’s also its ranking signal. <strong>If Google’s crawler can't access your website because it's loading slow or throwing errors, it will never proceed further with indexation and ranking</strong>, and as a result, your website won't get any decent organic traffic.
+Google Core Web Vitals are the metrics that Google uses to measure the user experience on the web (real user experience!).
 
-I wanted an easy-to-use tool to warn me in case my website load time may harm it’s search rankings. I wanted a native WordPress solution, with all information available from the dashboard, simple but still informative, a guard who will do the monitoring every day and ping me, in case something goes wrong. 
+If your website passes CWV assessment for Origin -- it means that your website is fast enough for the majority of users.
+If it doesn't pass -- it means that you have to fix this.
+If it does pass but quite a few specific URLs are not passing -- it's a good time to look into those URLs and improve them to prevent the entrirewebstie to be marked as failing CWV.
+
+I wanted a simple easy-to-use tool to warn me in case my clients' websites performance has a bad tendency and needs my attention.
+I wanted a native WordPress solution, with all information available from the dashboard, simple but still informative, a guard who will do the monitoring every day and ping me, in case something goes wrong.
 I have not found one and that's why I've built this plugin. 
 
 I'll be happy to know that you find it useful as well, feel free to leave a review :)
+
+P.S. Note about PageSpeed Insights: you SHOULD alsways use CWV data in case it is available for your website. In case it is not available (when the website is new and/or doesn't have enough traffic yet) -- use PageSpeed Insights. But you have to remember, that PSI -- are lab tests, it's just an emulation of real users experience. It's better than nothing, of course.
+Watch my talk here if you want to understand [Core Web Vitals Mystery](https://www.youtube.com/watch?v=-80yP6sY0Cg) better.
+
 
 == Screenshots ==
 1. HomePage is tested on activation
@@ -79,14 +91,14 @@ In this case, the plugin will perform tests every day but only send you the warn
 
 = How tests are performed? =
 Starting from version 1.7 SpeedGuard is using [Google PageSpeed Insights API](https://developers.google.com/speed/pagespeed/insights/) which uses [Lighthouse](https://developers.google.com/web/tools/lighthouse) technology to perform tests. 
+From there we have Core Web Vitals data for specific URLs of your website and for origin. (Same data, that you can see in [Google Search Console](https://search.google.com/search-console/about) under Core Web Vitals section.)
 
 = Do I need Google PageSpeed Insights API key to use SpeedGuard? =
-No, you don't. Just add pages you need to test. 
+No, you don't. Just add pages you need to test.
+This freedom from Google might be over soon, in case it happens, I'll add the opportunity to run tests with your own API key.
 
-= Are the speed results for desktop or mobile users? =
-You can choose the type of device to emulate:
-* Desktop
-* Mobile
+= Are the tests results for desktop or mobile users? =
+For both. Automatically.
 
 = Is it compatible with WordPress Multisite? =
 It is! Use per-site activation.
@@ -97,7 +109,7 @@ On [SpeedGuard's GitHub repo](https://github.com/sabrina-zeidan/speedguard)!
 = Translations =
 
 * English - default, always included
-* Russian - Привет!
+
 
 *Note:* No your language yet? You can help to translate this plugin to your language [right from the repository](https://translate.wordpress.org/projects/wp-plugins/speedguard), no extra software needed.
 
