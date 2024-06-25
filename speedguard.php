@@ -236,7 +236,8 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				'speedguard_tests_in_queue',
 				'speedguard_test_in_progress',
 				'speedguard_sending_request_now',
-				'speedguard_tests_count'
+				'speedguard_tests_count',
+				'speedguard_no_cwv_data'
 			];
 			foreach ( $speedguard_transients as $speedguard_transient ) {
 				delete_transient( $speedguard_transient );

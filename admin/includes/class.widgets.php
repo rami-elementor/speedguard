@@ -158,16 +158,13 @@ class SpeedGuard_Widgets {
 		/* translators:
 1: Settings page link
 */
-		if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) && ! get_transient( 'speedguard_not_production_environment' ) ) {
-			set_transient( 'speedguard_no_cwv_data', true, 10 );
-			$info_text = '';
-		} elseif ( 'psi' === $sg_test_type ) {
+	if ( 'psi' === $sg_test_type ) {
 			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
 			You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
 
-		} else {
-			$info_text = '';
-		}
+    } else {
+		$info_text = '';
+	}
 
 		echo wp_kses_post( $content . $info_text );
 

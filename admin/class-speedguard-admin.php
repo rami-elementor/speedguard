@@ -61,7 +61,7 @@ class SpeedGuard_Admin {
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
 			add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
-			add_action( 'current_screen', [ $this, 'sg_check_environment' ] );
+			add_action( 'current_screen', [ $this, 'sg_add_notices' ] );
 			add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
 			add_action( 'transition_post_status', [ $this, 'guarded_page_unpublished_hook' ], 10, 3 );
 			add_action( 'before_delete_post', [ $this, 'before_delete_test_hook' ], 10, 1 );
@@ -83,16 +83,34 @@ class SpeedGuard_Admin {
 
 	}
 
-	// Check if this is localhost or staging
-    public static function sg_check_environment() {
+	//Add a few admin notices on Tests page
+    public static function sg_add_notices() {
+
+
+
+
 	    if (self::is_screen('tests')){
-		    // Retrieving data to display
+
+		// Check if this is localhost or staging
 	    $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 	    //if PSI lcp value is not available it might mean it's localhost or staging, set transient to show notice
 	    if ( isset( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'] ) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N" ) ) {
 		    set_transient( 'speedguard_not_production_environment', true, 10 );
 	    }
-    }
+
+		//Check if tests are finished, but no CWV data available (and production) -- then suggest PSI
+		// Tests are done and it's production
+		if (! get_transient('speedguard_tests_in_queue') && !get_transient( 'speedguard_not_production_environment' )){
+			$sg_test_type = SpeedGuard_Settings::global_test_type();
+			$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
+			$mobile_lcp = $speedguard_cwv_origin['mobile']['cwv']['lcp'];
+			if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' )) {
+				set_transient( 'speedguard_no_cwv_data', true, 10 );
+			}
+		}
+	}
+
+
     }
 	//Fired when post meta is deleted or updated
 
