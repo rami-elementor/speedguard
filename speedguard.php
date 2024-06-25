@@ -74,6 +74,13 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			// Signal that SDK was initiated.
 			do_action( 'speedguard_fs_loaded' );
 
+            //Set EURO as default currency
+			function speedguard_default_currency( $currency ) {
+				return 'eur';
+			}
+
+			speedguard_fs()->add_filter( 'default_currency', 'speedguard_default_currency' );
+
 
 			//Customise strings
 			// For customers on pro plan
@@ -106,8 +113,8 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			}
 
 
-//Hide Contact me submenu for free users
-			function my_custom_is_submenu_visible( $is_visible, $menu_id ) {
+            //Hide Contact me submenu for free users
+			function speedguard_is_submenu_visible( $is_visible, $menu_id ) {
 				if ( $menu_id !== 'contact' && $menu_id !== 'account' ) {
 					return $is_visible;
 				}
@@ -115,7 +122,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				return speedguard_fs()->can_use_premium_code();
 			}
 
-			speedguard_fs()->add_filter( 'is_submenu_visible', 'my_custom_is_submenu_visible', 10, 2 );
+			speedguard_fs()->add_filter( 'is_submenu_visible', 'speedguard_is_submenu_visible', 10, 2 );
 
 
 		}
