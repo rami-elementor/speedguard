@@ -158,12 +158,22 @@ class SpeedGuard_Widgets {
 		/* translators:
 1: Settings page link
 */
+	$info_text = '';
 	if ( 'psi' === $sg_test_type ) {
 			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
 			You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
 
     } else {
-		$info_text = '';
+        // if CWV and no CWV data available  for origin
+		if (get_transient( 'speedguard_no_cwv_data')){
+
+            $info_text = sprintf(
+	            __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ),
+	            '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
+	            '</a>'( 'speedguard' )) ;
+        }
+
+
 	}
 
 		echo wp_kses_post( $content . $info_text );

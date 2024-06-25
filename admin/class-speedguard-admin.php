@@ -99,8 +99,8 @@ class SpeedGuard_Admin {
 	    }
 
 		//Check if tests are finished, but no CWV data available (and production) -- then suggest PSI
-		// Tests are done and it's production
-		if (! get_transient('speedguard_tests_in_queue') && !get_transient( 'speedguard_not_production_environment' )){
+		// Tests are just done and it's production
+		if (get_transient('speedguard_last_test_is_done') && !get_transient( 'speedguard_not_production_environment' )){
 			$sg_test_type = SpeedGuard_Settings::global_test_type();
 			$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 			$mobile_lcp = $speedguard_cwv_origin['mobile']['cwv']['lcp'];
@@ -208,85 +208,72 @@ class SpeedGuard_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+
+		// Initialize an empty array to collect notices
+		$notices = [];
+
 		// All screens
-		// Dashboard and SpeedGuard Settigns screens
+		// Dashboard and SpeedGuard Settings screens
 		if ( self::is_screen( 'settings,dashboard' ) ) {
-			if ( (int) get_transient( 'speedguard_tests_count' ) === 1 ) { // TODO: set transient/user meta on dissmissal action
-				$message = sprintf( __( 'You only have the speed of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
-				$notices = self::set_notice( $message, 'warning' );
+			if ( (int) get_transient( 'speedguard_tests_count' ) === 1 ) { // TODO: set transient/user meta on dismissal action
+				$message = sprintf( __( 'You only have the performance of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
+				$notices[] = self::set_notice( $message, 'warning' );
 			}
 		}
+
 		// Plugins screen
-		if ( self::is_screen( 'plugins' ) ) {
-			// homepage was added/updated on activation
+		if ( self::is_screen( 'plugins,tests' ) ) {
+			// Homepage was added/updated on activation
 			if ( get_transient( 'speedguard-notice-activation' ) ) {
 				$message = sprintf( __( 'Homepage performance test has just started. Would you like to %1$stest some other pages%2$s as well?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
-				$notices = self::set_notice( $message, 'success' );
+				$notices[] = self::set_notice( $message, 'success' );
 			}
 			// TODO: On plugin deactivation
-			if ( ( self::is_screen( 'plugins' ) ) && ( get_transient( 'speedguard-notice-deactivation' ) ) ) {
-				// $notices =  SpeedGuard_Admin::set_notice(__('Shoot me an email if something didn\'t work as expected','speedguard'),'warning' );
+			if ( self::is_screen( 'plugins' ) && get_transient( 'speedguard-notice-deactivation' ) ) {
+				// $notices[] = SpeedGuard_Admin::set_notice(__('Shoot me an email if something didn\'t work as expected','speedguard'),'warning' );
 				// delete_transient( 'speedguard-notice-deactivation' );
+				//Handled by Freemius since 2.0
 			}
 		}
+
 		// Tests screen Notices
 		if ( self::is_screen( 'tests' ) ) {
 			if ( ! empty( $_REQUEST['speedguard'] ) && isset( $_GET['sg_redirect_nonce'] ) && wp_verify_nonce( $_GET['sg_redirect_nonce'], 'sg_redirect_nonce_action' ) ) {
-
-				//ok
 				if ( get_transient( 'speedguard_notice_add_new_url_error_empty' ) ) {
-					$notices = self::set_notice( __( 'Please select the post you want to add.', 'speedguard' ), 'warning' );
+					$notices[] = self::set_notice( __( 'Please select the post you want to add.', 'speedguard' ), 'warning' );
 				}
-
-				//ok?
 				if ( get_transient( 'speedguard_last_test_is_done' ) ) {
-					$notices = self::set_notice( __( 'speedguard_last_test_is_done.', 'speedguard' ), 'warning' );
+					$notices[] = self::set_notice( __( 'speedguard_last_test_is_done.', 'speedguard' ), 'warning' );
 				}
-
-
-
-
-				//ok
 				if ( get_transient( 'speedguard_notice_add_new_url_error_not_url' ) ) {
-					$notices = self::set_notice( __( 'Please enter valid URL or select the post you want to add.', 'speedguard' ), 'warning' );
+					$notices[] = self::set_notice( __( 'Please enter valid URL or select the post you want to add.', 'speedguard' ), 'warning' );
 				}
-
-				//?
-				if ( get_transient( 'speedguard_notice_new_url_added' ) ) {
-					$notices = self::set_notice( __( 'New URL is successfully added!', 'speedguard' ), 'success' );
+				if ( get_transient( 'speedguard_notice_create_test' ) ) {
+					$notices[] = self::set_notice( __( 'New URL is successfully added!', 'speedguard' ), 'success' );
 				}
-
-				//after url is added, ok
-				if ( get_transient( 'speedguard_notice_speedguard_test_being_updated' ) ) {
-					$notices = self::set_notice( __( 'Test is being updating...', 'speedguard' ), 'success' );
+				if ( get_transient( 'speedguard_notice_update_test' ) ) {
+					$notices[] = self::set_notice( __( 'Test is being updating...', 'speedguard' ), 'success' );
 				}
-
-
-				// ok
 				if ( $_REQUEST['speedguard'] === 'load_time_updated' ) {
-					// TODO replace with transient?
-					$notices = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
+					$notices[] = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
 				}
 			}
 
-			//ok
-			if ( get_transient( 'speedguard_not_production_environment' ) ) {
-				$notices = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
+			// Show this notice only if there are no other notices
+			if ( get_transient( 'speedguard_not_production_environment' ) && empty( $notices ) ) {
+				$notices[] = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
 			}
-
-
 		}
+
 		if ( self::is_screen( 'settings' ) ) {
 			if ( ! empty( $_REQUEST['settings-updated'] ) && $_REQUEST['settings-updated'] === 'true' ) {
-				$notices = self::set_notice( __( 'Settings have been updated!' ), 'success' );
+				$notices[] = self::set_notice( __( 'Settings have been updated!' ), 'success' );
 			}
 		}
 
-		// TODO: I don't know why but this only works outside is_screen('tests') Maybe not a big deal this actions can only be performed from that page anyways
-
-		//ok
+		// Other global notices
 		if ( get_transient( 'speedguard_no_cwv_data' ) ) {
-			$notices = self::set_notice(
+			$notices[] = self::set_notice(
 				sprintf(
 					__( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ),
 					'<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
@@ -295,31 +282,27 @@ class SpeedGuard_Admin {
 				'warning'
 			);
 		}
-
-		//ok
 		if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
-			$notices = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
+			$notices[] = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
 		}
-		// ok
 		if ( get_transient( 'speedguard_notice_slow_down' ) ) {
-			$notices = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
+			$notices[] = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
 		}
-		//ok
 		if ( get_transient( 'speedguard_notice_delete_guarded_pages' ) ) {
-			$notices = self::set_notice( __( 'Selected pages are not guarded anymore!', 'speedguard' ), 'success' );
+			$notices[] = self::set_notice( __( 'Selected pages are not guarded anymore!', 'speedguard' ), 'success' );
 		}
-
-		//ok
 		if ( get_transient( 'speedguard_notice_already_in_queue' ) ) {
-			$notices = self::set_notice( __( 'This URL is currently in the queue.', 'speedguard' ), 'success' );
+			$notices[] = self::set_notice( __( 'This URL is currently in the queue.', 'speedguard' ), 'success' );
 		}
 
-
-
-		if ( isset( $notices ) ) {
-			echo wp_kses_post($notices);
+		// Display collected notices
+		if ( ! empty( $notices ) ) {
+			foreach ( $notices as $notice ) {
+				echo wp_kses_post( $notice );
+			}
 		}
 	}
+
 
 	public static function is_screen( $screens ) {
 		// screens: dashboard,settings,tests,plugins, clients
