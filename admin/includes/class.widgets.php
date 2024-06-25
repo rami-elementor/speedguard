@@ -83,12 +83,6 @@ class SpeedGuard_Widgets {
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-        //if PSI lcp value is not available it might mean it's localhost or staging, set transient to show notice
-        //if $overall_category_desktop = $speedguard_cwv_origin['desktop']['psi']['overall_category'];
-
-        if ( isset($speedguard_cwv_origin['desktop']['psi']['lcp']['average']) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N") ) {
-	        set_transient( 'speedguard_not_production_environment', true, 10 );
-        }
         // Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
 		foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {

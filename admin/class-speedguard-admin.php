@@ -61,6 +61,7 @@ class SpeedGuard_Admin {
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
 			add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
+			add_action( 'current_screen', [ $this, 'sg_check_environment' ] );
 			add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
 			add_action( 'transition_post_status', [ $this, 'guarded_page_unpublished_hook' ], 10, 3 );
 			add_action( 'before_delete_post', [ $this, 'before_delete_test_hook' ], 10, 1 );
@@ -82,7 +83,17 @@ class SpeedGuard_Admin {
 
 	}
 
-
+	// Check if this is localhost or staging
+    public static function sg_check_environment() {
+	    if (self::is_screen('tests')){
+		    // Retrieving data to display
+	    $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
+	    //if PSI lcp value is not available it might mean it's localhost or staging, set transient to show notice
+	    if ( isset( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'] ) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N" ) ) {
+		    set_transient( 'speedguard_not_production_environment', true, 10 );
+	    }
+    }
+    }
 	//Fired when post meta is deleted or updated
 
 	public static function capability() {
