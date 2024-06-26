@@ -610,6 +610,9 @@ class SpeedGuard_Admin {
 		$test_result_data_from_post = wp_unslash( $_POST['test_result_data'] ); // don't know where those slashes come from
 		$test_result_data           = json_decode( $test_result_data_from_post, true );
 
+		error_log($test_result_data_from_post);
+		error_log($test_result_data);
+
 		$mobile_data  = $test_result_data[0]['mobile'];
 		$desktop_data = $test_result_data[1]['desktop'];
 
@@ -768,11 +771,11 @@ class SpeedGuard_Admin {
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/js/speedguard-admin.js', [], $this->version, false );
 
 			//For making requests to API
-			wp_enqueue_script( 'speedguard_tests_module', plugin_dir_url( __FILE__ ) . 'assets/js/execute_tests.js', [], $this->version, true );
+			wp_enqueue_script( 'speedguard_tests_module', plugin_dir_url( __FILE__ ) . 'assets/js/execute_tests.js', [], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/execute_tests.js'), true );
 			wp_add_inline_script( 'speedguard_tests_module', 'const SG_Tests_Data = "data here"' );
 
 
-			wp_enqueue_script( 'speedguard_initiate_tests', plugin_dir_url( __FILE__ ) . 'assets/js/initiate_tests.js', [], $this->version, true );
+			wp_enqueue_script( 'speedguard_initiate_tests', plugin_dir_url( __FILE__ ) . 'assets/js/initiate_tests.js', [], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/initiate_tests.js'), true );
 
 			// Localize the script with your data
 			$data = [
