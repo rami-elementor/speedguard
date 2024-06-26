@@ -262,22 +262,19 @@ class SpeedGuard_Admin {
 				}
 
 			}
-
+			// Tests are being updated
+			if (get_transient('speedguard_tests_in_queue')) {
+				$notices[] = self::set_notice( __( 'Tests are being updated. You can stay on this page, or you can leave it -- tests will be running.', 'speedguard' ), 'success' );
+			}
+			if ( isset($_REQUEST['speedguard']) && $_REQUEST['speedguard'] === 'load_time_updated' ) {
+				$notices[] = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
+			}
 			// Show this notice only if there are no other notices
 			if ( get_transient( 'speedguard_not_production_environment' ) && empty( $notices ) ) {
 				$notices[] = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
 			}
-		}
 
-		// Try fix notices
-		//if ( get_transient( 'speedguard_notice_update_test' ) ) {
-		if ( get_transient( 'speedguard_waiting_tests' ) ) {
-			$notices[] = self::set_notice( __( 'Tests are being updated...', 'speedguard' ), 'success' );
 		}
-		if ( isset($_REQUEST['speedguard']) && $_REQUEST['speedguard'] === 'load_time_updated' ) {
-			$notices[] = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
-		}
-
 
 		if ( self::is_screen( 'settings' ) ) {
 			if ( ! empty( $_REQUEST['settings-updated'] ) && $_REQUEST['settings-updated'] === 'true' ) {
