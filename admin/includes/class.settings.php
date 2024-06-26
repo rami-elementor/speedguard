@@ -27,8 +27,11 @@ class SpeedGuard_Settings {
 		add_filter( 'cron_schedules', [ $this, 'speedguard_cron_schedules' ] );
 		// send report when load_time is updated by cron automatically
 		add_action( 'speedguard_update_results', [ $this, 'update_results_cron_function' ] );
-		add_action( 'speedguard_email_test_results', [ $this, 'email_test_results_function' ] );
-	}
+		if ( speedguard_fs()->is__premium_only() ) {
+			// send report when load_time is updated by cron automatically
+			add_action( 'speedguard_email_test_results', [ $this, 'email_test_results_function__premium_only' ] );
+		}
+        }
 
 	public static function global_test_type() {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
@@ -146,20 +149,12 @@ class SpeedGuard_Settings {
 		}
 	}
 
-	function email_test_results_function() {
+	function email_test_results_function__premium_only() {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$email_me_case      = $speedguard_options['email_me_case'];
-		// This IF block will be auto removed from the Free version.
-		if ( speedguard_fs()->is__premium_only() ) {
-			// This IF will be executed only if the user in a trial mode or have a valid license.
-			if ( speedguard_fs()->can_use_premium_code() ) {
 				if ( $email_me_case !== 'never' ) {
 					SpeedGuard_Notifications::test_results_email( 'regular' );
 				}
-			}
-		}
-
-
 	}
 
 	function speedguard_cron_schedules( $schedules ) {
@@ -191,7 +186,7 @@ class SpeedGuard_Settings {
 		echo '<input ' . esc_attr( $checked ) . ' id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']" type="checkbox" />';
 	}
 
-	function email_me_at_fn( $args ) {
+	function email_me_at_fn__premium_only( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$field_name = esc_attr( $args['label_for'] );
 		echo '<input id="speedguard_options[' . esc_attr( $field_name ) . ']" name="speedguard_options[' . esc_attr( $field_name ) . ']" type="text" size="40" value="' . esc_attr( $options[ $field_name ] ) . '"/>';
@@ -201,7 +196,7 @@ class SpeedGuard_Settings {
 		echo esc_html( $item );
 	}
 
-	function email_me_case_fn( $args ) {
+	function email_me_case_fn__premium_only( $args ) {
 		$options    = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		$field_name = esc_attr( $args['label_for'] );
 		$items      = [
@@ -268,14 +263,18 @@ class SpeedGuard_Settings {
 			$this,
 			'notifications_description_fn'
 		], 'speedguard' );
-		add_settings_field( 'speedguard_email_me_at', __( 'Send me report at', 'speedguard' ), [
-			$this,
-			'email_me_at_fn',
-		], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_at' ] );
-		add_settings_field( 'speedguard_email_me_case', '', [
-			$this,
-			'email_me_case_fn',
-		], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_case' ] );
+
+		if ( speedguard_fs()->is__premium_only() ) {
+            //Fields to set up email notifications
+			add_settings_field( 'speedguard_email_me_at', __( 'Send me report at', 'speedguard' ), [
+				$this,
+				'email_me_at_fn__premium_only',
+			], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_at' ] );
+			add_settings_field( 'speedguard_email_me_case', '', [
+				$this,
+				'email_me_case_fn__premium_only',
+			], 'speedguard', 'speedguard_reports_section', [ 'label_for' => 'email_me_case' ] );
+		}
 
 	}
 

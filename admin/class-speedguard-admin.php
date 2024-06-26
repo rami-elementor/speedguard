@@ -59,7 +59,9 @@ class SpeedGuard_Admin {
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.widgets.php';
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.settings.php';
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
-			require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
+			if ( speedguard_fs()->is__premium_only() ) {
+				require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
+			}
 			add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
 			add_action( 'current_screen', [ $this, 'sg_add_notices' ] );
 			add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
