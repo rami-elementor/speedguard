@@ -7,7 +7,7 @@ Stable tag: 2.0
 Requires PHP: 7.3.5
 License: GPLv2 or later 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
+Tracks Core Web Vitals for you. Every single day, for free.
 
 == Description ==
 **Google Core Web Vitals and PageSpeed Insights right in your WordPress dashboard.

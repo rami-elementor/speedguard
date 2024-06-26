@@ -521,6 +521,7 @@ class SpeedGuard_Tests {
 
 	public static function delete_test_fn( $guarded_page_id, $action = 'delete' ) {
 		$deleted = wp_delete_post( $guarded_page_id, true );
+        error_log('from:delete_test_fn Deleted CPT with ID: ' . $guarded_page_id);
 		if ( $deleted ) {
 			//delete from the queue if it is currently there
 			$current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );

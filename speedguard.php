@@ -74,7 +74,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			// Signal that SDK was initiated.
 			do_action( 'speedguard_fs_loaded' );
 
-            //Set EURO as default currency
+			//Set EURO as default currency
 			function speedguard_default_currency( $currency ) {
 				return 'eur';
 			}
@@ -89,7 +89,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 					'upgrade' => __( 'Track CWV on more websites.', 'speedguard' ),
 				) );
 			} // For customers in trial
-            elseif ( speedguard_fs()->is_trial() ) {
+			elseif ( speedguard_fs()->is_trial() ) {
 				speedguard_fs()->override_i18n( array(
 					'upgrade' => __( 'Keep email notifications going', 'speedguard' ),
 				) );
@@ -108,6 +108,7 @@ if ( function_exists( 'speedguard_fs' ) ) {
 				$message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link
 			) {
 				$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+
 				/* translators:
                 1: User's first name
                 2: Plugin title
@@ -115,11 +116,12 @@ if ( function_exists( 'speedguard_fs' ) ) {
                 4: Site link
                 5: Freemius link
                 */
+
 				return $picture . sprintf( '<p>' . __( 'Hi there!' ) . '</p>' . '<p>' . __( 'My name is Sabrina.' ) . '</p>' . '<p>' . __( 'Please help me improve %2$s!' ) . '<br>' . __( 'I would like to make this plugin more compatible with the sites like yours, and make it more useful.' ) . '<br>' . __( 'If you opt-in, some basic WordPress environment info will be shared.' ) . '<br>' . __( 'No guarantee, but I might also send you email for security & feature updates, educational content, and occasional offers.' ) . '</p>' . '<p>' . __( 'If you skip this, that\'s okay! %2$s will still work just fine.', 'speedguard' ) . '</p>', $user_first_name, '<b>' . $plugin_title . '</b>', '<b>' . $user_login . '</b>', $site_link, $freemius_link );
 			}
 
 
-            //Hide Contact me submenu for free users
+			//Hide Contact me submenu for free users
 			function speedguard_is_submenu_visible( $is_visible, $menu_id ) {
 				if ( $menu_id !== 'contact' && $menu_id !== 'account' ) {
 					return $is_visible;
@@ -134,15 +136,14 @@ if ( function_exists( 'speedguard_fs' ) ) {
 		}
 	}
 
-	// SpeedGuard main file logic ...
 
+	// SpeedGuard main file logic ...
 	function activate_speedguard( $network_wide ) {
 		// Network-wide  activation is a PRO feature. If tries to activate Network wide, stop:
 		if ( is_multisite() && $network_wide && ( ! defined( 'SPEEDGUARD_PRO' ) ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 			wp_die( esc_html__( 'Network activation is not available at the moment. But feel free to activate this plugin on per-site basis!', 'speedguard' ) );
 		}
-
 		// Activate in all other cases
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-speedguard-activator.php';
 		Speedguard_Activator::activate();
@@ -155,113 +156,12 @@ if ( function_exists( 'speedguard_fs' ) ) {
 	function deactivate_speedguard() {
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-speedguard-deactivator.php';
 		Speedguard_Deactivator::deactivate();
+		//	speedguard_delete_data();
 	}
 
 	register_activation_hook( __FILE__, 'activate_speedguard' );
 	register_deactivation_hook( __FILE__, 'deactivate_speedguard' );
 
-
-	register_uninstall_hook( __FILE__, 'uninstall_speedguard' );
-
-	function uninstall_speedguard() {
-		// Uninstall logic here
-		require_once plugin_dir_path( __FILE__ ) . '/admin/class-speedguard-admin.php';
-		require_once plugin_dir_path( __FILE__ ) . '/admin/includes/class.tests-table.php';
-
-// Delete all data
-		function speedguard_delete_data() {
-
-			// Delete CPTs
-			$guarded_pages = get_posts( [
-				'post_type'      => [ 'guarded-page'], // SpeedGuard_Admin::$cpt_name does not work here TODO Maybe move it to constant
-				'post_status'    => 'any',
-				'posts_per_page' => - 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-			] );
-
-			foreach ( $guarded_pages as $guarded_page_id ) {
-				SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
-			}
-
-			// Delete posts meta
-			$guarded_posts = get_posts( [
-				'post_type'     => 'any',
-				'post_status'   => 'any',
-				'fields'        => 'ids',
-				'meta_query'    => [
-					'relation' => 'AND',
-					[
-						'key'     => 'speedguard_on',
-						'compare' => 'EXISTS',
-					],
-				],
-				'no_found_rows' => true,
-			] );
-
-			foreach ( $guarded_posts as $guarded_post_id ) {
-				delete_post_meta( $guarded_post_id, 'speedguard_on' );
-			}
-
-			// Delete terms meta
-			$the_terms = get_terms( [
-				'fields'     => 'ids',
-				'hide_empty' => false,
-				'meta_query' => [
-					[
-						'key'     => 'speedguard_on',
-						'compare' => 'EXISTS',
-					],
-				],
-			] );
-
-			foreach ( $the_terms as $term_id ) {
-				delete_term_meta( $term_id, 'speedguard_on' );
-			}
-
-			// Delete options
-			$speedguard_options = [
-				'speedguard_options',
-				'sg_origin_results'
-			];
-			foreach ( $speedguard_options as $option_name ) {
-				delete_option( $option_name );
-				if ( is_multisite() ) {
-					delete_site_option( $option_name );
-				}
-			}
-
-			// Delete non-expiring transients (auto-expiring will be deleted automatically)
-			$speedguard_transients = [
-				'speedguard_tests_in_queue',
-				'speedguard_test_in_progress',
-				'speedguard_sending_request_now',
-				'speedguard_tests_count',
-				'speedguard_no_cwv_data'
-			];
-			foreach ( $speedguard_transients as $speedguard_transient ) {
-				delete_transient( $speedguard_transient );
-			}
-
-			// Delete CRON jobs
-			wp_clear_scheduled_hook( 'speedguard_update_results' );
-			wp_clear_scheduled_hook( 'speedguard_email_test_results' );
-		}
-
-// Search all blogs if Multisite
-		if ( is_multisite() ) {
-			$sites = get_sites();
-			foreach ( $sites as $site ) {
-				$blog_id = $site->blog_id;
-				switch_to_blog( $blog_id );
-				speedguard_delete_data();
-				restore_current_blog();
-			}
-		} else {
-			speedguard_delete_data();
-		}
-
-	}
 
 	/**
 	 * The core plugin class that is used to define internationalization,
@@ -286,13 +186,112 @@ if ( function_exists( 'speedguard_fs' ) ) {
 	}
 
 	run_speedguard();
+	// Add uninstall hook
+	speedguard_fs()->add_action( 'after_uninstall', 'speedguard_fs_uninstall_cleanup' );
+
 }
 
 
+function speedguard_fs_uninstall_cleanup() {
+	// Uninstall logic here
+	require_once plugin_dir_path( __FILE__ ) . '/admin/class-speedguard-admin.php';
+	require_once plugin_dir_path( __FILE__ ) . '/admin/includes/class.tests-table.php';
+	speedguard_delete_data();
+}
 
+function speedguard_delete_data() {
+	// Delete CPTs
+	$guarded_pages = get_posts( [
+		'post_type'      => [ 'guarded-page' ],
+		'post_status'    => 'any',
+		'posts_per_page' => - 1,
+		'fields'         => 'ids',
+		'no_found_rows'  => true,
+	] );
 
+	error_log( 'Deleting CPTs: ' . print_r( $guarded_pages, true ) );
 
+	foreach ( $guarded_pages as $guarded_page_id ) {
+		SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
+		error_log( 'Deleted CPT with ID: ' . $guarded_page_id );
+	}
 
+	// Delete posts meta
+	$guarded_posts = get_posts( [
+		'post_type'     => 'any',
+		'post_status'   => 'any',
+		'fields'        => 'ids',
+		'meta_query'    => [
+			'relation' => 'AND',
+			[
+				'key'     => 'speedguard_on',
+				'compare' => 'EXISTS',
+			],
+		],
+		'no_found_rows' => true,
+	] );
 
+	error_log( 'Deleting posts meta: ' . print_r( $guarded_posts, true ) );
 
+	foreach ( $guarded_posts as $guarded_post_id ) {
+		delete_post_meta( $guarded_post_id, 'speedguard_on' );
+		error_log( 'Deleted post meta for post with ID: ' . $guarded_post_id );
+	}
 
+	// Delete terms meta
+	$the_terms = get_terms( [
+		'fields'     => 'ids',
+		'hide_empty' => false,
+		'meta_query' => [
+			[
+				'key'     => 'speedguard_on',
+				'compare' => 'EXISTS',
+			],
+		],
+	] );
+
+	error_log( 'Deleting terms meta: ' . print_r( $the_terms, true ) );
+
+	foreach ( $the_terms as $term_id ) {
+		delete_term_meta( $term_id, 'speedguard_on' );
+		error_log( 'Deleted term meta for term with ID: ' . $term_id );
+	}
+
+	// Delete options
+	$speedguard_options = [
+		'speedguard_options',
+		'sg_origin_results'
+	];
+
+	error_log( 'Deleting options: ' . print_r( $speedguard_options, true ) );
+
+	foreach ( $speedguard_options as $option_name ) {
+		delete_option( $option_name );
+		if ( is_multisite() ) {
+			delete_site_option( $option_name );
+		}
+		error_log( 'Deleted option: ' . $option_name );
+	}
+
+	// Delete non-expiring transients (auto-expiring will be deleted automatically)
+	$speedguard_transients = [
+		'speedguard_tests_in_queue',
+		'speedguard_test_in_progress',
+		'speedguard_sending_request_now',
+		'speedguard_tests_count',
+		'speedguard_no_cwv_data'
+	];
+
+	error_log( 'Deleting transients: ' . print_r( $speedguard_transients, true ) );
+
+	foreach ( $speedguard_transients as $speedguard_transient ) {
+		delete_transient( $speedguard_transient );
+		error_log( 'Deleted transient: ' . $speedguard_transient );
+	}
+
+	// Delete CRON jobs
+	wp_clear_scheduled_hook( 'speedguard_update_results' );
+	wp_clear_scheduled_hook( 'speedguard_email_test_results' );
+
+	error_log( 'Deleted CRON jobs: speedguard_update_results, speedguard_email_test_results' );
+}
