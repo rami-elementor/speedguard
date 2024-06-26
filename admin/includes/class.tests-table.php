@@ -384,8 +384,9 @@ class SpeedGuard_Tests {
 
 		// Process based on guarded status
 		if ( $already_guarded && $existing_test_id && 'publish' === get_post_status( $existing_test_id ) ) {
-			$result = self::update_test_fn( $existing_test_id );
-			set_transient( 'speedguard_notice_update_test', true, 10 );
+			set_transient( 'speedguard_notice_update_test', true, 20 );
+            $result = self::update_test_fn( $existing_test_id );
+
 		} else {
 			$result = self::create_test_fn( $url_to_add, $guarded_item_type, $guarded_item_id );
 			set_transient( 'speedguard_notice_create_test', true, 5 );
@@ -458,7 +459,7 @@ class SpeedGuard_Tests {
 			set_transient( 'speedguard_tests_in_queue', wp_json_encode( array_unique( $current_tests_array ) ) );
 			update_post_meta( $guarded_page_id, 'sg_test_result', 'waiting' );
 			SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', 'waiting' );
-			$response = 'speedguard_test_being_updated';
+			$response = 'test_being_updated';
 		}
 
 
