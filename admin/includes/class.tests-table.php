@@ -666,7 +666,7 @@ class SpeedGuard_Tests {
 		$args = [
 			'post_type'              => SpeedGuard_Admin::supported_post_types(),
 			'post_status'            => 'publish',
-			'posts_per_page'         => 3,
+			'posts_per_page'         => 100, //limit to 100 to avoid performance issues TODO: needs testing
 			'fields'                 => 'ids',
 			's'                      => $search_term,
 			'no_found_rows'          => true,
