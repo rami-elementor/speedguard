@@ -610,8 +610,6 @@ class SpeedGuard_Admin {
 		$test_result_data_from_post = wp_unslash( $_POST['test_result_data'] ); // don't know where those slashes come from
 		$test_result_data           = json_decode( $test_result_data_from_post, true );
 
-		error_log($test_result_data_from_post);
-		error_log($test_result_data);
 
 		$mobile_data  = $test_result_data[0]['mobile'];
 		$desktop_data = $test_result_data[1]['desktop'];
