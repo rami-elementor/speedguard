@@ -221,13 +221,22 @@ class SpeedGuard_Admin {
 			}
 		}
 
-		// Plugins screen
-		if ( self::is_screen( 'plugins,tests' ) ) {
-			// Homepage was added/updated on activation
-			if ( get_transient( 'speedguard-notice-activation' ) ) {
+		if ( get_transient( 'speedguard-notice-activation' ) ) {
+			if ( self::is_screen( 'tests' ) ) {
+				$message = __( 'Homepage performance test has just started. Add some other pages below!', 'speedguard' );
+				$notices[] = self::set_notice( $message, 'success' );
+			}
+			else {
 				$message = sprintf( __( 'Homepage performance test has just started. Would you like to %1$stest some other pages%2$s as well?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
 				$notices[] = self::set_notice( $message, 'success' );
 			}
+
+		}
+
+		// Plugins screen
+		if ( self::is_screen( 'plugins,tests' ) ) {
+			// Homepage was added/updated on activation
+
 			// TODO: On plugin deactivation
 			if ( self::is_screen( 'plugins' ) && get_transient( 'speedguard-notice-deactivation' ) ) {
 				// $notices[] = SpeedGuard_Admin::set_notice(__('Shoot me an email if something didn\'t work as expected','speedguard'),'warning' );
