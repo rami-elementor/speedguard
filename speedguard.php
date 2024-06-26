@@ -208,12 +208,8 @@ function speedguard_delete_data() {
 		'fields'         => 'ids',
 		'no_found_rows'  => true,
 	] );
-
-	error_log( 'Deleting CPTs: ' . print_r( $guarded_pages, true ) );
-
 	foreach ( $guarded_pages as $guarded_page_id ) {
 		SpeedGuard_Tests::delete_test_fn( $guarded_page_id );
-		error_log( 'Deleted CPT with ID: ' . $guarded_page_id );
 	}
 
 	// Delete posts meta
@@ -231,11 +227,8 @@ function speedguard_delete_data() {
 		'no_found_rows' => true,
 	] );
 
-	error_log( 'Deleting posts meta: ' . print_r( $guarded_posts, true ) );
-
 	foreach ( $guarded_posts as $guarded_post_id ) {
 		delete_post_meta( $guarded_post_id, 'speedguard_on' );
-		error_log( 'Deleted post meta for post with ID: ' . $guarded_post_id );
 	}
 
 	// Delete terms meta
@@ -250,8 +243,6 @@ function speedguard_delete_data() {
 		],
 	] );
 
-	error_log( 'Deleting terms meta: ' . print_r( $the_terms, true ) );
-
 	foreach ( $the_terms as $term_id ) {
 		delete_term_meta( $term_id, 'speedguard_on' );
 		error_log( 'Deleted term meta for term with ID: ' . $term_id );
@@ -263,14 +254,12 @@ function speedguard_delete_data() {
 		'sg_origin_results'
 	];
 
-	error_log( 'Deleting options: ' . print_r( $speedguard_options, true ) );
 
 	foreach ( $speedguard_options as $option_name ) {
 		delete_option( $option_name );
 		if ( is_multisite() ) {
 			delete_site_option( $option_name );
 		}
-		error_log( 'Deleted option: ' . $option_name );
 	}
 
 	// Delete non-expiring transients (auto-expiring will be deleted automatically)
@@ -282,16 +271,12 @@ function speedguard_delete_data() {
 		'speedguard_no_cwv_data'
 	];
 
-	error_log( 'Deleting transients: ' . print_r( $speedguard_transients, true ) );
-
 	foreach ( $speedguard_transients as $speedguard_transient ) {
 		delete_transient( $speedguard_transient );
-		error_log( 'Deleted transient: ' . $speedguard_transient );
 	}
 
 	// Delete CRON jobs
 	wp_clear_scheduled_hook( 'speedguard_update_results' );
 	wp_clear_scheduled_hook( 'speedguard_email_test_results' );
-
-	error_log( 'Deleted CRON jobs: speedguard_update_results, speedguard_email_test_results' );
+	
 }
