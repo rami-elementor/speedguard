@@ -121,7 +121,7 @@ class SpeedGuard_Admin {
 	}
 
 	public static function supported_post_types() {
-		$args                 = [ 'publicly_queryable' => true ];
+		$args                 = [ 'publicly_queryable' => true, 'show_ui' => true, 'show_in_menu' => true, 'show_in_nav_menus' => true, 'show_in_admin_bar' => true, 'exclude_from_search' => false];
 		$output               = 'names';
 		$operator             = 'and';
 		$supported_post_types = get_post_types( $args, $output, $operator );
@@ -266,12 +266,13 @@ class SpeedGuard_Admin {
 			if (get_transient('speedguard_tests_in_queue')) {
 				$notices[] = self::set_notice( __( 'Tests are being updated. You can stay on this page, or you can leave it -- tests will be running.', 'speedguard' ), 'success' );
 			}
-			if ( isset($_REQUEST['speedguard']) && $_REQUEST['speedguard'] === 'load_time_updated' ) {
-				$notices[] = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
-			}
+
 			// Show this notice only if there are no other notices
 			if ( get_transient( 'speedguard_not_production_environment' ) && empty( $notices ) ) {
 				$notices[] = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
+			}
+			elseif ( isset($_REQUEST['speedguard']) && $_REQUEST['speedguard'] === 'load_time_updated' ) {
+				$notices[] = self::set_notice( __( 'Results have been updated!', 'speedguard' ), 'success' );
 			}
 
 		}
