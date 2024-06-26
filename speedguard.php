@@ -107,7 +107,9 @@ if ( function_exists( 'speedguard_fs' ) ) {
 			function speedguard_fs_custom_connect_message_on_update(
 				$message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link
 			) {
-				$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"><div id="szpic"></div></a>';
+				$sz_image_url = plugin_dir_url(__FILE__) . 'admin/assets/images/sabrina.jpg';
+				$picture = '<a href="https://sabrinazeidan.com/?utm_source=speedguard&utm_medium=sidebar&utm_campaign=avatar" target="_blank"
+><div id="szpic" style="background-image: url('.$sz_image_url.'); background-size: cover; height: 75px; width: 75px; border-radius: 50%; overflow: hidden; float: right; margin: 1em;"></div></a>';
 
 				/* translators:
                 1: User's first name
