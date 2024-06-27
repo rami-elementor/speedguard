@@ -21,8 +21,13 @@
 }
 
 #tests-list-meta-box td.column-guarded_page_title {
-    min-width: 250px;
+    min-width: 100px;
+    max-width: 200px;
+    font-size: 0.9em;
 }
+
+
+
 
 #tests-list-meta-box .column-report_date {
     min-width: 90px;
@@ -56,6 +61,10 @@
 
 
 /** Results Page**/
+
+#tests-list-meta-box table td:not(.column-guarded_page_title) {
+    white-space: nowrap;
+}
 /** Distinguish visually mobile results from Desktop. There is probably a better way to do this **/
 td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px solid grey;}
 

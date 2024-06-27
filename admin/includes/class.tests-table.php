@@ -341,13 +341,13 @@ class SpeedGuard_Tests {
 
 		// Check domain and PRO version
 		$entered_domain = wp_parse_url( $url_to_add );
-
+        /** Comment for testing
 		if ( ( $_SERVER['SERVER_NAME'] !== $entered_domain['host'] ) && ( ! defined( 'SPEEDGUARD_PRO' ) || SPEEDGUARD_PRO === false ) ) {
 			set_transient( 'speedguard_notice_add_new_url_error_not_current_domain', true, 5 );
 
 			return;
 		}
-
+        */
 		// Determine guarded item type
 		if ( empty( $guarded_item_type ) ) {
 			if ( trailingslashit( $url_to_add ) === trailingslashit( get_site_url() ) ) {
@@ -466,6 +466,8 @@ class SpeedGuard_Tests {
 		return $response;
 	}
 
+
+    // Create new test
 	public static function create_test_fn( $url_to_add = '', $guarded_item_type = '', $guarded_item_id = '' ) {
 		if ( empty( $url_to_add ) ) {
 			return;
@@ -517,7 +519,7 @@ class SpeedGuard_Tests {
 
 
 	/*
-	* Create a new test
+	* Delete test
 	*/
 
 	public static function delete_test_fn( $guarded_page_id, $action = 'delete' ) {
