@@ -7,7 +7,7 @@
     background-size: 18px auto;
 }
 
-#tests-list-meta-box .speedguard-waiting, .toplevel_page_speedguard_tests_cwv_widget tbody td .speedguard-waiting { {
+#tests-list-meta-box .speedguard-waiting, .toplevel_page_speedguard_tests_cwv_widget tbody td .speedguard-waiting { /* Waiting spinner */
     background-image: url(../images/loading.gif);
     height: 18px;
     width: 18px;

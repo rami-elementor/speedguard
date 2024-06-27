@@ -344,8 +344,7 @@ class SpeedGuard_Tests {
 
 		if ( ( $_SERVER['SERVER_NAME'] !== $entered_domain['host'] ) && ( ! defined( 'SPEEDGUARD_PRO' ) || SPEEDGUARD_PRO === false ) ) {
 			set_transient( 'speedguard_notice_add_new_url_error_not_current_domain', true, 5 );
-
-			return;
+            return;
 		}
         // Determine guarded item type
 		if ( empty( $guarded_item_type ) ) {
@@ -559,7 +558,7 @@ class SpeedGuard_Tests {
 	        $link = sprintf(
 		        '<a href="%s">%s</a>',
 		        admin_url('admin.php?page=speedguard_settings'),
-		        __('email notification', 'speedguard')
+		        __('email notifications', 'speedguard')
 	        );
 
 	        $note = sprintf(

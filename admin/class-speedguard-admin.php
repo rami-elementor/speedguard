@@ -63,11 +63,10 @@ class SpeedGuard_Admin {
 				require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
 			}
 			add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
-			add_action( 'current_screen', [ $this, 'sg_add_notices' ] );
 			add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
 			add_action( 'transition_post_status', [ $this, 'guarded_page_unpublished_hook' ], 10, 3 );
 			add_action( 'before_delete_post', [ $this, 'before_delete_test_hook' ], 10, 1 );
-			// MU Headers alredy sent fix
+			// MU Headers already sent fix
 			add_action( 'init', [ $this, 'app_output_buffer' ] );
 			// Add removable query args
 			add_filter( 'removable_query_args', [ $this, 'removable_query_args' ] );
@@ -85,45 +84,9 @@ class SpeedGuard_Admin {
 
 	}
 
-	//Add a few admin notices on Tests page
-	public static function sg_add_notices() {
-		if ( self::is_screen( 'tests' ) ) {
-
-			$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-			if ( ! is_array( $speedguard_cwv_origin ) ) {
-				return; // or handle the error appropriately
-			}
-
-			// Check if this is localhost or staging
-			// If PSI lcp value is not available, it might mean it's localhost or staging, set transient to show notice
-			if ( isset( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'] ) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N" ) ) {
-				set_transient( 'speedguard_not_production_environment', true, 10 );
-			}
-			// Check if tests are finished, but no CWV data available (and production) -- then suggest PSI
-			// Tests are just done and it's production
-			elseif ( get_transient( 'speedguard_last_test_is_done' ) && ! get_transient( 'speedguard_not_production_environment' ) ) {
-				$sg_test_type          = SpeedGuard_Settings::global_test_type();
-				$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-
-				// If CWV origin exists (tests finished) but it's N/A
-				if ( isset( $speedguard_cwv_origin['mobile']['cwv']['lcp'] ) ) {
-					$mobile_lcp = $speedguard_cwv_origin['mobile']['cwv']['lcp'];
-					if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' ) ) {
-						set_transient( 'speedguard_no_cwv_data', true, 10 );
-					}
-				} //TODO take any test and compare it LCP, CLS and INP with origin
 
 
-				else {
-					// Handle the case where the keys are missing
-					// Example: Log the error or set a different transient
-					error_log( 'Expected keys missing in $speedguard_cwv_origin' );
-				}
-			}
-		}
-	}
-
-	//Fired when post meta is deleted or updated
+	// Check which SpeedGuard screen is currently displayed
 
 	public static function is_screen( $screens ) {
 		// screens: dashboard,settings,tests,plugins, clients
@@ -264,10 +227,7 @@ class SpeedGuard_Admin {
 		$global_test_type = SpeedGuard_Settings::global_test_type();
 
 		// All screens
-		 if ( !self::is_screen( 'tests') && (int) get_transient( 'speedguard_tests_count' ) === 1 ) {
-			$message   = sprintf( __( 'You only have the performance of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
-			$notices[] = self::set_notice( $message, 'warning' );
-		}
+
 
 		// On activation
 		if ( get_transient( 'speedguard-notice-activation' ) ) {
@@ -279,6 +239,10 @@ class SpeedGuard_Admin {
 				$notices[] = self::set_notice( $message, 'success' );
 			}
 
+		}
+		elseif ( ( !self::is_screen( 'tests,settings') && (int) get_transient( 'speedguard_tests_count' ) === 1 )) {
+			$message   = sprintf( __( 'You only have the performance of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
+			$notices[] = self::set_notice( $message, 'warning' );
 		}
 
 
@@ -324,7 +288,7 @@ class SpeedGuard_Admin {
 
 
 			// Notices about environment
-			// There is no PSI data -- most likeley it's not a production environment
+			// There is no PSI data -- most likely it's not a production environment
 			if ( get_transient( 'speedguard_not_production_environment' ) ) {
 				$notices[] = self::set_notice( __( 'Is this a live website? Tests can\'t be executed on staging or localhost. Install it on the live website.', 'speedguard' ), 'error' );
 			} //there is PSI, but no CWV
@@ -717,43 +681,39 @@ class SpeedGuard_Admin {
 			$update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin );
 
 
-			// Compare CWV origin and test results CWV values for moibile. if htey are the same -- set transient to show the notice that there is no Google data available for separate URLs, only for Origin
-			// Assuming $both_devices_values and $both_devices_values_origin are defined as in your question
+			// Set environment transients here:
+			// Check if PSI for current test is available. If not -- probably it's not a production environment
+			if ( !is_array($both_devices_values['desktop']['psi']['lcp'] ) && !is_array
+				($both_devices_values['mobile']['psi']['lcp'] )) {
+				set_transient( 'speedguard_not_production_environment', true, 30 );
+			} else {
+				delete_transient( 'speedguard_not_production_environment' );
+			}
 
-			// Extract CWV mobile data from both arrays
-			$mobile_cwv_values = [
-				'lcp' => [
-					'both' => [
-						'mobile' => $both_devices_values['mobile']['cwv']['lcp']['percentile'],
-						'origin' => $both_devices_values_origin['mobile']['cwv']['lcp']['percentile']
-					]
-				],
-				'cls' => [
-					'both' => [
-						'mobile' => $both_devices_values['mobile']['cwv']['cls']['percentile'],
-						'origin' => $both_devices_values_origin['mobile']['cwv']['cls']['percentile']
-					]
-				],
-				'inp' => [
-					'both' => [
-						'mobile' => $both_devices_values['mobile']['cwv']['inp']['percentile'],
-						'origin' => $both_devices_values_origin['mobile']['cwv']['inp']['percentile']
-					]
-				]
-			];
+			//Check if CWV for Origin is available. If not -- set transient
+			if ( !is_array($both_devices_values_origin['desktop']['cwv']['lcp'] ) && !is_array
+				($both_devices_values_origin['mobile']['cwv']['lcp'] )) {
+				set_transient( 'speedguard_no_cwv_data', true, 30 );
+			} else {
+				delete_transient( 'speedguard_no_cwv_data' );
+				//CWV for origin is available. Is it available for individual URLs?
+				// Compare CWV origin and test results CWV values for mobile. If they are the same -- set transient to
+				// show the notice that there is no Google data available for separate URLs, only for Origin
+				$single_url_lcp   = $both_devices_values['mobile']['cwv']['lcp']['percentile'];
+				$origin_lcp = $both_devices_values_origin['mobile']['cwv']['lcp']['percentile'];
 
-			// Compare CWV mobile values
-			foreach ( [ 'lcp', 'cls', 'inp' ] as $metric ) {
-				$value_both   = $mobile_cwv_values[ $metric ]['both']['mobile'];
-				$value_origin = $mobile_cwv_values[ $metric ]['both']['origin'];
-
-				 // Perform comparison
-                if ( (!str_contains( $value_both, "N")) && ($value_both === $value_origin) ) {
-					set_transient( 'speedguard_notice_cwv_mobile_match', true );
+				// Perform comparison. If Origin CWV is available, but the same as the single URL CWV, set transient
+				if ( (is_int($origin_lcp)) && ($origin_lcp === $single_url_lcp) ) {
+					set_transient( 'speedguard_notice_cwv_mobile_match', true, 30);
 				} else {
+					//delete it if it was set before, but then data became available
 					delete_transient( 'speedguard_notice_cwv_mobile_match', true );
 				}
+
 			}
+
+
+
 
 
 		} else {
@@ -769,6 +729,11 @@ class SpeedGuard_Admin {
 		wp_send_json( $response );
 
 	}
+
+
+
+
+
 
 	public function speedguard_actions_links( array $actions ) {
 		return array_merge( [
