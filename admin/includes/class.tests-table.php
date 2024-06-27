@@ -651,7 +651,8 @@ class SpeedGuard_Tests {
 	}
 
 	function speedguard_search_function( $search_term ) {
-		$meta_query = [
+		// Exclude those that are already guarded
+        $meta_query = [
 			'relation' => 'OR',
 			[
 				'key'     => 'speedguard_on',
@@ -665,6 +666,7 @@ class SpeedGuard_Tests {
 			],
 		];
 
+        // Single posts of different post types
 		$args = [
 			'post_type'              => SpeedGuard_Admin::supported_post_types(),
 			'post_status'            => 'publish',
@@ -677,7 +679,6 @@ class SpeedGuard_Tests {
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
 		];
-
 		$this_blog_found_posts = get_posts( $args );
 
 		$temp = [];
@@ -693,10 +694,14 @@ class SpeedGuard_Tests {
 			$posts[] = $temp;
 		}
 
-		// Include Terms too
+		// Get public taxonomies
+		$public_taxonomies = get_taxonomies( [ 'public' => true ] );
+
+		// Now include Terms too
 		$the_terms = get_terms( [
+			    'taxonomy'   => $public_taxonomies,
 				'name__like' => $search_term,
-				'hide_empty' => true,
+                'hide_empty' => true,
 				'meta_query' => $meta_query,
 			] );
 		if ( count( $the_terms ) > 0 ) {
@@ -708,6 +713,7 @@ class SpeedGuard_Tests {
 					'label'     => $term->name,
 					'type'      => 'archive',
 				];
+
 				$posts[] = $temp;
 			}
 		}

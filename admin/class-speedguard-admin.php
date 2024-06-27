@@ -170,15 +170,10 @@ class SpeedGuard_Admin {
 	}
 
 
-	// Fn to count average PSI values for all tests, returns PSI only
-
+	//Post types that will be queriable in autocomeplete field
 	public static function supported_post_types() {
 		$args                 = [
 			'publicly_queryable'  => true,
-			'show_ui'             => true,
-			'show_in_menu'        => true,
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
 			'exclude_from_search' => false
 		];
 		$output               = 'names';
