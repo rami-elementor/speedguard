@@ -225,16 +225,15 @@ class SpeedGuard_Admin {
 
 		// All screens
 		// Dashboard and SpeedGuard Settings screens
-		if ( self::is_screen( 'settings,dashboard' ) ) {
 			if ( (int) get_transient( 'speedguard_tests_count' ) === 1 ) { // TODO: set transient/user meta on dismissal action
 				$message = sprintf( __( 'You only have the performance of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
 				$notices[] = self::set_notice( $message, 'warning' );
 			}
-		}
+		
 
 		if ( get_transient( 'speedguard-notice-activation' ) ) {
 			if ( self::is_screen( 'tests' ) ) {
-				$message = __( 'Homepage performance test has just started. Add some other pages below!', 'speedguard' );
+				$message = __( 'Homepage performance test has just started. Watch the video to make the most use of this plugin ->', 'speedguard' );
 				$notices[] = self::set_notice( $message, 'success' );
 			}
 			else {
