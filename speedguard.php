@@ -247,7 +247,7 @@ function speedguard_delete_data() {
 
 	foreach ( $the_terms as $term_id ) {
 		delete_term_meta( $term_id, 'speedguard_on' );
-		error_log( 'Deleted term meta for term with ID: ' . $term_id );
+	
 	}
 
 	// Delete options

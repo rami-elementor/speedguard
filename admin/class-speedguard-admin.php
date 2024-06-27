@@ -617,8 +617,8 @@ class SpeedGuard_Admin {
 		$test_result_data           = json_decode( $test_result_data_from_post, true );
 
 
-		$mobile_data  = $test_result_data[0]['mobile'];
-		$desktop_data = $test_result_data[1]['desktop'];
+		$mobile_data = isset($test_result_data[0]['mobile']) ? $test_result_data[0]['mobile'] : null;
+		$desktop_data = isset($test_result_data[1]['desktop']) ? $test_result_data[1]['desktop'] : null;
 
 
 		$both_devices_values = [
