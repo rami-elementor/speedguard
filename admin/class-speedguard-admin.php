@@ -314,7 +314,8 @@ class SpeedGuard_Admin {
 
 			// Notices about queue status when tests are running
 			// Tests are being updated
-			if ( get_transient( 'speedguard_tests_in_queue' ) ) {
+			// Tests are being updated, but not the first run after activation
+            if ( get_transient( 'speedguard_tests_in_queue' ) && !get_transient( 'speedguard-notice-activation' )) {
 				$notices[] = self::set_notice( __( 'Tests are being updated. You can stay on this page, or you can leave it -- tests will be running.', 'speedguard' ), 'success' );
 			} // When tests are finished
 			elseif ( get_transient( 'speedguard_last_test_is_done' ) or ( isset( $_REQUEST['speedguard'] ) && $_REQUEST['speedguard'] === 'load_time_updated' ) ) {
@@ -746,8 +747,8 @@ class SpeedGuard_Admin {
 				$value_both   = $mobile_cwv_values[ $metric ]['both']['mobile'];
 				$value_origin = $mobile_cwv_values[ $metric ]['both']['origin'];
 
-				// Perform comparison
-				if ( $value_both === $value_origin ) {
+				 // Perform comparison
+                if ( (!str_contains( $value_both, "N")) && ($value_both === $value_origin) ) {
 					set_transient( 'speedguard_notice_cwv_mobile_match', true );
 				} else {
 					delete_transient( 'speedguard_notice_cwv_mobile_match', true );
