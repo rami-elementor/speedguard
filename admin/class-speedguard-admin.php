@@ -264,7 +264,7 @@ class SpeedGuard_Admin {
 		$global_test_type = SpeedGuard_Settings::global_test_type();
 
 		// All screens
-		if ( (int) get_transient( 'speedguard_tests_count' ) === 1 ) { // TODO: set transient/user meta on dismissal action
+		 if ( !self::is_screen( 'tests') && (int) get_transient( 'speedguard_tests_count' ) === 1 ) {
 			$message   = sprintf( __( 'You only have the performance of 1 page monitored currently. Would you like to %1$sadd other pages%2$s to see the whole picture of the site speed?', 'speedguard' ), '<a href="' . self::speedguard_page_url( 'tests' ) . '">', '</a>' );
 			$notices[] = self::set_notice( $message, 'warning' );
 		}
