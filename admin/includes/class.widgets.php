@@ -4,7 +4,6 @@
  *   Class responsible for adding metaboxes
  */
 
-
 class SpeedGuard_Widgets {
 	public function __construct() {
 		$options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
@@ -82,9 +81,9 @@ class SpeedGuard_Widgets {
 	/**
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
-	public static function origin_results_widget_function($post = '', $args = '') {
+	public static function origin_results_widget_function( $post = '', $args = '' ) {
 		// Retrieving data to display
-		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
+		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 
 		// Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
@@ -93,23 +92,22 @@ class SpeedGuard_Widgets {
 		$mobile_lcp = $desktop_lcp = $mobile_cls = $desktop_cls = $mobile_inp = $desktop_inp = '';
 
 		// Loop through metrics array to populate variables
-		foreach (SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types) {
-			foreach ($test_types as $test_type => $metrics) {
-				if ($test_type === $sg_test_type) { // Prepare metrics only for the needed test type
-					foreach ($metrics as $metric) {
-						$current_metric = $device . '_' . $metric;
-						$$current_metric = SpeedGuard_Widgets::single_metric_display($speedguard_cwv_origin, $device, $test_type, $metric);
+		foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
+			foreach ( $test_types as $test_type => $metrics ) {
+				if ( $test_type === $sg_test_type ) { // Prepare metrics only for the needed test type
+					foreach ( $metrics as $metric ) {
+						$current_metric  = $device . '_' . $metric;
+						$$current_metric = SpeedGuard_Widgets::single_metric_display( $speedguard_cwv_origin, $device, $test_type, $metric );
 						// Check if the dynamic variable is defined (for cases when new metrics are added)
-						$$current_metric = isset($$current_metric) ? $$current_metric : '';
+						$$current_metric = isset( $$current_metric ) ? $$current_metric : '';
 					}
 				}
 			}
 		}
 
 		// Ensure $mobile_inp and $desktop_inp are defined if they are not already
-		$mobile_inp = isset($mobile_inp) ? $mobile_inp : 'N/A';
-		$desktop_inp = isset($desktop_inp) ? $desktop_inp : 'N/A';
-
+		$mobile_inp  = isset( $mobile_inp ) ? $mobile_inp : 'N/A';
+		$desktop_inp = isset( $desktop_inp ) ? $desktop_inp : 'N/A';
 
 
 		// Escaping and preparing links
@@ -120,8 +118,8 @@ class SpeedGuard_Widgets {
 
 		// Generate the table row for INP if the test type is 'cwv'
 		$inp_tr = '';
-		if ('cwv' === $sg_test_type) {
-			$inp_tr = '<tr><th><a href="' . esc_url($inplink) . '">' . esc_html__( 'Interaction to Next Paint (INP)', 'speedguard' ) . '</a></th>
+		if ( 'cwv' === $sg_test_type ) {
+			$inp_tr = '<tr><th><a href="' . esc_url( $inplink ) . '">' . esc_html__( 'Interaction to Next Paint (INP)', 'speedguard' ) . '</a></th>
         <td>' . wp_kses_post( $mobile_inp ) . '</td>
         <td>' . wp_kses_post( $desktop_inp ) . '</td></tr>';
 
@@ -131,13 +129,13 @@ class SpeedGuard_Widgets {
 		$mobile_color = $desktop_color = '';
 
 		// Assign colors based on overall_category for mobile and desktop
-		if ('cwv' === $sg_test_type && isset($speedguard_cwv_origin['desktop']['cwv']['overall_category']) && isset($speedguard_cwv_origin['mobile']['cwv']['overall_category'])) {
+		if ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) ) {
 			$overall_category_desktop = $speedguard_cwv_origin['desktop']['cwv']['overall_category'];
-			$overall_category_mobile = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
+			$overall_category_mobile  = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
 
 			// Assign color classes based on overall_category values
-			$mobile_color = ($overall_category_mobile === 'FAST') ? 'score-green' : (($overall_category_mobile === 'AVERAGE') ? 'score-yellow' : 'score-red');
-			$desktop_color = ($overall_category_desktop === 'FAST') ? 'score-green' : (($overall_category_desktop === 'AVERAGE') ? 'score-yellow' : 'score-red');
+			$mobile_color  = ( $overall_category_mobile === 'FAST' ) ? 'score-green' : ( ( $overall_category_mobile === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
+			$desktop_color = ( $overall_category_desktop === 'FAST' ) ? 'score-green' : ( ( $overall_category_desktop === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
 		}
 
 		// Constructing the HTML content for the table
@@ -146,40 +144,36 @@ class SpeedGuard_Widgets {
             <thead>
                 <tr class='bc-platforms'>
                     <td></td>
-                    <th><i class='sg-device-column mobile speedguard-score " . esc_attr($mobile_color) . "' aria-hidden='true' title='Mobile'></i></th>
-                    <th><i class='sg-device-column desktop speedguard-score " . esc_attr($desktop_color) . "' aria-hidden='true' title='Desktop'></i></th>
+                    <th><i class='sg-device-column mobile speedguard-score " . esc_attr( $mobile_color ) . "' aria-hidden='true' title='Mobile'></i></th>
+                    <th><i class='sg-device-column desktop speedguard-score " . esc_attr( $desktop_color ) . "' aria-hidden='true' title='Desktop'></i></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th><a href=\"" . esc_url($lcplink) . "\">" . esc_html__('Largest Contentful Paint (LCP)', 'speedguard') . "</a></th>
-                    <td>" . wp_kses_post($mobile_lcp) . "</td>
-                    <td>" . wp_kses_post($desktop_lcp) . "</td>
+                    <th><a href=\"" . esc_url( $lcplink ) . "\">" . esc_html__( 'Largest Contentful Paint (LCP)', 'speedguard' ) . "</a></th>
+                    <td>" . wp_kses_post( $mobile_lcp ) . "</td>
+                    <td>" . wp_kses_post( $desktop_lcp ) . "</td>
                 </tr>
                 <tr>
-                    <th><a href=\"" . esc_url($clslink) . "\">" . esc_html__('Cumulative Layout Shift (CLS)', 'speedguard') . "</a></th>
-                    <td>" . wp_kses_post($mobile_cls) . "</td>
-                    <td>" . wp_kses_post($desktop_cls) . "</td>
+                    <th><a href=\"" . esc_url( $clslink ) . "\">" . esc_html__( 'Cumulative Layout Shift (CLS)', 'speedguard' ) . "</a></th>
+                    <td>" . wp_kses_post( $mobile_cls ) . "</td>
+                    <td>" . wp_kses_post( $desktop_cls ) . "</td>
                 </tr>
-                " . wp_kses_post($inp_tr) . "
+                " . wp_kses_post( $inp_tr ) . "
             </tbody>
         </table>
     ";
 
 		// Generate informational text based on test type
 		$info_text = '';
-		if ('psi' === $sg_test_type) {
-			$info_text = sprintf(esc_html__('Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard'),
-					'<a href="' . esc_url(admin_url('admin.php?page=speedguard_settings')) . '">',
-					'</a>') . '<div><br></div>';
-		} elseif (get_transient('speedguard_no_cwv_data')) {
-			$info_text = sprintf(__('There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard'),
-				'<a href="' . esc_url(admin_url('admin.php?page=speedguard_settings')) . '">',
-				'</a>');
+		if ( 'psi' === $sg_test_type ) {
+			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
+		} elseif ( get_transient( 'speedguard_no_cwv_data' ) ) {
+			$info_text = sprintf( __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
 		}
 
 		// Output the final content
-		echo wp_kses_post($content . $info_text);
+		echo wp_kses_post( $content . $info_text );
 	}
 
 
@@ -275,33 +269,33 @@ class SpeedGuard_Widgets {
                 </p>
                 <h3><?php esc_html_e( 'Understanding metrics:', 'speedguard' ); ?></h3>
                 <div id="LCP-description">
-                <p>
-                       <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/lcp.svg' ); ?>"
-                            alt="<?php echo esc_attr( 'Largest Contentful Paint chart' ); ?>">
-                 <?php
-                 echo wp_kses_post( sprintf( __( '%1$s The time it takes for the largest content element on a page to load. This is typically an image or video.', 'speedguard' ), '<strong>' . esc_html__( 'Largest Contentful Paint (LCP):', 'speedguard' ) . '</strong>' ) );
-                 ?>
-                </p>
+                    <p>
+                        <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/lcp.svg' ); ?>"
+                             alt="<?php echo esc_attr( 'Largest Contentful Paint chart' ); ?>">
+						<?php
+						echo wp_kses_post( sprintf( __( '%1$s The time it takes for the largest content element on a page to load. This is typically an image or video.', 'speedguard' ), '<strong>' . esc_html__( 'Largest Contentful Paint (LCP):', 'speedguard' ) . '</strong>' ) );
+						?>
+                    </p>
                 </div>
                 <div id="CLS-description">
-                <p>
-                     <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/cls.svg' ); ?>"
-                          alt="<?php echo esc_attr( 'Cumulative Layout Shift chart' ); ?>">
-                  <?php
-                  echo wp_kses_post( sprintf( __( '%1$s The total amount of layout shift on a page while it is loading. This is a measure of how much the content on a page moves around while it is loading.', 'speedguard' ), '<strong>' . esc_html__( 'Cumulative Layout Shift (CLS):', 'speedguard' ) . '</strong>' ) );
-                  ?>
-                 </p>
-</div>
+                    <p>
+                        <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/cls.svg' ); ?>"
+                             alt="<?php echo esc_attr( 'Cumulative Layout Shift chart' ); ?>">
+						<?php
+						echo wp_kses_post( sprintf( __( '%1$s The total amount of layout shift on a page while it is loading. This is a measure of how much the content on a page moves around while it is loading.', 'speedguard' ), '<strong>' . esc_html__( 'Cumulative Layout Shift (CLS):', 'speedguard' ) . '</strong>' ) );
+						?>
+                    </p>
+                </div>
                 <div id="INP-description">
-                <p>
-                         <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/inp.svg' ); ?>"
-                              alt="<?php echo esc_attr( 'Interaction to Next Paint chart' ); ?>">
+                    <p>
+                        <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/inp.svg' ); ?>"
+                             alt="<?php echo esc_attr( 'Interaction to Next Paint chart' ); ?>">
 
-                    <?php
-                    echo wp_kses_post( sprintf( __( '%1$s The time it takes the website to respond to a user interaction, such as clicking a button or tapping on a link, throughout entire user experience with the page. This is a measure of how responsive a web page feels to users.', 'speedguard' ), '<strong>' . esc_html__( 'Interaction to Next Paint (INP):', 'speedguard' ) . '</strong>' ) );
-                    ?>
-               </p>
-</div>
+						<?php
+						echo wp_kses_post( sprintf( __( '%1$s The time it takes the website to respond to a user interaction, such as clicking a button or tapping on a link, throughout entire user experience with the page. This is a measure of how responsive a web page feels to users.', 'speedguard' ), '<strong>' . esc_html__( 'Interaction to Next Paint (INP):', 'speedguard' ) . '</strong>' ) );
+						?>
+                    </p>
+                </div>
 
             </li>
         </ul>
@@ -369,13 +363,13 @@ class SpeedGuard_Widgets {
 
 	public static function howto_widget_function() {
 		$content = '<style>.youtube-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;}.youtube-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;}</style>';
-	/**
-     * 	$content .= '<ul>';
-		$content .= '<li>' . sprintf( __( 'Add the URL of the page you want to monitor. You can add as many URLs as you want. The plugin will check them every day.', 'speedguard' ) ) . '</li>';
-		$content .= '<li>' . sprintf( __( 'Check the results in the table below. If you see a red or yellow score, it means that there is a problem with the page.', 'speedguard' ) ) . '</li>';
-		$content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
-		$content .= '</ul>';
-**/
+		/**
+		 *    $content .= '<ul>';
+		 * $content .= '<li>' . sprintf( __( 'Add the URL of the page you want to monitor. You can add as many URLs as you want. The plugin will check them every day.', 'speedguard' ) ) . '</li>';
+		 * $content .= '<li>' . sprintf( __( 'Check the results in the table below. If you see a red or yellow score, it means that there is a problem with the page.', 'speedguard' ) ) . '</li>';
+		 * $content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
+		 * $content .= '</ul>';
+		 **/
 		// Add YouTube video with responsive wrapper
 		$content .= '<div class="youtube-container">';
 		$content .= '<iframe src="https://www.youtube.com/embed/y_RvQEhdq9c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
