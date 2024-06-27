@@ -86,34 +86,43 @@ class SpeedGuard_Admin {
 	}
 
 	//Add a few admin notices on Tests page
-    public static function sg_add_notices() {
+	public static function sg_add_notices() {
+		if (self::is_screen('tests')) {
+			// Check if this is localhost or staging
+			$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
 
+			// Check if the retrieved option is an array
+			if (!is_array($speedguard_cwv_origin)) {
+				return; // or handle the error appropriately
+			}
 
+			// If PSI lcp value is not available, it might mean it's localhost or staging, set transient to show notice
+			if (isset($speedguard_cwv_origin['desktop']['psi']['lcp']['average']) && str_contains($speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N")) {
+				set_transient('speedguard_not_production_environment', true, 10);
+			}
 
+			// Check if tests are finished, but no CWV data available (and production) -- then suggest PSI
+			// Tests are just done and it's production
+			if (get_transient('speedguard_last_test_is_done') && !get_transient('speedguard_not_production_environment')) {
+				$sg_test_type = SpeedGuard_Settings::global_test_type();
+				$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
 
-	    if (self::is_screen('tests')){
+				// Ensure 'mobile', 'cwv', and 'lcp' keys exist
+				if (isset($speedguard_cwv_origin['mobile']['cwv']['lcp'])) {
+					$mobile_lcp = $speedguard_cwv_origin['mobile']['cwv']['lcp'];
 
-		// Check if this is localhost or staging
-	    $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-	    //if PSI lcp value is not available it might mean it's localhost or staging, set transient to show notice
-	    if ( isset( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'] ) && str_contains( $speedguard_cwv_origin['desktop']['psi']['lcp']['average'], "N" ) ) {
-		    set_transient( 'speedguard_not_production_environment', true, 10 );
-	    }
-
-		//Check if tests are finished, but no CWV data available (and production) -- then suggest PSI
-		// Tests are just done and it's production
-		if (get_transient('speedguard_last_test_is_done') && !get_transient( 'speedguard_not_production_environment' )){
-			$sg_test_type = SpeedGuard_Settings::global_test_type();
-			$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-			$mobile_lcp = $speedguard_cwv_origin['mobile']['cwv']['lcp'];
-			if ( 'cwv' === $sg_test_type && str_contains( $mobile_lcp, 'N' )) {
-				set_transient( 'speedguard_no_cwv_data', true, 10 );
+					if ('cwv' === $sg_test_type && str_contains($mobile_lcp, 'N')) {
+						set_transient('speedguard_no_cwv_data', true, 10);
+					}
+				} else {
+					// Handle the case where the keys are missing
+					// Example: Log the error or set a different transient
+					error_log('Expected keys missing in $speedguard_cwv_origin');
+				}
 			}
 		}
 	}
 
-
-    }
 	//Fired when post meta is deleted or updated
 
 	public static function capability() {
