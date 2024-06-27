@@ -270,7 +270,8 @@ function speedguard_delete_data() {
 		'speedguard_test_in_progress',
 		'speedguard_sending_request_now',
 		'speedguard_tests_count',
-		'speedguard_no_cwv_data'
+		'speedguard_no_cwv_data',
+		'speedguard_notice_cwv_mobile_match'
 	];
 
 	foreach ( $speedguard_transients as $speedguard_transient ) {
