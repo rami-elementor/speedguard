@@ -82,103 +82,106 @@ class SpeedGuard_Widgets {
 	/**
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
-	public static function origin_results_widget_function( $post = '', $args = '' ) {
+	public static function origin_results_widget_function($post = '', $args = '') {
 		// Retrieving data to display
-		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
+		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
+
 		// Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
-		foreach ( SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types ) {
-			foreach ( $test_types as $test_type => $metrics ) {
-				if ( $test_type === $sg_test_type ) { //prepare metrics only for needed test type
-					foreach ( $metrics as $metric ) {
-						$current_metric  = $device . '_' . $metric;
-						$$current_metric = SpeedGuard_Widgets::single_metric_display( $speedguard_cwv_origin, $device, $test_type, $metric );
-						// Check if the dynamic variable is defined (For the cases when new metrics are added)
-						$$current_metric = isset( $$current_metric ) ? $$current_metric : '';
 
+		// Initialize variables for metrics
+		$mobile_lcp = $desktop_lcp = $mobile_cls = $desktop_cls = $mobile_inp = $desktop_inp = '';
+
+		// Loop through metrics array to populate variables
+		foreach (SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $test_types) {
+			foreach ($test_types as $test_type => $metrics) {
+				if ($test_type === $sg_test_type) { // Prepare metrics only for the needed test type
+					foreach ($metrics as $metric) {
+						$current_metric = $device . '_' . $metric;
+						$$current_metric = SpeedGuard_Widgets::single_metric_display($speedguard_cwv_origin, $device, $test_type, $metric);
+						// Check if the dynamic variable is defined (for cases when new metrics are added)
+						$$current_metric = isset($$current_metric) ? $$current_metric : '';
 					}
 				}
 			}
 		}
+
 		// Ensure $mobile_inp and $desktop_inp are defined if they are not already
-		if ( ! isset( $mobile_inp ) ) {
-			$mobile_inp = 'N/A';
-		}
-		if ( ! isset( $desktop_inp ) ) {
-			$desktop_inp = 'N/A';
-		}
+		$mobile_inp = isset($mobile_inp) ? $mobile_inp : 'N/A';
+		$desktop_inp = isset($desktop_inp) ? $desktop_inp : 'N/A';
+
+
+
+		// Escaping and preparing links
+		$lcplink = "#LCP-description";
+		$clslink = "#CLS-description";
+		$inplink = "#INP-description";
+
 
 		// Generate the table row for INP if the test type is 'cwv'
-		if ( 'cwv' === $sg_test_type ) {
-			$inp_tr = '<tr><th>' . esc_html__( 'Interaction to Next Paint (INP)', 'speedguard' ) . '</th>
-    <td>' . wp_kses_post( $mobile_inp ) . '</td>
-    <td>' . wp_kses_post( $desktop_inp ) . '</td></tr>';
-		} else {
-			$inp_tr = '';
+		$inp_tr = '';
+		if ('cwv' === $sg_test_type) {
+			$inp_tr = '<tr><th><a href="' . esc_url($inplink) . '">' . esc_html__( 'Interaction to Next Paint (INP)', 'speedguard' ) . '</a></th>
+        <td>' . wp_kses_post( $mobile_inp ) . '</td>
+        <td>' . wp_kses_post( $desktop_inp ) . '</td></tr>';
+
 		}
 
-		if ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) ) {
+		// Initialize color variables
+		$mobile_color = $desktop_color = '';
 
+		// Assign colors based on overall_category for mobile and desktop
+		if ('cwv' === $sg_test_type && isset($speedguard_cwv_origin['desktop']['cwv']['overall_category']) && isset($speedguard_cwv_origin['mobile']['cwv']['overall_category'])) {
 			$overall_category_desktop = $speedguard_cwv_origin['desktop']['cwv']['overall_category'];
-			$overall_category_mobile  = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
-			//overall_category can be FAST, AVERAGE, SLOW. Assign color (red, yellow, green) accordingly
-			$mobile_color  = ( $overall_category_mobile === 'FAST' ) ? 'score-green' : ( ( $overall_category_mobile === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
-			$desktop_color = ( $overall_category_desktop === 'FAST' ) ? 'score-green' : ( ( $overall_category_desktop === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
+			$overall_category_mobile = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
+
+			// Assign color classes based on overall_category values
+			$mobile_color = ($overall_category_mobile === 'FAST') ? 'score-green' : (($overall_category_mobile === 'AVERAGE') ? 'score-yellow' : 'score-red');
+			$desktop_color = ($overall_category_desktop === 'FAST') ? 'score-green' : (($overall_category_desktop === 'AVERAGE') ? 'score-yellow' : 'score-red');
 		}
 
-		$mobile_color  = isset( $mobile_color ) ? esc_attr( $mobile_color ) : '';
-		$desktop_color = isset( $desktop_color ) ? esc_attr( $desktop_color ) : '';
-
-
+		// Constructing the HTML content for the table
 		$content = "
-<table class='widefat fixed striped toplevel_page_speedguard_tests_cwv_widget'>
-<thead>
-<tr class='bc-platforms'><td></td>
-<th><i class='sg-device-column mobile speedguard-score " . esc_attr( $mobile_color ) . "' aria-hidden='true' title='Mobile'></i></th>
-<th><i class='sg-device-column desktop speedguard-score " . esc_attr( $desktop_color ) . "' aria-hidden='true' title='Desktop'></i></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>" . esc_html__( 'Largest Contentful Paint (LCP)', 'speedguard' ) . "</th>
-<td>" . wp_kses_post( $mobile_lcp ) . "</td>
-<td>" . wp_kses_post( $desktop_lcp ) . "</td>
-</tr>                                                                   
-<tr><th>" . esc_html__( 'Cumulative Layout Shift (CLS)', 'speedguard' ) . "</th>
+        <table class='widefat fixed striped toplevel_page_speedguard_tests_cwv_widget'>
+            <thead>
+                <tr class='bc-platforms'>
+                    <td></td>
+                    <th><i class='sg-device-column mobile speedguard-score " . esc_attr($mobile_color) . "' aria-hidden='true' title='Mobile'></i></th>
+                    <th><i class='sg-device-column desktop speedguard-score " . esc_attr($desktop_color) . "' aria-hidden='true' title='Desktop'></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th><a href=\"" . esc_url($lcplink) . "\">" . esc_html__('Largest Contentful Paint (LCP)', 'speedguard') . "</a></th>
+                    <td>" . wp_kses_post($mobile_lcp) . "</td>
+                    <td>" . wp_kses_post($desktop_lcp) . "</td>
+                </tr>
+                <tr>
+                    <th><a href=\"" . esc_url($clslink) . "\">" . esc_html__('Cumulative Layout Shift (CLS)', 'speedguard') . "</a></th>
+                    <td>" . wp_kses_post($mobile_cls) . "</td>
+                    <td>" . wp_kses_post($desktop_cls) . "</td>
+                </tr>
+                " . wp_kses_post($inp_tr) . "
+            </tbody>
+        </table>
+    ";
 
-<td>" . wp_kses_post( $mobile_cls ) . "</td>
-<td>" . wp_kses_post( $desktop_cls ) . "</td>
-</tr>
-   " . wp_kses_post( $inp_tr ) . "
-</tbody>
-</table>
-";
+		// Generate informational text based on test type
+		$info_text = '';
+		if ('psi' === $sg_test_type) {
+			$info_text = sprintf(esc_html__('Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard'),
+					'<a href="' . esc_url(admin_url('admin.php?page=speedguard_settings')) . '">',
+					'</a>') . '<div><br></div>';
+		} elseif (get_transient('speedguard_no_cwv_data')) {
+			$info_text = sprintf(__('There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard'),
+				'<a href="' . esc_url(admin_url('admin.php?page=speedguard_settings')) . '">',
+				'</a>');
+		}
 
-		// if CWV is not available but it's production website and PSI was calculated
-		/* translators:
-1: Settings page link
-*/
-	$info_text = '';
-	if ( 'psi' === $sg_test_type ) {
-			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that.
-			You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
-
-    } else {
-        // if CWV and no CWV data available  for origin
-		if (get_transient( 'speedguard_no_cwv_data')){
-
-            $info_text = sprintf(
-	            __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ),
-	            '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">',
-	            '</a>'( 'speedguard' )) ;
-        }
-
-
+		// Output the final content
+		echo wp_kses_post($content . $info_text);
 	}
 
-		echo wp_kses_post( $content . $info_text );
-
-	}
 
 	/**
 	 * Function responsible for formatting CWV data for display
@@ -271,7 +274,7 @@ class SpeedGuard_Widgets {
 				?>
                 </p>
                 <h3><?php esc_html_e( 'Understanding metrics:', 'speedguard' ); ?></h3>
-                <span>
+                <div id="LCP-description">
                 <p>
                        <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/lcp.svg' ); ?>"
                             alt="<?php echo esc_attr( 'Largest Contentful Paint chart' ); ?>">
@@ -279,6 +282,8 @@ class SpeedGuard_Widgets {
                  echo wp_kses_post( sprintf( __( '%1$s The time it takes for the largest content element on a page to load. This is typically an image or video.', 'speedguard' ), '<strong>' . esc_html__( 'Largest Contentful Paint (LCP):', 'speedguard' ) . '</strong>' ) );
                  ?>
                 </p>
+                </div>
+                <div id="CLS-description">
                 <p>
                      <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/cls.svg' ); ?>"
                           alt="<?php echo esc_attr( 'Cumulative Layout Shift chart' ); ?>">
@@ -286,6 +291,8 @@ class SpeedGuard_Widgets {
                   echo wp_kses_post( sprintf( __( '%1$s The total amount of layout shift on a page while it is loading. This is a measure of how much the content on a page moves around while it is loading.', 'speedguard' ), '<strong>' . esc_html__( 'Cumulative Layout Shift (CLS):', 'speedguard' ) . '</strong>' ) );
                   ?>
                  </p>
+</div>
+                <div id="INP-description">
                 <p>
                          <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/images/inp.svg' ); ?>"
                               alt="<?php echo esc_attr( 'Interaction to Next Paint chart' ); ?>">
@@ -294,9 +301,8 @@ class SpeedGuard_Widgets {
                     echo wp_kses_post( sprintf( __( '%1$s The time it takes the website to respond to a user interaction, such as clicking a button or tapping on a link, throughout entire user experience with the page. This is a measure of how responsive a web page feels to users.', 'speedguard' ), '<strong>' . esc_html__( 'Interaction to Next Paint (INP):', 'speedguard' ) . '</strong>' ) );
                     ?>
                </p>
-                <p>
+</div>
 
-            </span>
             </li>
         </ul>
 		<?php
