@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       SpeedGuard
  * Plugin URI:        https://sabrinazeidan.com/speedguard/
- * Description:       Tracks Core Web Vitals for you and sends an email if there is a problem; every single day for free.
+ * Description:       Tracks Core Web Vitals for you. Every single day, for free.
  * Version:           2.0
  * Author:            Sabrina Zeidan
  * Author URI:        https://sabrinazeidan.com/

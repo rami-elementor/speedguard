@@ -226,7 +226,7 @@ td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px so
 }
 
 /** Widgets**/
-.toplevel_page_speedguard_tests h2 {text-transform: none}
+.toplevel_page_speedguard_tests #poststuff h2, .toplevel_page_speedguard_settings #poststuff h2  {text-transform: none;}
 
 
 .toplevel_page_speedguard_tests_cwv_widget tbody td {

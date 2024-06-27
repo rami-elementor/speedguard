@@ -297,7 +297,7 @@ class SpeedGuard_Settings {
 </figure>';
 			echo $example_picture;
 			echo '<p><b>' . __( 'This functionality is available for PRO users.', 'speedguard' ) . '</b> ';
-			echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' . __( 'But you can try it for free during 7 days -- without subscription and with no strings attached.', 'speedguard' ) . '</a></p>';
+			echo '<a href="' . speedguard_fs()->get_upgrade_url() . '">' . __( 'See monthly and annual subscriptions here.', 'speedguard' ) . '</a></p>';
 
 			echo '</section>';
 		}
