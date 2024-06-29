@@ -21,7 +21,7 @@ const check_tests_queue_status = async (ajaxurl, reload) => {
 
         if (data.status === 'queue') {
             console.log('Tests are in queue. Checking again in 10 seconds...');
-            setTimeout(() => check_tests_queue_status(ajaxurl, reload), 30000);
+            setTimeout(() => check_tests_queue_status(ajaxurl, reload), 10000);
             return sg_run_one_test(ajaxurl, data.speedguard_test_in_progress_url, run_nonce, data.speedguard_test_in_progress_id);
         } else if (data.status === 'last_test_complete' && reload === 'true') {
             console.log('Last test completed. Reloading page...');
