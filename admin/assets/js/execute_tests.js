@@ -10,8 +10,8 @@ async function fetchAll(url_to_test) {
     const request_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=performance&url=' + url_to_test + '&';
     const devices = ['mobile', 'desktop'];
     const defaultValue = 'No data';
-    const delayBetweenRequests = 2000; // delay in milliseconds
-    const retryDelay = 3000; // retry delay in milliseconds
+    const delayBetweenRequests = 1500; // delay in milliseconds
+    const retryDelay = 2000; // retry delay in milliseconds
 
     let singleURLresult = [];
     let hadSuccessfulRequest = false;
