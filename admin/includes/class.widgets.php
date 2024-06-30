@@ -362,38 +362,20 @@ class SpeedGuard_Widgets {
 	}
 
 	public static function howto_widget_function() {
-		$content = '<style>.youtube-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;}.youtube-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;}</style>';
-		/**
-		 *    $content .= '<ul>';
-		 * $content .= '<li>' . sprintf( __( 'Add the URL of the page you want to monitor. You can add as many URLs as you want. The plugin will check them every day.', 'speedguard' ) ) . '</li>';
-		 * $content .= '<li>' . sprintf( __( 'Check the results in the table below. If you see a red or yellow score, it means that there is a problem with the page.', 'speedguard' ) ) . '</li>';
-		 * $content .= '<li>' . sprintf( __( 'If you have any other questions, feel free to contact me. I will be happy to help you.', 'speedguard' ) ) . '</li>';
-		 * $content .= '</ul>';
-		 **/
 		// Add YouTube video with responsive wrapper
-		$content .= '<div class="youtube-container">';
-		$content .= '<iframe src="https://www.youtube.com/embed/y_RvQEhdq9c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-		$content .= '</div>';
+		$content = '<div class="youtube-responsive-container"><div id="player"></div></div>';
+		$content .= '
+        <ul>
+            <li><a href="javascript:void(0);" onclick="setCurrentTime(0)">0:00 How SpeedGuard is useful for you</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(1)">1:15 Homepage performance VS Other pages</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(2)">3:18 How to understand the results</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(3)">5:10 Understand CWV, PSI and Chrome User Experience report and Google Search Console</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(4)">9:35 What if there is no CWV data available?</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(5)">11:00 When to worry about your website performance?</a></li>
+<li><a href="javascript:void(0);" onclick="setCurrentTime(6)">12:20 How to update results?</a></li>
+</ul>';
 
-
-		// Define allowed HTML tags
-		$allowed_html = array(
-			'style'  => array(),
-			'ul'     => array(),
-			'li'     => array(),
-			'div'    => array(
-				'class' => array(),
-			),
-			'iframe' => array(
-				'src'             => array(),
-				'title'           => array(),
-				'frameborder'     => array(),
-				'allow'           => array(),
-				'allowfullscreen' => array(),
-			),
-		);
-
-		echo wp_kses( $content, $allowed_html );
+		echo $content;
 	}
 
 

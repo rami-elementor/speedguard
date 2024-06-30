@@ -12,6 +12,10 @@ document.addEventListener(
 
         // Fix metaboxes open/close funcitonality
         fixMetaboxesOpenCloseFunctionality();
+
+        //Add Timecodes to Youtube video
+        addTimecodesToYoutubeVideo();
+
     }
 );
 
@@ -77,4 +81,24 @@ function fixMetaboxesOpenCloseFunctionality() {
             }
         );
     });
+}
+
+function addTimecodesToYoutubeVideo() {
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+let player;
+
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('player', {
+        videoId: '5Rq3qvySKtI', // YouTube Video ID
+    });
+}
+
+window.setCurrentTime = function(slideNum) {
+    var object = [ 0, 75, 198, 310, 575, 660, 740 ];
+    player.seekTo(object[slideNum]);
 }
