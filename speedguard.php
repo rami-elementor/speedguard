@@ -49,21 +49,18 @@ if ( function_exists( 'speedguard_fs' ) ) {
 						'premium_slug'        => 'speedguard-pro',
 						'type'                => 'plugin',
 						'public_key'          => 'pk_4f087343623f01d0a96151c22d6f9',
-						'is_premium'          => false,
+						'is_premium'          => true,
 						'premium_suffix'      => 'PRO',
 						// If your plugin is a serviceware, set this option to false.
 						'has_premium_version' => true,
 						'has_addons'          => false,
 						'has_paid_plans'      => true,
-						'trial'               => array(
-							'days'               => 7,
-							'is_require_payment' => false,
-						),
 						'menu'                => array(
-							'slug'       => 'speedguard_tests',
-							'first-path' => 'admin.php?page=speedguard_tests',
+							'slug'           => 'speedguard_tests',
+							'first-path'     => 'admin.php?page=speedguard_tests',
 						),
 					) );
+				
 				}
 
 				return $speedguard_fs;
@@ -266,10 +263,13 @@ function speedguard_delete_data() {
 
 	// Delete non-expiring transients (auto-expiring will be deleted automatically)
 	$speedguard_transients = [
+		//Not expiring transients
+		'speedguard_tests_count',
 		'speedguard_tests_in_queue',
 		'speedguard_test_in_progress',
+
+		//Expring transients
 		'speedguard_sending_request_now',
-		'speedguard_tests_count',
 		'speedguard_no_cwv_data',
 		'speedguard_notice_cwv_mobile_match'
 	];

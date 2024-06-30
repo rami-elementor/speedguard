@@ -640,7 +640,7 @@ class SpeedGuard_Admin {
 		//if after removing this test there are no tests left to process, mark that this is the last test in queue and delete transient
 		if ( ( ! is_array( $current_tests_array ) ) || ( count( $current_tests_array ) < 1 ) ) {
 			delete_transient( 'speedguard_tests_in_queue' );
-			set_transient( 'speedguard_last_test_is_done', true, 300 );
+			set_transient( 'speedguard_last_test_is_done', true, 30 );
 			$last_test_is_done = true;
 
 
@@ -684,7 +684,7 @@ class SpeedGuard_Admin {
 			// Set environment transients here:
 			// Check if PSI for current test is available. If not -- probably it's not a production environment
 			if ( !is_array($both_devices_values['desktop']['psi']['lcp'] ) && !is_array
-				($both_devices_values['mobile']['psi']['lcp'] )) {
+				($both_devices_values['mobile']['psi']['lcp'] ) && !get_transient('speedguard_tests_in_queue')) {
 				set_transient( 'speedguard_not_production_environment', true, 30 );
 			} else {
 				delete_transient( 'speedguard_not_production_environment' );
