@@ -60,7 +60,7 @@ class SpeedGuard_Admin {
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.settings.php';
 			require_once plugin_dir_path( __FILE__ ) . '/includes/class.tests-table.php';
 			if ( speedguard_fs()->is__premium_only() ) {
-				require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications.php';
+				require_once plugin_dir_path( __FILE__ ) . '/includes/class.notifications__premium_only.php';
 			}
 			add_action( 'admin_init', [ $this, 'speedguard_cpt' ] );
 			add_filter( 'admin_body_class', [ $this, 'body_classes_filter' ] );
