@@ -683,8 +683,7 @@ class SpeedGuard_Admin {
 
 			// Set environment transients here:
 			// Check if PSI for current test is available. If not -- probably it's not a production environment
-			if ( !is_array($both_devices_values['desktop']['psi']['lcp'] ) && !is_array
-				($both_devices_values['mobile']['psi']['lcp'] ) && !get_transient('speedguard_tests_in_queue')) {
+			if ( !is_array( $calculated_average_psi['desktop']['psi']['lcp'] ) && !is_array( $calculated_average_psi['desktop']['psi']['lcp'] ) && get_transient('speedguard_last_test_is_done') ) {
 				set_transient( 'speedguard_not_production_environment', true, 30 );
 			} else {
 				delete_transient( 'speedguard_not_production_environment' );
