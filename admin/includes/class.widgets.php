@@ -62,17 +62,17 @@ class SpeedGuard_Widgets {
 			'SpeedGuard_Widgets',
 			'explanation_widget_function',
 		], '', 'main-content', 'core' );
-		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'How to get the most use from this plugin?', 'speedguard' ), [
+		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'Get the most use of this plugin:', 'speedguard' ), [
 			'SpeedGuard_Widgets',
 			'howto_widget_function',
 		], '', 'side', 'core' );
 
-		add_meta_box( 'speedguard-important-questions-meta-box', esc_html__( 'Important questions:', 'speedguard' ), [
+		add_meta_box( 'speedguard-important-questions-meta-box', esc_html__( 'Learn more:', 'speedguard' ), [
 			'SpeedGuard_Widgets',
 			'important_questions_widget_function',
 		], '', 'side', 'core' );
 
-		add_meta_box( 'speedguard-about-meta-box', esc_html__( 'Do you like this plugin?', 'speedguard' ), [
+		add_meta_box( 'speedguard-about-meta-box', esc_html__( 'Do you like SpeedGuard?', 'speedguard' ), [
 			'SpeedGuard_Widgets',
 			'about_widget_function',
 		], '', 'side', 'core' );
@@ -171,6 +171,10 @@ class SpeedGuard_Widgets {
 		} elseif ( get_transient( 'speedguard_no_cwv_data' ) ) {
 			$info_text = sprintf( __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
 		}
+        // else if CWV is not passing, show the link to the video
+        elseif ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) && ($speedguard_cwv_origin['desktop']['cwv']['overall_category'] !== 'FAST' or $speedguard_cwv_origin['mobile']['cwv']['overall_category'] !== 'FAST')) {
+            $info_text = sprintf( __( 'If your Core Web Vitals are not passing, you might want to check out %s to investigate it further.', 'speedguard' ), '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console </a>' );
+        }
 
 		// Output the final content
 		echo wp_kses_post( $content . $info_text );
@@ -348,6 +352,7 @@ class SpeedGuard_Widgets {
 		//Convert this function to return instead of echo
 
 		$links   = [
+			sprintf( __( '%1$sCore Web Vitals Mystery%2$s', 'speedguard' ), '<a href="https://www.youtube.com/watch?v=-80yP6sY0Cg" target="_blank">', '</a>' ),
 			sprintf( __( '%1$sWhy CWV fail after they were passing before?%2$s', 'speedguard' ), '<a href="https://www.youtube.com/watch?v=Q40B5cscObc" target="_blank">', '</a>' ),
 			sprintf( __( '%1$sOne single reason why your CWV are not passing%2$s', 'speedguard' ), '<a href="https://youtu.be/-d7CPbjLXwg?si=VmZ_q-9myI4SBYSD" target="_blank">', '</a>' ),
 			sprintf( __( '%1$s5 popular recommendations that don’t work%2$s', 'speedguard' ), '<a href="https://youtu.be/5j3OUaBDXKI?si=LSow4BWgtF9cSQKq" target="_blank">', '</a>' ),
@@ -418,7 +423,14 @@ class SpeedGuard_Widgets {
 
 
 	function speedguard_dashboard_widget_function() {
-		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( 'Current Performance', 'speedguard' ), [
+        $sg_test_type = SpeedGuard_Settings::global_test_type();
+		if ( 'cwv' === $sg_test_type ) {
+			$origin_widget_title = 'Core Web Vitals for Origin';
+		} elseif ( 'psi' === $sg_test_type ) {
+			$origin_widget_title = 'PageSpeed Insights Average';
+		}
+
+		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( $origin_widget_title. _(' [SpeedGuard]'), 'speedguard' ), [
 			$this,
 			'origin_results_widget_function',
 		], '', [ 'echo' => 'true' ] );
