@@ -13,8 +13,8 @@ document.addEventListener(
         // Fix metaboxes open/close funcitonality
         fixMetaboxesOpenCloseFunctionality();
 
-        //Add Timecodes to Youtube video
-        addTimecodesToYoutubeVideo();
+        // Initialize YouTube API
+        initializeYouTubeAPI();
 
     }
 );
@@ -83,7 +83,8 @@ function fixMetaboxesOpenCloseFunctionality() {
     });
 }
 
-function addTimecodesToYoutubeVideo() {
+
+function initializeYouTubeAPI() {
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -92,13 +93,53 @@ function addTimecodesToYoutubeVideo() {
 
 let player;
 
-window.onYouTubeIframeAPIReady = function() {
+function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         videoId: '5Rq3qvySKtI', // YouTube Video ID
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
     });
 }
 
-window.setCurrentTime = function(slideNum) {
-    var object = [ 0, 75, 198, 310, 575, 660, 740 ];
-    player.seekTo(object[slideNum]);
+function onPlayerReady(event) {
+    setHighestQuality();
+    setupFullscreenQualityAdjustment();
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        setHighestQuality();
+    }
+}
+
+function setHighestQuality() {
+    const qualities = player.getAvailableQualityLevels();
+    if (qualities.length > 0) {
+        player.setPlaybackQuality(qualities[0]); // Set to the highest available quality
+    }
+}
+
+function setupFullscreenQualityAdjustment() {
+    const playerElement = document.getElementById('player').contentWindow;
+
+    if (playerElement) {
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(event => {
+            window.addEventListener(event, onFullscreenChange);
+        });
+    }
+}
+
+function onFullscreenChange() {
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        setTimeout(setHighestQuality, 500); // Slight delay to ensure it catches the fullscreen mode change
+    }
+}
+
+function setCurrentTime(slideNum) {
+    const timecodes = [ 0, 75, 198, 310, 575, 660, 740 ];
+    if (player && timecodes[slideNum] !== undefined) {
+        player.seekTo(timecodes[slideNum]);
+    }
 }

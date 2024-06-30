@@ -363,7 +363,9 @@ class SpeedGuard_Widgets {
 
 	public static function howto_widget_function() {
 		// Add YouTube video with responsive wrapper
-		$content = '<div class="youtube-responsive-container"><div id="player"></div></div>';
+		$content = '<div class="youtube-responsive-container">';
+		$content .= '<iframe id="player" src="https://www.youtube.com/embed/5Rq3qvySKtI?enablejsapi=1&origin=' . urlencode( get_site_url() ) . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+		$content .= '</div>';
 		$content .= '
         <ul>
             <li><a href="javascript:void(0);" onclick="setCurrentTime(0)">0:00 How SpeedGuard is useful for you</a></li>
