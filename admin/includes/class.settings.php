@@ -285,7 +285,7 @@ class SpeedGuard_Settings {
 	}
 
 	function notifications_description_fn() {
-		if ( speedguard_fs()->is_not_paying() ) {
+		if ( !(speedguard_fs()->is__premium_only()) ) {
 			echo '<section>';
 			$picture_url     = plugin_dir_url( __DIR__ ) . 'assets/images/notifications-example.png';
 			$example_picture = '<figure class="notifications-example">

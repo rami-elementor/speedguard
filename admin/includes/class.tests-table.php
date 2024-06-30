@@ -555,19 +555,27 @@ class SpeedGuard_Tests {
 	public static function tests_results_widget_function() {
         //show note is global test type is set to cwv
         if ( SpeedGuard_Settings::global_test_type() === 'cwv' ) {
-	        $link = sprintf(
-		        '<a href="%s">%s</a>',
-		        admin_url('admin.php?page=speedguard_settings'),
-		        __('email notifications', 'speedguard')
+
+	        $note = __('Note: The results are updated automatically every 24 hours.', 'speedguard');
+            // Define the default verb based on user's premium status
+	        $notification_verb = speedguard_fs()->is__premium_only() ? __('will receive', 'speedguard') : __('can have', 'speedguard');
+
+            // Define the link to email notification settings
+	        $email_notification_link = admin_url('admin.php?page=speedguard_settings');
+
+	        $note .= sprintf(
+	        /* translators: %1$s: notification verb, %2$s: link to email notification settings */
+		        __(' You %1$s <a href="%2$s">email notifications</a> in case Core Web Vitals need your attention.', 'speedguard'),
+		        $notification_verb,
+		        $email_notification_link
 	        );
 
-	        $note = sprintf(
-	        /* translators: %s: link to email notification settings */
-		        __('Note: The results are updated automatically every 24 hours. You can have %s in case Core Web Vitals need your attention.', 'speedguard'),
-		        $link
-	        );
 
-            // Output the note safely
+
+
+
+
+	        // Output the note safely
 	        echo wp_kses(
 		        $note,
 		        array(
