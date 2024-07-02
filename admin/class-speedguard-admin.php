@@ -358,7 +358,7 @@ class SpeedGuard_Admin {
 					//TODO check seems to be fine
 					'cls'              => $current_cwv_origin_data['mobile']['cwv']['cls'],
 					'inp'              => $current_cwv_origin_data['mobile']['cwv']['inp'],
-					'overall_category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
+					'category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
 				],
 				'psi' => [
 					'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
@@ -372,7 +372,7 @@ class SpeedGuard_Admin {
 					//array if ok, string if no data
 					'cls'              => $current_cwv_origin_data['desktop']['cwv']['cls'],
 					'inp'              => $current_cwv_origin_data['desktop']['cwv']['inp'],
-					'overall_category' => $current_cwv_origin_data['desktop']['cwv']['overall_category']
+					'category' => $current_cwv_origin_data['desktop']['cwv']['overall_category']
 				],
 				'psi' => [
 					'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
@@ -592,7 +592,7 @@ class SpeedGuard_Admin {
 					'lcp'              => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
 					'cls'              => $mobile_data['cwv']['cls'],
 					'inp'              => $mobile_data['cwv']['inp'],
-					'overall_category' => $mobile_data['cwv']['overall_category']
+					'category' => $mobile_data['cwv']['overall_category']
 				],
 				'psi' => [
 					'lcp' => $mobile_data['psi']['lcp'],
@@ -605,7 +605,7 @@ class SpeedGuard_Admin {
 					'lcp'              => $desktop_data['cwv']['lcp'], //array if ok, string if no data
 					'cls'              => $desktop_data['cwv']['cls'],
 					'inp'              => $desktop_data['cwv']['inp'],
-					'overall_category' => $desktop_data['cwv']['overall_category']
+					'category' => $desktop_data['cwv']['overall_category']
 				],
 				'psi' => [
 					'lcp' => $desktop_data['psi']['lcp'], //array
@@ -655,7 +655,7 @@ class SpeedGuard_Admin {
 						'lcp'              => $mobile_data['originCWV']['lcp'], //TODO check seems to be fine
 						'cls'              => $mobile_data['originCWV']['cls'],
 						'inp'              => $mobile_data['originCWV']['inp'],
-						'overall_category' => $mobile_data['originCWV']['overall_category']
+						'category' => $mobile_data['originCWV']['overall_category']
 					],
 					'psi' => [
 						'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
@@ -668,7 +668,7 @@ class SpeedGuard_Admin {
 						'lcp'              => $desktop_data['originCWV']['lcp'], //array if ok, string if no data
 						'cls'              => $desktop_data['originCWV']['cls'],
 						'inp'              => $desktop_data['originCWV']['inp'],
-						'overall_category' => $desktop_data['originCWV']['overall_category']
+						'category' => $desktop_data['originCWV']['overall_category']
 					],
 					'psi' => [
 						'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],

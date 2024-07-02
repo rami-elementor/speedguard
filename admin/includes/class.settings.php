@@ -154,7 +154,7 @@ class SpeedGuard_Settings {
 	function email_test_results_function__premium_only() {
         $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
 		// Check if there are any tests running at the moment, and if so -- reschedule it to 10 minutes later
-		if ( get_transient( 'speedguard_tests_in_queue' ) or $speedguard_cwv_origin === 'waiting' ) {
+		if ( get_transient( 'speedguard_tests_in_queue' ) || $speedguard_cwv_origin === 'waiting' ) {
 			wp_schedule_single_event( time() + 10 * 60, 'speedguard_email_test_results' );
 			return;
 		}

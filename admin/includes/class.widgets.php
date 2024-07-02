@@ -82,6 +82,9 @@ class SpeedGuard_Widgets {
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
+	// SpeedGuard_Notifications::email_tests_results();
+
+
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
 
@@ -129,9 +132,9 @@ class SpeedGuard_Widgets {
 		$mobile_color = $desktop_color = '';
 
 		// Assign colors based on overall_category for mobile and desktop
-		if ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) ) {
-			$overall_category_desktop = $speedguard_cwv_origin['desktop']['cwv']['overall_category'];
-			$overall_category_mobile  = $speedguard_cwv_origin['mobile']['cwv']['overall_category'];
+		if ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['category'] ) ) {
+			$overall_category_desktop = $speedguard_cwv_origin['desktop']['cwv']['category'];
+			$overall_category_mobile  = $speedguard_cwv_origin['mobile']['cwv']['category'];
 
 			// Assign color classes based on overall_category values
 			$mobile_color  = ( $overall_category_mobile === 'FAST' ) ? 'score-green' : ( ( $overall_category_mobile === 'AVERAGE' ) ? 'score-yellow' : 'score-red' );
@@ -172,7 +175,7 @@ class SpeedGuard_Widgets {
 			$info_text = sprintf( __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
 		}
         // else if CWV is not passing, show the link to the video
-        elseif ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['overall_category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['overall_category'] ) && ($speedguard_cwv_origin['desktop']['cwv']['overall_category'] !== 'FAST' or $speedguard_cwv_origin['mobile']['cwv']['overall_category'] !== 'FAST')) {
+        elseif ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['category'] ) && ($speedguard_cwv_origin['desktop']['cwv']['category'] !== 'FAST' || $speedguard_cwv_origin['mobile']['cwv']['category'] !== 'FAST')) {
             $info_text = sprintf( __( 'If your Core Web Vitals are not passing, you might want to check out %s to investigate it further.', 'speedguard' ), '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console </a>' );
         }
 

@@ -20,20 +20,20 @@ class SpeedGuard_Notifications {
 		// might happen if tests were started just now)
 		//AND rescedule the email
 		// This is needed for all cases:
-		var_dump($speedguard_cwv_origin);
+//		var_dump($speedguard_cwv_origin);
 
-		$overall_category_desktop = $speedguard_cwv_origin['desktop'][$sg_test_type]['overall_category'];
-		$overall_category_mobile = $speedguard_cwv_origin['mobile'][$sg_test_type]['overall_category'];
-		$status_mobile = ($overall_category_mobile === 'FAST') ? 'PASSES' : 'FAILS';
-		$status_desktop = ($overall_category_desktop === 'FAST') ? 'PASSES' : 'FAILS';
-		$color_mobile = ($overall_category_mobile === 'FAST') ? 'score-green' : 'score-red';
-		$color_desktop = ($overall_category_desktop === 'FAST') ? 'score-green' : 'score-red';
+		$category_desktop = $speedguard_cwv_origin['desktop'][$sg_test_type]['category'];
+		$category_mobile = $speedguard_cwv_origin['mobile'][$sg_test_type]['category'];
+		$status_mobile = ($category_mobile === 'FAST') ? 'PASSES' : 'FAILS';
+		$status_desktop = ($category_desktop === 'FAST') ? 'PASSES' : 'FAILS';
+		$color_mobile = ($category_mobile === 'FAST') ? 'score-green' : 'score-red';
+		$color_desktop = ($category_desktop === 'FAST') ? 'score-green' : 'score-red';
 		$status_mobile_display = '<span class="' . $color_mobile . '"><strong>' . $status_mobile . '</strong></span>';
 		$status_desktop_display = '<span class="' . $color_desktop . '"><strong>' . $status_desktop . '</strong></span>';
 
-		// Assign color classes based on overall_category values
-		$mobile_color = ($overall_category_mobile === 'FAST') ? 'score-green' : (($overall_category_mobile === 'AVERAGE') ? 'score-yellow' : 'score-red');
-		$desktop_color = ($overall_category_desktop === 'FAST') ? 'score-green' : (($overall_category_desktop === 'AVERAGE') ? 'score-yellow' : 'score-red');
+		// Assign color classes based on category values
+		$mobile_color = ($category_mobile === 'FAST') ? 'score-green' : (($category_mobile === 'AVERAGE') ? 'score-yellow' : 'score-red');
+		$desktop_color = ($category_desktop === 'FAST') ? 'score-green' : (($category_desktop === 'AVERAGE') ? 'score-yellow' : 'score-red');
 
 		// if any url fails for this test type
 		if ($email_me_case === 'any_URL_fails') { //use proper test type
@@ -71,7 +71,7 @@ class SpeedGuard_Notifications {
 		}
 
 		// if Origin fails for this test type or Every time (same data needed, just trigger is different)
-		elseif (($email_me_case === 'origin_fails') && ($overall_category_mobile !== 'FAST' || $overall_category_desktop !== 'FAST')) {
+		elseif (($email_me_case === 'origin_fails') && ($category_mobile !== 'FAST' || $category_desktop !== 'FAST')) {
 			echo 'Send email "origin fails"';
 			$decision = true;
 			$trigger = 'origin_fails';
