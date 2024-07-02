@@ -152,23 +152,31 @@ class SpeedGuard_Settings {
 	}
 
 	function email_test_results_function__premium_only() {
-        $speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
+		// Check if the email notification is set to 'never'
+		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
+		$global_test_type = SpeedGuard_Settings::global_test_type();
+		if ( $speedguard_options['email_me_case'] === 'never' ) return;
 		// Check if there are any tests running at the moment, and if so -- reschedule it to 10 minutes later
+		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option('sg_origin_results');
 		if ( get_transient( 'speedguard_tests_in_queue' ) || $speedguard_cwv_origin === 'waiting' ) {
 			wp_schedule_single_event( time() + 10 * 60, 'speedguard_email_test_results' );
 			return;
 		}
+        //If tests are not curring at the moment, check if there are no results at all
+        elseif (!is_array($speedguard_cwv_origin['mobile'][$global_test_type]['lcp']) || !is_array($speedguard_cwv_origin['desktop'][$global_test_type ]['lcp'])){
+            return;
+        }
 		// Check if there are no guarded pages at all
 		$guarded_pages = get_transient('speedguard_tests_count');
 		if (json_decode( $guarded_pages) < 1) return;
 
+		//check if origin results are N/A
 
-		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
-		// Check if the email notification is set to 'never'
-		if ( $speedguard_options['email_me_case'] === 'never' ) return;
-        //send email
+
+		//All is good, send email
 		SpeedGuard_Notifications::email_tests_results();
 	}
+
 
 	function speedguard_cron_schedules( $schedules ) {
 		$check_recurrence = 1; // Check every day
