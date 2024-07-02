@@ -131,7 +131,7 @@ class SpeedGuard_Settings {
 	        if ( $email_me_case != 'never' ) {
 		        if ( ! wp_next_scheduled( 'speedguard_email_test_results' ) ) {
 			        // In 2 minutes
-			        wp_schedule_single_event( time() + 2 * 60, 'speedguard_email_test_results' );
+			        wp_schedule_single_event( time() + 5 * 60, 'speedguard_email_test_results' );
 		        }
 	        }
         }
@@ -152,11 +152,21 @@ class SpeedGuard_Settings {
 	}
 
 	function email_test_results_function__premium_only() {
+		// Check if there are any tests running at the moment, and if so -- reschedule it to 10 minutes later
+		if ( get_transient( 'speedguard_tests_in_queue' ) ) {
+			wp_schedule_single_event( time() + 10 * 60, 'speedguard_email_test_results' );
+			return;
+		}
+		// Check if there are no guarded pages at all
+		$guarded_pages = get_transient('speedguard_tests_count');
+		if (json_decode( $guarded_pages) < 1) return;
+        // Check if the email notification is set to 'never'
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
-		$email_me_case      = $speedguard_options['email_me_case'];
-				if ( $email_me_case !== 'never' ) {
-					SpeedGuard_Notifications::test_results_email( 'regular' );
-				}
+        if ( $speedguard_options['email_me_case'] === 'never' ) return;
+
+        //All good, let's send the email
+		SpeedGuard_Notifications::test_results_email( 'regular' );
+
 	}
 
 	function speedguard_cron_schedules( $schedules ) {
