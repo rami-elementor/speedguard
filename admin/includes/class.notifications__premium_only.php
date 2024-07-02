@@ -92,16 +92,16 @@ class SpeedGuard_Notifications {
 
 		/* translators: %s: site URL */
 		$headers = ['Content-Type: text/html; charset=UTF-8'];
-		$subject = sprintf(__('Performance update for %s', 'speedguard'), $site_url);
+		$subject = sprintf(__('Performance update for %s [SpeedGuard]', 'speedguard'), $site_url);
 
 		$message = '';
 		$message .= '<!DOCTYPE html>';
 		$message .= '<html>';
 		$message .= '<head>';
-		$message .= '<title>';
+		//$message .= '<title>';
 		/* translators: Title of the email report */
-		$message .= esc_html__('SpeedGuard Report', 'speedguard');
-		$message .= '</title>';
+		//$message .= esc_html__('SpeedGuard Report', 'speedguard');
+		//$message .= '</title>';
 		$message .= '<style>';
 		$message .= 'table {border-collapse: collapse;width: 560px; margin-top: 2em;}';
 		$message .= 'th, td {text-align: left; padding: 8px;}';
@@ -114,14 +114,20 @@ class SpeedGuard_Notifications {
 		$message .= '<table align="center">';
 		$message .= '<tr>';
 		$message .= '<td style="padding: 10px; bgcolor="#f7f7f7">';
-		$message .= '<p style="text-align:center; font-size: 1.2em; font-weight: bold;">';
+		$message .= '<p style="font-weight: bold;">';
 		/* translators: Core Web Vitals report */
 		$message .= esc_html__('SpeedGuard report', 'speedguard');
 		/* translators: %1$s - Website URL, %2$s - Mobile status, %3$s - Desktop status */
 		if ($sg_test_type === 'cwv') {
-			$message .= sprintf(esc_html__('Currently the website %1$s %2$s Core Web Vitals assessment by Google for Mobile and %3$s for Desktop. This result is for Origin, meaning for the website in general.', 'speedguard'), $site_url, $status_mobile_display, $status_desktop_display);
+			$message .= sprintf(esc_html__('Currently the website %1$s %2$s Core Web Vitals assessment by Google for Mobile and %3$s for Desktop.', 'speedguard'), $site_url, $status_mobile_display, $status_desktop_display);
+			$message .= '<p>';
+			$message .= esc_html__('This result is for Origin, meaning for the website in general.', 'speedguard');
+			$message .= '</p>';
 		} elseif ($sg_test_type === 'psi') {
-			$message .= sprintf(esc_html__('Currently the website %1$s average PageSpeed Insights %2$s for Mobile and %3$s for Desktop. This result is calculated average based on the URLs that you have added to be monitored.', 'speedguard'), $site_url, $status_mobile_display, $status_desktop_display);
+			$message .= sprintf(esc_html__('Currently the website %1$s average PageSpeed Insights %2$s for Mobile and %3$s for Desktop.', 'speedguard'), $site_url, $status_mobile_display, $status_desktop_display);
+			$message .= '<p>';
+			$message .= esc_html__('This result is calculated average based on the URLs that you have added to be monitored.', 'speedguard');
+			$message .= '</p>';
 			$message .= '<p>';
 			$message .= esc_html__('Please, remember that PSI is not a real users data, it is lab test only. If your website has CWV data available you should use that.', 'speedguard');
 			$message .= '</p>';
