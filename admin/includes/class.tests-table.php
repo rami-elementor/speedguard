@@ -324,6 +324,16 @@ class SpeedGuard_Tests {
 	 */
 
 	public static function try_add_speedguard_test( $url_to_add = '', $guarded_item_type = '', $guarded_item_id = '', $guarded_post_blog_id = '', $already_guarded = false ) {
+		// Check Tests count and limit
+		$monitored_urls_count = json_decode( get_transient( 'speedguard_tests_count' ) );
+		$monitored_urls_count = isset( $monitored_urls_count ) ? $monitored_urls_count : 0;
+		$max_monitored_urls   = SpeedGuard_Admin::max_monitored_urls();
+		if ( $monitored_urls_count >= $max_monitored_urls ) {
+			set_transient( 'speedguard_notice_add_new_url_error_max_urls', true, 5 );
+			return;
+		}
+
+
 		// Validate input URL
 		if ( empty( $url_to_add ) ) {
 			set_transient( 'speedguard_notice_add_new_url_error_empty', true, 5 );
@@ -346,6 +356,8 @@ class SpeedGuard_Tests {
 			//set_transient( 'speedguard_notice_add_new_url_error_not_current_domain', true, 5 );
            // return;
 		}
+
+
         // Determine guarded item type
 		if ( empty( $guarded_item_type ) ) {
 			if ( trailingslashit( $url_to_add ) === trailingslashit( get_site_url() ) ) {

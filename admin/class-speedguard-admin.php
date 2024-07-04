@@ -86,7 +86,9 @@ class SpeedGuard_Admin {
 	}
 
 
-
+	public static function max_monitored_urls() {
+		return 10;
+	}
 
 
 	// Check which SpeedGuard screen is currently displayed
@@ -253,7 +255,7 @@ class SpeedGuard_Admin {
 		if ( self::is_screen( 'tests' ) ) {
 			//Notices about tests statuses
 			//When trying to add test
-
+			if ( ! empty( $_REQUEST['speedguard'] )) {
 				if ( get_transient( 'speedguard_notice_add_new_url_error_empty' ) ) {
 					$notices[] = self::set_notice( __( 'Please select the post you want to add.', 'speedguard' ), 'warning' );
 				}
@@ -263,10 +265,15 @@ class SpeedGuard_Admin {
 				if ( get_transient( 'speedguard_notice_create_test' ) ) {
 					$notices[] = self::set_notice( __( 'New URL is successfully added!', 'speedguard' ), 'success' );
 				}
+				if ( get_transient( 'speedguard_notice_add_new_url_error_max_urls' ) ) {
+					$notices[] = self::set_notice( sprintf( __( 'To avoid blockage from PageSpeed Insights API you can add up to %s URLs to be monitored currently. Delete one of the existing tests to add another one. I am working on the solution to increase this number.', 'speedguard' ), self::max_monitored_urls() ), 'warning' );
 
-			if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
-				$notices[] = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
+				}
+				if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
+					$notices[] = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
+				}
 			}
+
 			if ( get_transient( 'speedguard_notice_slow_down' ) ) {
 				$notices[] = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
 			}
