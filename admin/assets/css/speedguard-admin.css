@@ -139,6 +139,10 @@ td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px so
     margin-top: 2em;
 }
 
+#speedguard-legend-meta-box li#understand-results ul {
+    list-style: disc;
+    margin-left: 4em;
+}
 
 
 

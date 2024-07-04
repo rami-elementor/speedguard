@@ -82,12 +82,8 @@ class SpeedGuard_Widgets {
 	 * Function responsible for displaying the Origin widget, both n Tests page and Dashboard
 	 */
 	public static function origin_results_widget_function( $post = '', $args = '' ) {
-	// SpeedGuard_Notifications::email_tests_results();
-
-
 		// Retrieving data to display
 		$speedguard_cwv_origin = SpeedGuard_Admin::get_this_plugin_option( 'sg_origin_results' );
-
 		// Preparing data to display
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
 
@@ -167,67 +163,10 @@ class SpeedGuard_Widgets {
         </table>
     ";
 
-		// Generate informational text based on test type
-		$info_text = '<ul>';
-		if ( 'psi' === $sg_test_type ) {
 
-			$info_text .= '<li>';
-			$info_text .= sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
-			$info_text .= '</li>';
+//Link here to the block below with the words "Understand the results" and the list of explanations
 
-            $info_text .= '<li>';
-            // Why there is no INP in PSI
-            $info_text .= sprintf( esc_html__( 'There is no INP in PSI tests (to measure interactivity of the page), as it is Lab test, and currectly there is no reliable way to replicate this part of performance in Lab tests. We have LCP and CLS though.',   'speedguard') );
-            $info_text .= '</li>';
-
-			$info_text .= '<li>';
-			// How PSI Average is calculated
-			$info_text .= sprintf( esc_html__( 'PSI Average is calculated based on the values of all URLs that are currently guarded across your website.', 'speedguard' ) );
-			$info_text .= '</li>';
-
-
-
-
-
-
-
-
-
-
-
-
-		}
-        elseif ( 'cwv' === $sg_test_type) {
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( 'Core Web Vitals are based on real user data collected on your website, it comes from %s.', 'speedguard' ), '<a href="https://developers.google.com/web/tools/chrome-user-experience-report/" target="_blank">Chrome User Experience report</a>' );
-	        $info_text .= '</li>';
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf you have CWV data available%2$s, you should always refer to that data first, as it represents the real experience real users of your website are having.', 'speedguard' ), '<strong>', '</strong>' );
-	        $info_text .= '</li>';
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf your Core Web Vitals are not passing%2$s, you might want to check out %3$s to investigate it further.', 'speedguard' ), '<strong>', '</strong>', '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console</a>' );
-	        $info_text .= '</li>';
-
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf there are the same numbers for a few URLs%2$s, it means there is not enough real-user data for those specific pages yet. In that case Google may use data from another similar page on your website or Origin.', 'speedguard' ), '<strong>', '</strong>' );
-	        $info_text .= '</li>';
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for individual URLs%2$s --- it means that there is not enough real-user data for those URLs yet and Google didn\'t use other similar pages data as well.', 'speedguard' ), '<strong>', '</strong>' );
-	        $info_text .= '</li>';
-
-	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for Origin Core Web Vitals%2$s, it means there is not enough real-user data even for a general assessment of your entire website. In this case, you can switch to PageSpeed Insights in the %3$sSettings%4$s.', 'speedguard' ), '<strong>', '</strong>', '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
-	        $info_text .= '</li>';
-
-        }
-
-
-        $info_text .= '</ul>';
+		$info_text = '<p>👋 <a href="#understand-results">' . esc_html__( 'Understand the results ↓', 'speedguard' ) . '</a></p>';
 
 
 		// Output the final content
@@ -298,25 +237,74 @@ class SpeedGuard_Widgets {
 
 	public static function explanation_widget_function() {
 		$cwv_link = 'https://web.dev/lcp/';
-		?>
+		$sg_test_type = SpeedGuard_Settings::global_test_type();
+        ?>
         <ul>
+            <li id="understand-results">
+                <h3><?php esc_html_e( 'Understand the results:', 'speedguard' ); ?></h3>
+                <ul>
+					<?php if ( 'psi' === $sg_test_type ) : ?>
+
+                        <li>
+							<?php
+							echo sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
+							?>
+                        </li>
+                        <li>
+							<?php
+							echo esc_html__( 'There is no INP in PSI tests (to measure interactivity of the page), as it is Lab test, and currently there is no reliable way to replicate this part of performance in Lab tests. We have LCP and CLS though.', 'speedguard' );
+							?>
+                        </li>
+                        <li>
+							<?php
+							echo esc_html__( 'PSI Average is calculated based on the values of all URLs that are currently guarded across your website.', 'speedguard' );
+							?>
+                        </li>
+
+					<?php elseif ( 'cwv' === $sg_test_type ) : ?>
+
+                        <li>
+							<?php
+							echo sprintf( __( 'Core Web Vitals are based on real user data collected on your website, it comes from %s.', 'speedguard' ), '<a href="https://developers.google.com/web/tools/chrome-user-experience-report/" target="_blank">Chrome User Experience report</a>' );
+							?>
+                        </li>
+                        <li>
+							<?php
+							echo sprintf( __( '%1$sIf you have CWV data available%2$s, you should always refer to that data first, as it represents the real experience real users of your website are having.', 'speedguard' ), '<strong>', '</strong>' );
+							?>
+                        </li>
+                        <li>
+							<?php
+							echo sprintf( __( '%1$sIf your Core Web Vitals are not passing%2$s, you might want to check out %3$s to investigate it further.', 'speedguard' ), '<strong>', '</strong>', '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console</a>' );
+							?>
+                        </li>
+                        <li>
+							<?php
+							echo sprintf( __( '%1$sIf there is "N/A" for Origin Core Web Vitals%2$s, it means there is not enough real-user data even for a general assessment of your entire website. In this case, you can switch to PageSpeed Insights in the %3$sSettings%4$s.', 'speedguard' ), '<strong>', '</strong>', '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
+							?>
+                        </li>
+
+					<?php endif; ?>
+                </ul>
+            </li>
             <li>
+
                 <h3><?php esc_html_e( 'What is the difference between Core Web Vitals and PageSpeed Insights?', 'speedguard' ); ?></h3>
                 <span>
-                <?php
-                echo wp_kses_post( __( 'The main difference between CWV and PSI is that CWV is based on real-user data, while PSI uses lab data collected in a controlled environment. Lab data can be useful for debugging performance issues, but it is not as representative of the real-world user experience as real-user data.', 'speedguard' ) );
-                ?>
-                <p><strong><?php echo esc_html__( 'If you have CWV data available, you should always refer to that data first, as it represents the real experience real users of your website are having.', 'speedguard' ); ?></strong></p>
-                <?php
-                echo wp_kses_post( __( 'If there is no CWV data available -- you CAN use PSI as a reference, but you need to remember these are LAB tests: on the devices, connection and location that are most certainly don\'t match the actual state of things.', 'speedguard' ) );
-                ?>
-            </span>
+<?php
+echo wp_kses_post( __( 'The main difference between CWV and PSI is that CWV is based on real-user data, while PSI uses lab data collected in a controlled environment. Lab data can be useful for debugging performance issues, but it is not as representative of the real-world user experience as real-user data.', 'speedguard' ) );
+?>
+<p><strong><?php echo esc_html__( 'If you have CWV data available, you should always refer to that data first, as it represents the real experience real users of your website are having.', 'speedguard' ); ?></strong></p>
+<?php
+echo wp_kses_post( __( 'If there is no CWV data available -- you CAN use PSI as a reference, but you need to remember these are LAB tests: on the devices, connection and location that are most certainly don\'t match the actual state of things.', 'speedguard' ) );
+?>
+</span>
             </li>
+
             <li id="undersanding-metrics">
 				<?php
 				echo wp_kses_post( __( 'All three of these metrics are important for providing a good user experience. A fast LCP means that users will not have to wait long for the main content of a page to load. A low CLS means that users will not have to deal with content that moves around while they are trying to read it. And a low INP means that users will be able to interact with a web page quickly and easily.', 'speedguard' ) );
 				?>
-                </p>
                 <h3><?php esc_html_e( 'Understanding metrics:', 'speedguard' ); ?></h3>
                 <div id="LCP-description">
                     <p>
@@ -351,7 +339,6 @@ class SpeedGuard_Widgets {
         </ul>
 		<?php
 	}
-
 
 	public static function add_new_widget_function() {
 		$nonce_field = wp_nonce_field( 'sg_add_new_url', 'sg_add_new_nonce_field', true, false );
@@ -469,14 +456,14 @@ class SpeedGuard_Widgets {
 
 
 	function speedguard_dashboard_widget_function() {
-        $sg_test_type = SpeedGuard_Settings::global_test_type();
+		$sg_test_type = SpeedGuard_Settings::global_test_type();
 		if ( 'cwv' === $sg_test_type ) {
 			$origin_widget_title = 'Core Web Vitals for Origin';
 		} elseif ( 'psi' === $sg_test_type ) {
 			$origin_widget_title = 'PageSpeed Insights Average';
 		}
 
-		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( $origin_widget_title. _(' [SpeedGuard]'), 'speedguard' ), [
+		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( $origin_widget_title . _( ' [SpeedGuard]' ), 'speedguard' ), [
 			$this,
 			'origin_results_widget_function',
 		], '', [ 'echo' => 'true' ] );
