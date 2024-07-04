@@ -657,13 +657,55 @@ class SpeedGuard_Admin {
 
 			//Save CWV for origin
 
+
+
+
+
+			//Found bug in PSI API
+			// (where the overall_category is average even though LCP, INP, CLS are passing, in PSI interface
+			// and GSC are passing too)
+			//have to replace this before that gets fixed
+			// 'category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
+
+
+			$cwv_origin_categories = [
+				'mobile' => [],
+				'desktop' => []
+			];
+
+			foreach (SpeedGuard_Admin::SG_METRICS_ARRAY as $device => $metrics) {
+				foreach ($metrics['cwv'] as $metric) {
+					if ($device === 'mobile' && is_array($mobile_data['originCWV'][$metric])) {
+						$cwv_origin_categories[$device][] = $mobile_data['originCWV'][$metric]['category'];
+					} elseif ($device === 'desktop' && is_array($desktop_data['originCWV'][$metric])) {
+						$cwv_origin_categories[$device][] = $desktop_data['originCWV'][$metric]['category'];
+					}
+				}
+			}
+
+			$proper_cwv_origin = [
+				'mobile' => 'No data',
+				'desktop' => 'No data'
+			];
+
+			foreach ($cwv_origin_categories as $device => $categories) {
+				if (in_array('POOR', $categories)) {
+					$proper_cwv_origin[$device] = 'POOR';
+				} elseif (in_array('AVERAGE', $categories)) {
+					$proper_cwv_origin[$device] = 'AVERAGE';
+				} elseif (in_array('FAST', $categories)) {
+					$proper_cwv_origin[$device] = 'FAST';
+				}
+			}
+
+
 			$both_devices_values_origin = [
 				'mobile'  => [
 					'cwv' => [
 						'lcp'              => $mobile_data['originCWV']['lcp'], //TODO check seems to be fine
 						'cls'              => $mobile_data['originCWV']['cls'],
 						'inp'              => $mobile_data['originCWV']['inp'],
-						'category' => $mobile_data['originCWV']['overall_category']
+						'category' => $proper_cwv_origin['mobile']
 					],
 					'psi' => [
 						'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
@@ -676,7 +718,7 @@ class SpeedGuard_Admin {
 						'lcp'              => $desktop_data['originCWV']['lcp'], //array if ok, string if no data
 						'cls'              => $desktop_data['originCWV']['cls'],
 						'inp'              => $desktop_data['originCWV']['inp'],
-						'category' => $desktop_data['originCWV']['overall_category']
+						'category' => $proper_cwv_origin['desktop']
 					],
 					'psi' => [
 						'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
