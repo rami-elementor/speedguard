@@ -170,11 +170,33 @@ class SpeedGuard_Widgets {
 		// Generate informational text based on test type
 		$info_text = '<ul>';
 		if ( 'psi' === $sg_test_type ) {
-			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
-		} elseif ( get_transient( 'speedguard_no_cwv_data' ) ) {
-			$info_text = sprintf( __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
+
+			$info_text .= '<li>';
+			$info_text .= sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
+			$info_text .= '</li>';
+
+            $info_text .= '<li>';
+            // Why there is no INP in PSI
+            $info_text .= sprintf( esc_html__( 'There is no INP in PSI tests (to measure interactivity of the page), as it is Lab test, and currectly there is no reliable way to replicate this part of performance in Lab tests. We have LCP and CLS though.',   'speedguard') );
+            $info_text .= '</li>';
+
+			$info_text .= '<li>';
+			// How PSI Average is calculated
+			$info_text .= sprintf( esc_html__( 'PSI Average is calculated based on the values of all URLs that are currently guarded across your website.', 'speedguard' ) );
+			$info_text .= '</li>';
+
+
+
+
+
+
+
+
+
+
+
+
 		}
-        // else if CWV is not passing, show the link to the video
         elseif ( 'cwv' === $sg_test_type) {
 
 	        $info_text .= '<li>';
@@ -199,13 +221,12 @@ class SpeedGuard_Widgets {
 	        $info_text .= '</li>';
 
 	        $info_text .= '<li>';
-	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for Origin Core Web Vitals%2$s, it means there is not enough real-user data even for a general assessment of your entire website. In this case, you can switch to PageSpeed Insights in the %3$sSettings%4$s.', 'speedguard' ), '<strong>', '</strong>', '<a href="settings_page_link" target="_blank">', '</a>' );
+	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for Origin Core Web Vitals%2$s, it means there is not enough real-user data even for a general assessment of your entire website. In this case, you can switch to PageSpeed Insights in the %3$sSettings%4$s.', 'speedguard' ), '<strong>', '</strong>', '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
 	        $info_text .= '</li>';
 
-
-
-
         }
+
+
         $info_text .= '</ul>';
 
 
