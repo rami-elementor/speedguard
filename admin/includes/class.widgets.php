@@ -168,16 +168,46 @@ class SpeedGuard_Widgets {
     ";
 
 		// Generate informational text based on test type
-		$info_text = '';
+		$info_text = '<ul>';
 		if ( 'psi' === $sg_test_type ) {
 			$info_text = sprintf( esc_html__( 'Mind, that Pagespeed Insights IS NOT real user data. These are just emulated laboratory tests. Core Web Vitals -- is where the real data is. If your website has enough traffic and already had Core Web Vitals assessment -- you should always work with that. You can switch in %sSettings%s.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' ) . '<div><br></div>';
 		} elseif ( get_transient( 'speedguard_no_cwv_data' ) ) {
 			$info_text = sprintf( __( 'There is no Core Web Vitals data available for this website currently. Most likely your website has not got enough traffic for Google to make an evaluation. You can %sswitch%s to lab tests (PageSpeed Insights) though.', 'speedguard' ), '<a href="' . esc_url( admin_url( 'admin.php?page=speedguard_settings' ) ) . '">', '</a>' );
 		}
         // else if CWV is not passing, show the link to the video
-        elseif ( 'cwv' === $sg_test_type && isset( $speedguard_cwv_origin['desktop']['cwv']['category'] ) && isset( $speedguard_cwv_origin['mobile']['cwv']['category'] ) && ($speedguard_cwv_origin['desktop']['cwv']['category'] !== 'FAST' || $speedguard_cwv_origin['mobile']['cwv']['category'] !== 'FAST')) {
-            $info_text = sprintf( __( 'If your Core Web Vitals are not passing, you might want to check out %s to investigate it further.', 'speedguard' ), '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console </a>' );
+        elseif ( 'cwv' === $sg_test_type) {
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( 'Core Web Vitals are based on real user data collected on your website, it comes from %s.', 'speedguard' ), '<a href="https://developers.google.com/web/tools/chrome-user-experience-report/" target="_blank">Chrome User Experience report</a>' );
+	        $info_text .= '</li>';
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( '%1$sIf you have CWV data available%2$s, you should always refer to that data first, as it represents the real experience real users of your website are having.', 'speedguard' ), '<strong>', '</strong>' );
+	        $info_text .= '</li>';
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( '%1$sIf your Core Web Vitals are not passing%2$s, you might want to check out %3$s to investigate it further.', 'speedguard' ), '<strong>', '</strong>', '<a href="https://search.google.com/search-console/" target="_blank">Google Search Console</a>' );
+	        $info_text .= '</li>';
+
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( '%1$sIf there are the same numbers for a few URLs%2$s, it means there is not enough real-user data for those specific pages yet. In that case Google may use data from another similar page on your website or Origin.', 'speedguard' ), '<strong>', '</strong>' );
+	        $info_text .= '</li>';
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for individual URLs%2$s --- it means that there is not enough real-user data for those URLs yet and Google didn\'t use other similar pages data as well.', 'speedguard' ), '<strong>', '</strong>' );
+	        $info_text .= '</li>';
+
+	        $info_text .= '<li>';
+	        $info_text .= sprintf( __( '%1$sIf there is "N/A" for Origin Core Web Vitals%2$s, it means there is not enough real-user data even for a general assessment of your entire website. In this case, you can switch to PageSpeed Insights in the %3$sSettings%4$s.', 'speedguard' ), '<strong>', '</strong>', '<a href="settings_page_link" target="_blank">', '</a>' );
+	        $info_text .= '</li>';
+
+
+
+
         }
+        $info_text .= '</ul>';
+
 
 		// Output the final content
 		echo wp_kses_post( $content . $info_text );
@@ -249,14 +279,6 @@ class SpeedGuard_Widgets {
 		$cwv_link = 'https://web.dev/lcp/';
 		?>
         <ul>
-            <li>
-                <h3><?php esc_html_e( 'What does N/A mean?', 'speedguard' ); ?></h3>
-                <span>
-                <?php
-                echo wp_kses_post( sprintf( /* translators: 1: Google Search Console URL, 2: CrUX report URL */ __( 'If you see "N/A" for a metric in Core Web Vitals tests, it means that there is not enough real-user data to provide a score. This can happen if your website is new or has very low traffic. You will see the same in your %1$s, as they pull data from the same source -- (%2$s).', 'speedguard' ), '<a href="' . esc_url( 'https://search.google.com/search-console/' ) . '">' . esc_html__( 'Google Search Console (GSC)', 'speedguard' ) . '</a>', '<a href="' . esc_url( 'https://developer.chrome.com/docs/crux/' ) . '">' . esc_html__( 'CrUX report', 'speedguard' ) . '</a>' ) );
-                ?>
-            </span>
-            </li>
             <li>
                 <h3><?php esc_html_e( 'What is the difference between Core Web Vitals and PageSpeed Insights?', 'speedguard' ); ?></h3>
                 <span>
