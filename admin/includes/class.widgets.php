@@ -62,7 +62,7 @@ class SpeedGuard_Widgets {
 			'SpeedGuard_Widgets',
 			'explanation_widget_function',
 		], '', 'main-content', 'core' );
-		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'Get the most use of this plugin:', 'speedguard' ), [
+		add_meta_box( 'speedguard-howto-meta-box', esc_html__( 'Make the most of it:', 'speedguard' ), [
 			'SpeedGuard_Widgets',
 			'howto_widget_function',
 		], '', 'side', 'core' );
