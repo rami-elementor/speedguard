@@ -1,6 +1,6 @@
 === Site Speed Test - SpeedGuard === 
 Contributors: sabrinazeidan
-Tags: speed, site speed, test speed, performance, optimization
+Tags: site speed, test speed, core web vitals, pagespeed, pagespeed insights, performance, optimization
 Requires at least: 5.8
 Tested up to: 6.5.4
 Stable tag: 2.0
@@ -14,7 +14,7 @@ Tracks Core Web Vitals for you. Every single day, for free.
 It's free.**
 <strong>Track Core Web Vitals for individual URLs of your website. Every day. For free.</strong>
 
-[youtube https://www.youtube.com/watch?v=y_RvQEhdq9c]
+[youtube https://www.youtube.com/watch?v=5Rq3qvySKtI]
 
 No need to guess whether your website performance needs your attention or not - you will get the definite answer in your WordPress Dashboard in a few minutes.
 
@@ -23,7 +23,7 @@ No need to guess whether your website performance needs your attention or not - 
 * <strong>Core Web Vitals (LCP, CLS, INP) testing for individual URLs of your website</strong>
 * <strong>PageSpeed Insights (LCP, CLS) for the cases if your website doesn't have Core Web Vitals yet</strong>
 * <strong>automatic </strong> everyday monitoring
-* <strong>desktop and mobile</strong> testing
+* <strong>both desktop and mobile</strong> testing
 * <strong>links to the Google PageSpeed Insights reports (that include CWV on top as well)</strong> which you can pass to the performance engineer to improve your site speed
 * <strong>tests are completely automated</strong> -- you don't need to do anything
 * <strong>easy to use</strong> — just pick pages of your website that you would like to monitor
@@ -51,41 +51,42 @@ Google Core Web Vitals are the metrics that Google uses to measure the user expe
 
 If your website passes CWV assessment for Origin -- it means that your website is fast enough for the majority of users.
 If it doesn't pass -- it means that you have to fix this.
-If it does pass but quite a few specific URLs are not passing -- it's a good time to look into those URLs and improve them to prevent the entrirewebstie to be marked as failing CWV.
+If it does pass but quite a few specific URLs are not passing -- it's a good time to look into those URLs and improve them to prevent the entrire webstie to be marked as failing CWV.
 
 I wanted a simple easy-to-use tool to warn me in case my clients' websites performance has a bad tendency and needs my attention.
+
 I wanted a native WordPress solution, with all information available from the dashboard, simple but still informative, a guard who will do the monitoring every day and ping me, in case something goes wrong.
+
 I have not found one and that's why I've built this plugin. 
 
-I'll be happy to know that you find it useful as well, feel free to leave a review :)
+I'll be happy to know that you find it useful as well -- please, leave a review.
 
-P.S. Note about PageSpeed Insights: you SHOULD alsways use CWV data in case it is available for your website. In case it is not available (when the website is new and/or doesn't have enough traffic yet) -- use PageSpeed Insights. But you have to remember, that PSI -- are lab tests, it's just an emulation of real users experience. It's better than nothing, of course.
+P.S. Note about PageSpeed Insights: you SHOULD always use CWV data in case it is available for your website. In case it is not available (when the website is new and/or doesn't have enough traffic yet) -- use PageSpeed Insights. But you have to remember, that PSI -- are lab tests, it's just an emulation of real users experience. It's better than nothing, of course.
 Watch my talk here if you want to understand [Core Web Vitals Mystery](https://www.youtube.com/watch?v=-80yP6sY0Cg) better.
 
 
 == Screenshots ==
-1. HomePage is tested on activation
+1. HomePage is added after activation
 2. Add pages you want to test
-3. View PageSpeed Insights reports
-4. Choose Mobile or Desktop
-5. Choose when you would like to get notified
+3. See Core Web Vitals for the website in general (for Origin)
+4. See Core Web Vitals for individual URLs of your website
 
 == Installation ==
 = Automatic plugin installation: =
 1. Go to Plugins > Add New in your WordPress Admin
 2. Search for SpeedGuard plugin
 3. Click Install SpeedGuard
-4. Activate SpeedGuard after installation
-5. Follow further instructions to add pages that you want to test
+4. Activate SpeedGuard
+5. You will be redirected to the Tests page and your Homepage will be tested automatically on activation
+6. While the test is running, watch the video in the sidebar to make the most of the plugin
 
 
 = Configuration: =
-Go to the SpeedGuard -> Settings page to set the scan frequency and whether you prefer to be emailed. 
+SpeedGuard is ready to use right after activation.
 
-For example, you can set tests to run every day and send you a performance report every day, too. 
+Tests are run every day automatically by CRON.
 
-Or you may want to receive an email just in case the average site speed is worse than say, 5 seconds (adjustable too). 
-In this case, the plugin will perform tests every day but only send you the warning if your site is loading slower than the time you have set.
+There are 2 tests type: Core Web Vitals and PageSpeed Insights. By default, Core Web Vitals is selected. If Google has this data available for your website, it will be used. If not -- you will see the notice, switch to PageSpeed Insights in SpeedGuard -> Settings then.
 
 == Frequently Asked Questions ==
 
@@ -95,16 +96,15 @@ From there we have Core Web Vitals data for specific URLs of your website and fo
 
 = Do I need Google PageSpeed Insights API key to use SpeedGuard? =
 No, you don't. Just add pages you need to test.
-This freedom from Google might be over soon, in case it happens, I'll add the opportunity to run tests with your own API key.
 
 = Are the tests results for desktop or mobile users? =
 For both. Automatically.
 
 = Is it compatible with WordPress Multisite? =
-It is! Use per-site activation.
+Use per-site activation.
 
 = Where can I suggest a new feature or report a bug? =
-On [SpeedGuard's GitHub repo](https://github.com/sabrina-zeidan/speedguard)! 
+Here, in the support forum.
 
 = Translations =
 
@@ -118,6 +118,17 @@ On [SpeedGuard's GitHub repo](https://github.com/sabrina-zeidan/speedguard)!
 * Thanx to Baboon designs from the Noun Project for the timer icon.
 
 == Changelog ==
+
+= Version 2.0 - July 4, 2024 =
+
+* [New] Added Core Web Vitals (LCP, CLS, INP) metrics
+* [New] PageSpeed Insights (LCP, CLS) stays as a backup for the cases if your website doesn't have Core Web Vitals yet
+* [New] No API key needed, plugin works right away
+* [New] Automatic everyday monitoring by default
+* [New] Both desktop and mobile testing by default
+* [Improved]  PSI API v5
+* [Improved] Overall plugin performance (especially for making/handling requests)
+* [Discontinued] Admin Bar widget
 
 = Version 1.8.5 - June 7, 2021 =
 * [Fixed] Compatibility with plugins that disable admin notices 
