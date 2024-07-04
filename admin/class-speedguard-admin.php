@@ -82,7 +82,10 @@ class SpeedGuard_Admin {
 		//Recount PSI Average for Origin when test is deleted
 		add_action( 'deleted_post', [ $this, 'update_average_psi_on_deletion' ], 10, 1 );
 
+
 	}
+
+
 
 
 
@@ -250,7 +253,6 @@ class SpeedGuard_Admin {
 		if ( self::is_screen( 'tests' ) ) {
 			//Notices about tests statuses
 			//When trying to add test
-			if ( ! empty( $_REQUEST['speedguard'] ) && isset( $_GET['sg_redirect_nonce'] ) && wp_verify_nonce( $_GET['sg_redirect_nonce'], 'sg_redirect_nonce_action' ) ) {
 
 				if ( get_transient( 'speedguard_notice_add_new_url_error_empty' ) ) {
 					$notices[] = self::set_notice( __( 'Please select the post you want to add.', 'speedguard' ), 'warning' );
@@ -261,7 +263,7 @@ class SpeedGuard_Admin {
 				if ( get_transient( 'speedguard_notice_create_test' ) ) {
 					$notices[] = self::set_notice( __( 'New URL is successfully added!', 'speedguard' ), 'success' );
 				}
-			}
+
 			if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
 				$notices[] = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
 			}
@@ -310,7 +312,6 @@ class SpeedGuard_Admin {
 				$notices[] = self::set_notice( __( 'Settings have been updated!' ), 'success' );
 			}
 		}
-
 
 		// Display collected notices
 		if ( ! empty( $notices ) ) {
