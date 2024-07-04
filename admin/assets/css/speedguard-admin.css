@@ -90,6 +90,7 @@ td.cwv_desktop_lcp,  th.column-cwv_desktop_lcp, th.desktop { border-left: 1px so
 
 .toplevel_page_speedguard_tests .awesomplete {
     width: 80% !important;
+    margin-right: 1em;
 }
 
 .toplevel_page_speedguard_tests .awesomplete #speedguard_new_url {
