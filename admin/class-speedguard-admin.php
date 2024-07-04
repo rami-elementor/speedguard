@@ -254,8 +254,11 @@ class SpeedGuard_Admin {
 		// Tests screen Notices
 		if ( self::is_screen( 'tests' ) ) {
 			//Notices about tests statuses
-			//When trying to add test
-			if ( ! empty( $_REQUEST['speedguard'] )) {
+			//When trying to add test or update load time
+			$speedguard_key = isset($_REQUEST['speedguard']) ? 'speedguard' : (isset($_REQUEST['amp;speedguard']) ? 'amp;speedguard' : null);
+
+			if ($speedguard_key && !empty($_REQUEST[$speedguard_key])) {
+
 				if ( get_transient( 'speedguard_notice_add_new_url_error_empty' ) ) {
 					$notices[] = self::set_notice( __( 'Please select the post you want to add.', 'speedguard' ), 'warning' );
 				}
@@ -272,11 +275,15 @@ class SpeedGuard_Admin {
 				if ( get_transient( 'speedguard_notice_add_new_url_error_not_current_domain' ) ) {
 					$notices[] = self::set_notice( __( 'SpeedGuard only monitors pages from current website.', 'speedguard' ), 'warning' );
 				}
+
+				// Only when manually requested retest load time retest_load_time
+				if ( get_transient( 'speedguard_notice_slow_down' )){
+					$notices[] = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
+				}
+
 			}
 
-			if ( get_transient( 'speedguard_notice_slow_down' ) ) {
-				$notices[] = self::set_notice( __( 'You are moving too fast. Wait at least 3 minutes before updating the tests', 'speedguard' ), 'warning' );
-			}
+
 			if ( get_transient( 'speedguard_notice_already_in_queue' ) ) {
 				$notices[] = self::set_notice( __( 'This URL is currently in the queue.', 'speedguard' ), 'success' );
 			}

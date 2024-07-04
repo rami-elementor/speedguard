@@ -75,7 +75,7 @@ class SpeedGuard_Settings {
 	function default_options_added( $option, $new_value ) {
 		$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
 		if ( empty( $speedguard_options ) ) {
-			// TODO set options on activation
+			// Set options on activation
 			// if just activated + if options are not set yet
 			$new_value = $this->default_options_set( [] );
 			SpeedGuard_Admin::update_this_plugin_option( 'speedguard_options', $new_value );
@@ -112,9 +112,8 @@ class SpeedGuard_Settings {
 
 	function speedguard_options_updated( $option, $old_value, $value ) {
 		if ( $option === 'speedguard_options' ) {
-			$speedguard_options = SpeedGuard_Admin::get_this_plugin_option( 'speedguard_options' );
-			$admin_email        = $speedguard_options['email_me_at'];
-			wp_clear_scheduled_hook( 'speedguard_update_results' );
+            // Reschdeule cron job to update results
+            wp_clear_scheduled_hook( 'speedguard_update_results' );
 			wp_clear_scheduled_hook( 'speedguard_email_test_results' );
 			if ( ! wp_next_scheduled( 'speedguard_update_results' ) ) {
 				wp_schedule_event( time(), 'speedguard_interval', 'speedguard_update_results' );
