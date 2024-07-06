@@ -366,14 +366,13 @@ class SpeedGuard_Admin {
 
 		$calculated_average_psi = SpeedGuard_Admin::count_average_psi(); // Returns PSI only
 		// merge calculated average psi with current cwv origin data
-		$both_devices_values_origin = [
+		$both_devices_values_for_origin = [
 			'mobile'  => [
 				'cwv' => [
 					'lcp'              => $current_cwv_origin_data['mobile']['cwv']['lcp'],
-					//TODO check seems to be fine
 					'cls'              => $current_cwv_origin_data['mobile']['cwv']['cls'],
 					'inp'              => $current_cwv_origin_data['mobile']['cwv']['inp'],
-					'category' => $current_cwv_origin_data['mobile']['cwv']['overall_category']
+					'category' => $current_cwv_origin_data['mobile']['cwv']['category']
 				],
 				'psi' => [
 					'lcp' => $calculated_average_psi['mobile']['psi']['lcp'],
@@ -387,7 +386,7 @@ class SpeedGuard_Admin {
 					//array if ok, string if no data
 					'cls'              => $current_cwv_origin_data['desktop']['cwv']['cls'],
 					'inp'              => $current_cwv_origin_data['desktop']['cwv']['inp'],
-					'category' => $current_cwv_origin_data['desktop']['cwv']['overall_category']
+					'category' => $current_cwv_origin_data['desktop']['cwv']['category']
 				],
 				'psi' => [
 					'lcp' => $calculated_average_psi['desktop']['psi']['lcp'],
@@ -398,7 +397,7 @@ class SpeedGuard_Admin {
 
 
 		// Update Average PSI (CWV is used from saved before) for Origin
-		$update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_origin );
+		$update_cwv_origin_data = SpeedGuard_Admin::update_this_plugin_option( 'sg_origin_results', $both_devices_values_for_origin );
 
 	}
 
@@ -601,7 +600,7 @@ class SpeedGuard_Admin {
 		$desktop_data = isset($test_result_data[1]['desktop']) ? $test_result_data[1]['desktop'] : null;
 
 
-		$both_devices_values = [
+		$both_devices_values_for_url = [
 			'mobile'  => [
 				'cwv' => [
 					'lcp'              => $mobile_data['cwv']['lcp'], //TODO check seems to be fine
@@ -631,16 +630,14 @@ class SpeedGuard_Admin {
 			]
 		];
 
-		$update_url_values = update_post_meta( $current_test, 'sg_test_result', $both_devices_values );
+		update_post_meta( $current_test, 'sg_test_result', $both_devices_values_for_url );
 
 		// update post date also
-		$update_post_date = wp_update_post( array(
+		wp_update_post( array(
 			'ID'            => $current_test,
 			'post_date'     => current_time( 'mysql' ),
 			'post_date_gmt' => current_time( 'mysql', 1 )
 		) );
-
-//wp_mail('sabrinazeidanspain@gmail.com', 'another attempt1205',    '$test_result_data:  '.print_r($test_result_data,true).'$mobile_data:  '.print_r($mobile_data,true).'$desktop_data:  '.print_r($desktop_data,true).'<br>$device_values ' .print_r($both_devices_values,true).'<br>$test_result_data[0]'.print_r($test_result_data[0], true), 'Content-Type: text/html; charset=UTF-8');
 
 
 		//Mark test as done in the queue
@@ -663,11 +660,6 @@ class SpeedGuard_Admin {
 			$calculated_average_psi = SpeedGuard_Admin::count_average_psi();
 
 			//Save CWV for origin
-
-
-
-
-
 			//Found bug in PSI API
 			// (where the overall_category is average even though LCP, INP, CLS are passing, in PSI interface
 			// and GSC are passing too)
@@ -755,7 +747,7 @@ class SpeedGuard_Admin {
 				//CWV for origin is available. Is it available for individual URLs?
 				// Compare CWV origin and test results CWV values for mobile. If they are the same -- set transient to
 				// show the notice that there is no Google data available for separate URLs, only for Origin
-				$single_url_lcp   = $both_devices_values['mobile']['cwv']['lcp']['percentile'];
+				$single_url_lcp   = $both_devices_values_for_url['mobile']['cwv']['lcp']['percentile'];
 				$origin_lcp = $both_devices_values_origin['mobile']['cwv']['lcp']['percentile'];
 
 				// Perform comparison. If Origin CWV is available, but the same as the single URL CWV, set transient

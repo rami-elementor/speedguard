@@ -353,8 +353,8 @@ class SpeedGuard_Tests {
 		$entered_domain = wp_parse_url( $url_to_add );
 
 		if ( ( $_SERVER['SERVER_NAME'] !== $entered_domain['host'] ) && ( ! defined( 'SPEEDGUARD_PRO' ) || SPEEDGUARD_PRO === false ) ) {
-			//set_transient( 'speedguard_notice_add_new_url_error_not_current_domain', true, 5 );
-           // return;
+			set_transient( 'speedguard_notice_add_new_url_error_not_current_domain', true, 5 );
+            return;
 		}
 
 
