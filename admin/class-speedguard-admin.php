@@ -314,7 +314,7 @@ class SpeedGuard_Admin {
 			} // There is CWV data, but only for Origin
 			elseif ( ( get_transient( 'speedguard_notice_cwv_mobile_match' ) ) && $global_test_type === 'cwv' ) {
 				$settings_link = esc_url( admin_url( 'admin.php?page=speedguard_settings' ) );
-				$message       = __( 'Your CWV tests results are the same for all pages -- it means that Google doesn\'t have data for specific URLs, and only has data for this website in general (usually, due to little traffic on the website).', 'speedguard' );
+				$message       = __( 'CWV tests results are the same for a few pages -- it means that Google doesn\'t have data for specific URLs, and only has data for this website in general (usually, due to little traffic on the website).', 'speedguard' );
 				$message       .= '<br/>';
 				$message       .= sprintf( __( 'You can switch to PSI in  %sSettings%s or you can keep tracking CWV for origin only (add just 1 URL for now).', 'speedguard' ), '<a href="' . $settings_link . '">', '</a>' );
 				$notices[]     = self::set_notice( $message, 'warning' );
