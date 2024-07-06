@@ -541,20 +541,29 @@ class SpeedGuard_Tests {
 			if ( ! empty( $current_tests_array ) ) {
 				if ( ( $key = array_search( $guarded_page_id, $current_tests_array ) ) !== false ) {
 					unset( $current_tests_array[ $key ] );
+					// And update the queue transient with the new array
+                    // if it was the only test in the queue, delete the transient
+                    if ( empty( $current_tests_array ) ) {
+                        delete_transient( 'speedguard_tests_in_queue' );
+                    } else {
+	                    set_transient( 'speedguard_tests_in_queue', wp_json_encode( $current_tests_array ) );
+                    }
+
 				}
 			}
-			set_transient( 'speedguard_tests_in_queue', wp_json_encode( $current_tests_array ) );
+
 
 			//update tests count
 			$monitored_urls_count = json_decode( get_transient( 'speedguard_tests_count' ) );
 			$updated_count        = $monitored_urls_count - 1;
 			set_transient( 'speedguard_tests_count', wp_json_encode( $updated_count ) );
 
-			//if currently running:
+			// If this test is currently being tested, delete it from the queue
 			if ( json_decode( get_transient( 'speedguard_test_in_progress' ) ) == $guarded_page_id ) {
 				delete_transient( 'speedguard_test_in_progress' );
 			}
-			if ( json_decode( get_transient( ' speedguard_sending_request_now' ) ) == $guarded_page_id ) {
+
+			if ( json_decode( get_transient( 'speedguard_sending_request_now' ) ) == $guarded_page_id ) {
 				delete_transient( ' speedguard_sending_request_now' );
 			}
 
