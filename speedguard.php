@@ -20,7 +20,7 @@
  * The code that runs during plugin activation.
  * This action is documented in includes/class-speedguard-activator.php
  */
-const SPEEDGUARD_VERSION = '2.0';
+const SPEEDGUARD_VERSION = '2.0.1';
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
