@@ -267,9 +267,7 @@ class SpeedGuard_List_Table extends WP_List_Table {
 				}
 			} else {
 				// Nonce verification failed - log the error with more context
-				error_log( 'Nonce verification failed in sort_data function. Request data: ' . print_r($_REQUEST, true) );
-				// Optionally, you can handle the failure differently based on your application flow
-				// For now, we'll just log the error and continue with defaults
+
 			}
 		}
 
@@ -534,7 +532,7 @@ class SpeedGuard_Tests {
 
 	public static function delete_test_fn( $guarded_page_id, $action = 'delete' ) {
 		$deleted = wp_delete_post( $guarded_page_id, true );
-        error_log('from:delete_test_fn Deleted CPT with ID: ' . $guarded_page_id);
+        //error_log('from:delete_test_fn Deleted CPT with ID: ' . $guarded_page_id);
 		if ( $deleted ) {
 			//delete from the queue if it is currently there
 			$current_tests_array = json_decode( get_transient( 'speedguard_tests_in_queue' ), true );
