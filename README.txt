@@ -1,18 +1,21 @@
 === Site Speed Test - SpeedGuard === 
 Contributors: sabrinazeidan
-Tags: site speed, test speed, core web vitals, pagespeed, pagespeed insights, performance, optimization
+Tags: speed, core web vitals, pagespeed, performance, optimization
 Requires at least: 5.8
-Tested up to: 6.5.4
-Stable tag: 2.0.1
+Tested up to: 6.5.5
+Stable tag: 2.0
 Requires PHP: 7.3.5
-License: GPLv2 or later 
+License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tracks Core Web Vitals for you. Every single day, for free.
 
 == Description ==
-**Google Core Web Vitals and PageSpeed Insights right in your WordPress dashboard.
-It's free.**
-<strong>Track Core Web Vitals for individual URLs of your website. Every day. For free.</strong>
+
+<strong>Track Core Web Vitals for the entire website and for individual URLs.
+Mobile and Desktop.
+Every day.
+Automatically.
+For free.</strong>
 
 [youtube https://www.youtube.com/watch?v=5Rq3qvySKtI]
 
@@ -57,7 +60,7 @@ I wanted a simple easy-to-use tool to warn me in case my clients' websites perfo
 
 I wanted a native WordPress solution, with all information available from the dashboard, simple but still informative, a guard who will do the monitoring every day and ping me, in case something goes wrong.
 
-I have not found one and that's why I've built this plugin. 
+I have not found one and that's why I've built this plugin.
 
 I'll be happy to know that you find it useful as well -- please, leave a review.
 
@@ -91,7 +94,7 @@ There are 2 tests type: Core Web Vitals and PageSpeed Insights. By default, Core
 == Frequently Asked Questions ==
 
 = How tests are performed? =
-Starting from version 1.7 SpeedGuard is using [Google PageSpeed Insights API](https://developers.google.com/speed/pagespeed/insights/) which uses [Lighthouse](https://developers.google.com/web/tools/lighthouse) technology to perform tests. 
+Starting from version 1.7 SpeedGuard is using [Google PageSpeed Insights API](https://developers.google.com/speed/pagespeed/insights/) which uses [Lighthouse](https://developers.google.com/web/tools/lighthouse) technology to perform tests.
 From there we have Core Web Vitals data for specific URLs of your website and for origin. (Same data, that you can see in [Google Search Console](https://search.google.com/search-console/about) under Core Web Vitals section.)
 
 = Do I need Google PageSpeed Insights API key to use SpeedGuard? =
@@ -118,11 +121,9 @@ Here, in the support forum.
 * Thanx to Baboon designs from the Noun Project for the timer icon.
 
 == Changelog ==
-
 = Version 2.0.1 - July 6, 2024 =
 
 * [Fixed] CWV for Origin are "N/A" after the test deletion
-
 
 = Version 2.0 - July 4, 2024 =
 
@@ -136,20 +137,20 @@ Here, in the support forum.
 * [Discontinued] Admin Bar widget
 
 = Version 1.8.5 - June 7, 2021 =
-* [Fixed] Compatibility with plugins that disable admin notices 
-* [Fixed] Error on author archive pages 
+* [Fixed] Compatibility with plugins that disable admin notices
+* [Fixed] Error on author archive pages
 
 = Version 1.8.4 - March 22, 2021 =
-* [Fixed] Error on date archive pages 
-* [Fixed] Homepage can be added multiple times 
+* [Fixed] Error on date archive pages
+* [Fixed] Homepage can be added multiple times
 * [Fixed] Site's average is not updated properly when tests are deleted
 * [Tweak] jQuery independence: all functions use vanilla JS now
 
 = Version 1.8.3 - November 9, 2020 =
-* [Fixed] Threshold error (5 minutes + timezone) after WordPress 5.3  
+* [Fixed] Threshold error (5 minutes + timezone) after WordPress 5.3
 * [Fixed] Settings are being reset to defaults
 * [Fixed] PHP Warning: Illegal string offset 'displayValue' in Admin bar when test is in progress
-* [Fixed] Critical error on custom post type archive page 
+* [Fixed] Critical error on custom post type archive page
 * [Fixed] Tests for terms pages were not being deleted on uninstall
 * [Fixed] Styles and scripts loaded for not logged-in user after version 1.8
 * [Fixed] 504 admin-ajax.php error (or inifinite spinning) on bulk retest
@@ -226,12 +227,10 @@ _If you've got working WebPageTest API key and want to keep using it to run test
 * Language bug fixed.
 
 = Version 1.2 =
-* Multisite support added. 
+* Multisite support added.
 
 = Version 1.1.0 =
 * Tests page view updated.
 
 = Version 1.0.0 =
 * Initial public release.
-
-
