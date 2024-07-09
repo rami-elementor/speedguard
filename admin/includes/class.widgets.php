@@ -30,9 +30,9 @@ class SpeedGuard_Widgets {
 		], '', 'normal', 'core' );
 
 		if ( 'cwv' === $sg_test_type ) {
-			$origin_widget_title = 'Core Web Vitals for Origin -- real users\' experience for the entire website';
+			$origin_widget_title = __( 'Core Web Vitals for Origin -- real users\' experience for the entire website', 'speedguard' );
 		} elseif ( 'psi' === $sg_test_type ) {
-			$origin_widget_title = 'PageSpeed Insights (lab tests)';
+			$origin_widget_title = __( 'PageSpeed Insights (lab tests)', 'speedguard' );
 		}
 
 		add_meta_box( 'speedguard-dashboard-widget', esc_html__( $origin_widget_title, 'speedguard' ), [
@@ -458,9 +458,9 @@ echo wp_kses_post( __( 'If there is no CWV data available -- you CAN use PSI as 
 	function speedguard_dashboard_widget_function() {
 		$sg_test_type = SpeedGuard_Settings::global_test_type();
 		if ( 'cwv' === $sg_test_type ) {
-			$origin_widget_title = 'Core Web Vitals for Origin';
+			$origin_widget_title = __( 'Core Web Vitals for Origin', 'speedguard' );
 		} elseif ( 'psi' === $sg_test_type ) {
-			$origin_widget_title = 'PageSpeed Insights Average';
+			$origin_widget_title = __( 'PageSpeed Insights Average', 'speedguard' );
 		}
 
 		wp_add_dashboard_widget( 'speedguard_dashboard_widget', __( $origin_widget_title . _( ' [SpeedGuard]' ), 'speedguard' ), [
