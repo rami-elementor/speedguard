@@ -323,7 +323,7 @@ class SpeedGuard_Admin {
 
 		} elseif ( self::is_screen( 'settings' ) ) {
 			if ( ! empty( $_REQUEST['settings-updated'] ) && $_REQUEST['settings-updated'] === 'true' ) {
-				$notices[] = self::set_notice( __( 'Settings have been updated!' ), 'success' );
+				$notices[] = self::set_notice( __( 'Settings have been updated!', 'speedguard' ), 'success' );
 			}
 		}
 
