@@ -3,7 +3,7 @@ Contributors: sabrinazeidan
 Tags: speed, core web vitals, pagespeed, performance, optimization
 Requires at least: 5.8
 Tested up to: 6.5.5
-Stable tag: 2.0
+Stable tag: 2.0.2
 Requires PHP: 7.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -121,6 +121,12 @@ Here, in the support forum.
 * Thanx to Baboon designs from the Noun Project for the timer icon.
 
 == Changelog ==
+
+= Version 2.0.2 - July 12, 2024 =
+
+* [Fixed] Error on activating PRO (with AMP)
+
+
 = Version 2.0.1 - July 6, 2024 =
 
 * [Fixed] CWV for Origin are "N/A" after the test deletion

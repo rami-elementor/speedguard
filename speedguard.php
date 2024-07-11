@@ -8,7 +8,7 @@
  * Plugin Name:       SpeedGuard
  * Plugin URI:        https://sabrinazeidan.com/speedguard/
  * Description:       Tracks Core Web Vitals for you. Every single day, for free.
- * Version:           2.0
+ * Version:           2.0.2
  * Author:            Sabrina Zeidan
  * Author URI:        https://sabrinazeidan.com/
  * License:           GPL-2.0+
